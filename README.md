@@ -88,3 +88,28 @@ grim-sil/
 ## 📞 지원
 
 문제가 발생하면 [배포 가이드](docs/DEPLOYMENT_GUIDE.md)의 문제 해결 섹션을 참고하세요.
+
+---
+
+## 🔗 GitHub 자동 배포 (2025-12-25 연동 완료)
+
+### 연결된 저장소
+- **GitHub**: `taejungart-maker/grim-sil`
+- **Branch**: `main`
+
+### 배포된 갤러리
+1. **하현주 갤러리** - https://hahyunju-gallery.vercel.app
+2. **문혜경 갤러리** - https://moonhyekyung-gallery.vercel.app
+3. **황미경 갤러리** - https://hwangmikyung-gallery.vercel.app
+
+### 자동 배포 사용법
+
+코드를 수정하고 GitHub에 push하면 자동으로 모든 갤러리가 업데이트됩니다:
+
+```bash
+git add .
+git commit -m "업데이트 내용"
+git push
+```
+
+Vercel이 자동으로 3개 갤러리를 모두 배포합니다! 🚀
