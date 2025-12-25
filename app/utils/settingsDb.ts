@@ -1,8 +1,9 @@
 // 설정 저장소 - Supabase를 사용하여 클라우드 동기화
-import { SiteConfig, defaultSiteConfig } from "../config/site";
-import { supabase } from "./supabase";
+import { SiteConfig, defaultSiteConfig } from "..//config/site";
+import { supabase, ARTIST_ID } from "./supabase";
 
-const SETTINGS_ID = "default";
+// 각 작가별로 고유한 설정 ID 사용
+const SETTINGS_ID = ARTIST_ID;
 
 // 설정 Row 타입
 interface SettingsRow {

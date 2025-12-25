@@ -50,6 +50,7 @@ export async function getAllArtworks(): Promise<Artwork[]> {
         const { data, error, status } = await supabase
             .from("artworks")
             .select("id, title, year, month, dimensions, medium, description, price, created_at, image_url, artist_name")
+            .eq("artist_id", ARTIST_ID) // 현재 작가의 데이터만 가져오기
             .order("created_at", { ascending: false });
 
         console.log("Supabase response status:", status);
@@ -110,6 +111,7 @@ export async function updateArtwork(artwork: Artwork): Promise<Artwork> {
         .from("artworks")
         .update(row)
         .eq("id", artwork.id)
+        .eq("artist_id", ARTIST_ID) // 현재 작가의 데이터만 수정
         .select()
         .single();
 
@@ -126,7 +128,8 @@ export async function deleteArtwork(id: string): Promise<void> {
     const { error } = await supabase
         .from("artworks")
         .delete()
-        .eq("id", id);
+        .eq("id", id)
+        .eq("artist_id", ARTIST_ID); // 현재 작가의 데이터만 삭제
 
     if (error) {
         console.error("Failed to delete artwork:", error);
@@ -140,6 +143,7 @@ export async function getArtwork(id: string): Promise<Artwork | undefined> {
         .from("artworks")
         .select("*")
         .eq("id", id)
+        .eq("artist_id", ARTIST_ID) // 현재 작가의 데이터만 가져오기
         .single();
 
     if (error) {
@@ -483,6 +487,7 @@ export async function incrementVisitorCount() {
             .from('visitor_stats')
             .select('count')
             .eq('date', today)
+            .eq('artist_id', ARTIST_ID) // 현재 작가의 통계만 가져오기
             .single();
 
         if (error && error.code !== 'PGRST116') { // PGRST116 is "not found"
@@ -494,12 +499,13 @@ export async function incrementVisitorCount() {
             await supabase
                 .from('visitor_stats')
                 .update({ count: data.count + 1 })
-                .eq('date', today);
+                .eq('date', today)
+                .eq('artist_id', ARTIST_ID); // 현재 작가의 통계만 업데이트
         } else {
             // 없으면 새로 생성
             await supabase
                 .from('visitor_stats')
-                .insert([{ date: today, count: 1 }]);
+                .insert([{ date: today, count: 1, artist_id: ARTIST_ID }]); // artist_id 포함
         }
     } catch (error) {
         console.error("Failed to increment visitor count:", error);
@@ -512,6 +518,7 @@ export async function getVisitorStats(days = 7) {
         const { data, error } = await supabase
             .from('visitor_stats')
             .select('*')
+            .eq('artist_id', ARTIST_ID) // 현재 작가의 통계만 가져오기
             .order('date', { ascending: false })
             .limit(days);
 
