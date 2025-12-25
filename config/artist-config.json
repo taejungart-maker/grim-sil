@@ -1,0 +1,31 @@
+{
+  "artists": [
+    {
+      "id": "-vqsk",
+      "name": "하현주",
+      "galleryName": "하현주 갤러리",
+      "vercelProject": "prj_dX2Wo9c9Xy8bwlZEcoelrtX0tvnn",
+      "deploymentUrl": "https://hahyunju-gallery.vercel.app",
+      "supabaseProject": "shared",
+      "createdAt": "2025-12-25T02:05:18.127Z"
+    },
+    {
+      "id": "-3ibp",
+      "name": "문혜경",
+      "galleryName": "문혜경 작가님",
+      "vercelProject": "prj_fVGR24WNOwA8XUEFsubugTac6qLM",
+      "deploymentUrl": "https://moonhyekyung-gallery.vercel.app",
+      "supabaseProject": "shared",
+      "createdAt": "2025-12-25T02:11:17.139Z"
+    },
+    {
+      "id": "-5e4p",
+      "name": "황미경",
+      "galleryName": "황미경 갤러리",
+      "vercelProject": "prj_iqSlF4KpSOJiYBlUnTv4eHuLE8MM",
+      "deploymentUrl": "https://hwangmikyung-gallery.vercel.app",
+      "supabaseProject": "shared",
+      "createdAt": "2025-12-25T02:12:44.888Z"
+    }
+  ]
+}

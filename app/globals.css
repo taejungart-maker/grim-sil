@@ -1,0 +1,321 @@
+@import "tailwindcss";
+
+/* ============================================
+   그림실 (Grim-sil) 디자인 시스템
+   시니어 친화적 UI - 큰 버튼, 큰 글씨
+   ============================================ */
+
+:root {
+  /* 색상 */
+  --background: #ffffff;
+  --foreground: #1a1a1a;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --secondary: #f3f4f6;
+  --border: #e5e7eb;
+  --text-muted: #444444;
+
+  /* 시니어 친화적 폰트 크기 (더 크게 조정) */
+  --font-size-sm: 18px;
+  --font-size-base: 22px;
+  --font-size-lg: 26px;
+  --font-size-xl: 30px;
+  --font-size-2xl: 38px;
+  --font-size-3xl: 50px;
+
+  /* 버튼 크기 (엄지손가락 터치 영역) */
+  --button-min-height: 60px;
+  --touch-target: 52px;
+
+  /* 간격 */
+  --spacing-sm: 14px;
+  --spacing-md: 24px;
+  --spacing-lg: 36px;
+  --spacing-xl: 52px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --font-sans: "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* 다크 모드 비활성화 - 시니어에게 밝은 화면이 더 적합 */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: var(--font-size-base);
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.01em;
+}
+
+/* 시니어 친화적 버튼 기본 스타일 */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--button-min-height);
+  padding: 16px 32px;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  border-radius: 16px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background: var(--primary-hover);
+  transform: scale(1.02);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-secondary {
+  background: var(--secondary);
+  color: var(--foreground);
+  border: 2px solid var(--border);
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
+  background: #e5e7eb;
+}
+
+/* 큰 터치 영역을 위한 유틸리티 */
+.touch-target {
+  min-width: var(--touch-target);
+  min-height: var(--touch-target);
+}
+
+/* 스크롤바 스타일 (시니어 친화적으로 두껍게) */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
+/* 풀스크린 오버레이 */
+.fullscreen-overlay {
+  position: fixed;
+  inset: 0;
+  background: black;
+  z-index: 50;
+}
+
+/* 연도 탭 스타일 */
+.year-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  min-height: var(--button-min-height);
+  padding: 12px 24px;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-muted);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.year-tab:hover {
+  background: var(--secondary);
+}
+
+.year-tab.active {
+  background: var(--primary);
+  color: white;
+}
+
+/* 작품 카드 */
+.artwork-card {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: var(--secondary);
+}
+
+.artwork-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.artwork-card:active {
+  transform: scale(0.98);
+}
+
+.artwork-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 페이드 인 애니메이션 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+/* 스크롤 가이드 애니메이션 */
+@keyframes bounce {
+
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+
+  40% {
+    transform: translateY(-6px);
+  }
+
+  60% {
+    transform: translateY(-3px);
+  }
+}
+
+/* 진입 안내 문구 애니메이션 - 스르륵 나타났다 스르륵 사라짐 */
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  20% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  75% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+/* 이미지 wiggle 애니메이션 - 터치 유도 힌트 */
+@keyframes wiggle {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  25% {
+    transform: translateY(-4px);
+  }
+
+  50% {
+    transform: translateY(0);
+  }
+
+  75% {
+    transform: translateY(-2px);
+  }
+}
+
+/* 미니멀 작품 카드 (PKM Gallery 스타일) */
+.minimal-artwork-card {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.minimal-artwork-image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  background: #f0f0f0;
+  overflow: hidden;
+}
+
+.minimal-artwork-image img {
+  transition: transform 0.3s ease;
+}
+
+.minimal-artwork-card:hover .minimal-artwork-image img {
+  transform: scale(1.03);
+}
+
+.minimal-artwork-info {
+  margin-top: 12px;
+}
+
+.minimal-artwork-title {
+  font-size: 13px;
+  font-weight: 400;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.minimal-artwork-year {
+  font-size: 14px;
+  color: #555;
+  font-weight: 500;
+}
