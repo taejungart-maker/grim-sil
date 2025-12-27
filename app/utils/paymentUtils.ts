@@ -1,137 +1,23 @@
-// ============================================
-// 결제 상태 관리 유틸리티 (localStorage 기반)
-// Port One V2 SDK + 시뮬레이션 모드
-// ============================================
+import * as PortOne from "@portone/browser-sdk/v2";
 
-import { isTestPaymentMode } from "./deploymentMode";
+export async function requestPayment() {
+    const response = await PortOne.requestPayment({
+        storeId: "store-69b1a422-27db-4295-818d-84a9a7e5136e",
+        channelKey: "channel-key-4f2a8b54-c09c-4575-9a1c-de33285b2b20",
+        paymentId: `payment-${crypto.randomUUID()}`,
+        orderName: "데스크링크 표준형 구독",
+        totalAmount: 100,
+        currency: "CURRENCY_KRW",
+        payMethod: "CARD",
+    });
 
-/**
- * 결제 상태 확인 (클라이언트 전용)
- */
-export function checkPaymentStatus(): boolean {
-    if (typeof window === 'undefined') {
+    if (response?.code) {
+        // 결제 실패
+        console.error('Payment failed:', response);
         return false;
     }
 
-    const status = localStorage.getItem('payment_status');
-    return status === 'paid';
-}
-
-/**
- * 결제 처리 (PORT ONE V2 SDK + 시뮬레이션 모드)
- */
-export async function processPayment(): Promise<boolean> {
-    if (typeof window === 'undefined') {
-        console.error('Window is undefined - cannot process payment');
-        return false;
-    }
-
-    // 🔥 실제 포트원 결제 모드 (테스트: 100원)
-    const ENABLE_SIMULATION = false; // 실제 결제창 활성화
-    const TEST_AMOUNT = 100; // 테스트용 100원
-
-    if (ENABLE_SIMULATION) {
-        console.log(
-            '%c💳 결제 시뮬레이션 모드',
-            'color: #FF9800; font-weight: bold; font-size: 16px; background: #FFF3E0; padding: 8px; border-radius: 4px;',
-            '\n\n✅ 테스트용 가상 결제가 진행됩니다.',
-            '\n💡 실제 결제를 원하시면 paymentUtils.ts 파일에서',
-            '\n   ENABLE_SIMULATION을 false로 변경하세요.'
-        );
-
-        // 사용자 확인 후 승인
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                const userConfirmed = window.confirm(
-                    '💎 VIP 프리미엄 멤버십\n\n' +
-                    '결제 금액: ₩20,000 / 월\n\n' +
-                    '━━━━━━━━━━━━━━━━━━━\n\n' +
-                    '⚠️ 현재 시뮬레이션 모드입니다.\n' +
-                    '실제 결제는 진행되지 않습니다.\n\n' +
-                    '테스트 결제를 진행하시겠습니까?'
-                );
-
-                if (userConfirmed) {
-                    localStorage.setItem('payment_status', 'paid');
-                    console.log(
-                        '%c✅ 시뮬레이션 결제 완료!',
-                        'color: #4CAF50; font-weight: bold; font-size: 14px; background: #E8F5E9; padding: 8px; border-radius: 4px;',
-                        '\n\nVIP 멤버십이 활성화되었습니다 (테스트).'
-                    );
-                    alert('✅ 결제가 완료되었습니다!\n\nVIP 갤러리를 이용하실 수 있습니다.');
-                    resolve(true);
-                } else {
-                    console.log('사용자가 결제를 취소했습니다.');
-                    resolve(false);
-                }
-            }, 300);
-        });
-    }
-
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 실제 Port One V2 결제 (ENABLE_SIMULATION = false)
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    try {
-        const PortOne = await import('@portone/browser-sdk/v2');
-        const STORE_ID = process.env.NEXT_PUBLIC_PORTONE_STORE_ID || 'store-test';
-        const CHANNEL_ID = process.env.NEXT_PUBLIC_PORTONE_CHANNEL_ID || 'channel-key-4f2a8b54-c09c-4575-9a1c-de33285b2b20';
-
-        console.log(
-            '%c포트원 V2 결제 시작',
-            'color: #4CAF50; font-weight: bold; font-size: 14px;',
-            '\n상점 ID:', STORE_ID,
-            '\n채널 ID:', CHANNEL_ID.substring(0, 20) + '...'
-        );
-
-        const isTest = isTestPaymentMode();
-
-        const response = await PortOne.requestPayment({
-            storeId: STORE_ID,
-            channelKey: CHANNEL_ID,
-            paymentId: `payment-${Date.now()}`,
-            orderName: '그림실 프리미엄 멤버십',
-            totalAmount: TEST_AMOUNT, // 테스트용 100원 고정
-            currency: 'CURRENCY_KRW' as const,
-            payMethod: 'CARD',
-            customer: {
-                fullName: '작가님',
-            },
-        });
-
-        if (response && typeof response === 'object' && 'code' in response) {
-            console.error('Payment error:', response);
-            return false;
-        }
-
-        localStorage.setItem('payment_status', 'paid');
-        console.log('%c결제 성공!', 'color: #4CAF50; font-weight: bold;');
-        return true;
-
-    } catch (error) {
-        console.error(
-            '%c결제 처리 오류',
-            'color: #f44336; font-weight: bold; font-size: 14px;',
-            '\n에러:', error
-        );
-
-        if (error instanceof Error) {
-            if (error.message.includes('User cancelled')) {
-                console.log('사용자가 결제를 취소했습니다.');
-                return false;
-            }
-        }
-
-        return false;
-    }
-}
-
-/**
- * 결제 상태 초기화 (테스트용)
- */
-export function resetPaymentStatus(): void {
-    if (typeof window === 'undefined') {
-        return;
-    }
-
-    localStorage.removeItem('payment_status');
+    // 결제 성공
+    localStorage.setItem('payment_status', 'paid');
+    return true;
 }
