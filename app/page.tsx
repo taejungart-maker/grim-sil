@@ -15,6 +15,7 @@ import { usePayment } from "./contexts/PaymentContext";
 import PaymentGate from "./components/PaymentGate";
 import PaymentModal from "./components/PaymentModal";
 import Header from "./components/Header";
+import LoginModal from "./components/LoginModal";
 
 function HomeContent() {
   // URL 쿼리 파라미터 읽기
@@ -48,6 +49,7 @@ function HomeContent() {
   } | null>(null);
   const [demoLoaded, setDemoLoaded] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   // URL 파라미터 처리 (클라이언트에서만)
@@ -335,49 +337,97 @@ function HomeContent() {
       {
         artworks.length > 0 && (
           <div className="fixed bottom-6 right-6 z-40 flex flex-col gap-3">
-            {/* SNS 공유 센터 버튼 */}
-            <Link
-              href="/share"
-              className="flex items-center justify-center shadow-lg"
-              style={{
-                width: "56px",
-                height: "56px",
-                borderRadius: "50%",
-                background: "#6366f1", // 고급스러운 보라빛 파랑
-                color: "#fff",
-                fontSize: "22px",
-                textDecoration: "none",
-                boxShadow: "0 4px 12px rgba(99, 102, 241, 0.3)",
-              }}
-              aria-label="SNS 공유 센터"
-              title="SNS 공유 센터로 이동"
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
-                <polyline points="16 6 12 2 8 6" />
-                <line x1="12" y1="2" x2="12" y2="15" />
-              </svg>
-            </Link>
-
-            {/* 작품 추가 버튼 - 결제 필요 모드에서는 결제 완료 시에만 노출 */}
-            {(!needsPayment || isPaid) && (
+            {/* SNS 공유 센터 버튼 - 작가만 접근 가능 */}
+            {isLoggedIn ? (
               <Link
-                href="/add"
+                href="/share"
                 className="flex items-center justify-center shadow-lg"
                 style={{
                   width: "56px",
                   height: "56px",
                   borderRadius: "50%",
-                  background: settings.theme === "black" ? "#fff" : "#1a1a1a",
-                  color: settings.theme === "black" ? "#1a1a1a" : "#fff",
-                  fontSize: "24px",
+                  background: "#6366f1",
+                  color: "#fff",
+                  fontSize: "22px",
                   textDecoration: "none",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                  boxShadow: "0 4px 12px rgba(99, 102, 241, 0.3)",
                 }}
-                aria-label="작품 추가"
+                aria-label="SNS 공유 센터"
+                title="SNS 공유 센터로 이동"
               >
-                +
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                  <polyline points="16 6 12 2 8 6" />
+                  <line x1="12" y1="2" x2="12" y2="15" />
+                </svg>
               </Link>
+            ) : (
+              <button
+                onClick={() => setShowLoginModal(true)}
+                className="flex items-center justify-center shadow-lg"
+                style={{
+                  width: "56px",
+                  height: "56px",
+                  borderRadius: "50%",
+                  background: "#94a3b8",
+                  color: "#fff",
+                  fontSize: "22px",
+                  border: "none",
+                  cursor: "pointer",
+                  boxShadow: "0 4px 12px rgba(148, 163, 184, 0.3)",
+                }}
+                aria-label="SNS 공유 센터 (로그인 필요)"
+                title="작가 전용 기능 - 로그인이 필요합니다"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                  <polyline points="16 6 12 2 8 6" />
+                  <line x1="12" y1="2" x2="12" y2="15" />
+                </svg>
+              </button>
+            )}
+
+            {/* 작품 추가 버튼 - 작가만 접근 가능 */}
+            {(!needsPayment || isPaid) && (
+              isLoggedIn ? (
+                <Link
+                  href="/add"
+                  className="flex items-center justify-center shadow-lg"
+                  style={{
+                    width: "56px",
+                    height: "56px",
+                    borderRadius: "50%",
+                    background: settings.theme === "black" ? "#fff" : "#1a1a1a",
+                    color: settings.theme === "black" ? "#1a1a1a" : "#fff",
+                    fontSize: "24px",
+                    textDecoration: "none",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                  }}
+                  aria-label="작품 추가"
+                >
+                  +
+                </Link>
+              ) : (
+                <button
+                  onClick={() => setShowLoginModal(true)}
+                  className="flex items-center justify-center shadow-lg"
+                  style={{
+                    width: "56px",
+                    height: "56px",
+                    borderRadius: "50%",
+                    background: "#94a3b8",
+                    color: "#fff",
+                    fontSize: "24px",
+                    border: "none",
+                    cursor: "pointer",
+                    boxShadow: "0 4px 12px rgba(148, 163, 184, 0.3)",
+                  }}
+                  aria-label="작품 추가 (로그인 필요)"
+                  title="작가 전용 기능 - 로그인이 필요합니다"
+                >
+                  +
+                </button>
+              )
             )}
           </div>
         )
@@ -396,6 +446,15 @@ function HomeContent() {
           />
         )
       }
+
+      {/* 로그인 모달 */}
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onSuccess={() => {
+          router.refresh();
+        }}
+      />
 
       {/* 결제 모달 */}
       <PaymentModal

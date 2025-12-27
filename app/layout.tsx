@@ -25,6 +25,10 @@ export async function generateMetadata() {
     }
     // 이미 http로 시작하면 Supabase Storage URL이므로 그대로 사용
 
+    // 🔥 카카오톡 캐시 방지: 동적 타임스탬프 추가
+    const cacheBustingParam = `?v=${Date.now()}`;
+    const finalImageUrl = image + cacheBustingParam;
+
     return {
       title,
       description,
@@ -36,7 +40,7 @@ export async function generateMetadata() {
         siteName: title,
         images: [
           {
-            url: image,
+            url: finalImageUrl,
             // 실제 이미지 크기에 맞게 자동 조정 (하드코딩 제거)
             alt: `${settings.artistName} 작가 프로필`,
           }
@@ -48,12 +52,12 @@ export async function generateMetadata() {
         card: "summary_large_image",
         title,
         description,
-        images: [image],
+        images: [finalImageUrl],
       },
       // 카카오톡 최적화를 위한 추가 메타데이터
       other: {
         // 카카오톡 공유 시 이미지 캐시 방지
-        'og:image:secure_url': image,
+        'og:image:secure_url': finalImageUrl,
         'og:image:type': 'image/jpeg',
       },
     };
