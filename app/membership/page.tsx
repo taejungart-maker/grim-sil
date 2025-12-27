@@ -2,126 +2,97 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { processPayment } from "../utils/paymentUtils";
 
 export default function MembershipPage() {
-    const [isLoading, setIsLoading] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
 
-    const handleSubscribe = async () => {
-        setIsLoading(true);
+    const handlePayment = async () => {
+        setIsProcessing(true);
+
         try {
-            const success = await processPayment();
-            if (success) {
+            // Port One V2 SDK 동적 로드
+            const PortOne = await import('@portone/browser-sdk/v2');
+
+            // 결제 요청
+            const response = await PortOne.requestPayment({
+                storeId: 'store-69b1a422-27db-4295-818d-84a9a7e5136e',
+                channelKey: 'channel-key-4f2a8b54-c09c-4575-9a1c-de33285b2b20',
+                paymentId: `payment-${Date.now()}`,
+                orderName: 'VIP 프리미엄 구독',
+                totalAmount: 100,
+                currency: 'CURRENCY_KRW' as const,
+                payMethod: 'CARD',
+            });
+
+            // 성공 처리
+            if (response && typeof response === 'object' && !('code' in response)) {
+                localStorage.setItem('payment_status', 'paid');
                 alert('✅ 구독이 완료되었습니다!');
                 window.location.href = '/';
             } else {
-                alert('❌ 결제가 취소되었거나 실패했습니다.');
+                alert('결제가 취소되었습니다.');
             }
         } catch (error) {
             console.error('Payment error:', error);
-            alert('❌ 결제 중 오류가 발생했습니다.');
+            alert('결제 중 오류가 발생했습니다.');
         } finally {
-            setIsLoading(false);
+            setIsProcessing(false);
         }
     };
 
     return (
         <div style={{
             minHeight: "100vh",
-            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            background: "#fff",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            padding: "20px",
-            fontFamily: "'Noto Sans KR', sans-serif"
+            padding: "20px"
         }}>
-            {/* 뒤로가기 */}
             <Link href="/" style={{
                 position: "absolute",
                 top: "20px",
                 left: "20px",
-                color: "rgba(255,255,255,0.9)",
-                textDecoration: "none",
-                fontSize: "14px"
+                color: "#666",
+                textDecoration: "none"
             }}>
                 ← 돌아가기
             </Link>
 
-            {/* 메인 카드 */}
-            <div style={{
-                background: "#fff",
-                borderRadius: "32px",
-                padding: "60px 40px",
-                maxWidth: "500px",
-                width: "100%",
-                boxShadow: "0 25px 50px rgba(0,0,0,0.2)",
-                textAlign: "center"
-            }}>
+            <div style={{ textAlign: "center" }}>
                 <h1 style={{
-                    fontSize: "42px",
-                    fontWeight: 900,
+                    fontSize: "32px",
+                    fontWeight: 700,
                     marginBottom: "16px",
-                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    letterSpacing: "-0.02em"
+                    color: "#1a1a1a"
                 }}>
                     VIP 프리미엄
                 </h1>
 
                 <p style={{
-                    fontSize: "18px",
-                    color: "#666",
-                    marginBottom: "48px"
-                }}>
-                    프리미엄 작품 컬렉션에 무제한 접근
-                </p>
-
-                {/* 가격 */}
-                <div style={{
-                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                    borderRadius: "24px",
-                    padding: "40px",
+                    fontSize: "48px",
+                    fontWeight: 900,
+                    color: "#6366f1",
                     marginBottom: "40px"
                 }}>
-                    <div style={{
-                        color: "#fff",
-                        fontSize: "56px",
-                        fontWeight: 900,
-                        letterSpacing: "-0.03em"
-                    }}>
-                        ₩100
-                        <span style={{
-                            fontSize: "20px",
-                            fontWeight: 400,
-                            marginLeft: "8px"
-                        }}>
-                            테스트
-                        </span>
-                    </div>
-                </div>
+                    ₩100
+                </p>
 
-                {/* 구독 버튼 */}
                 <button
-                    onClick={handleSubscribe}
-                    disabled={isLoading}
+                    onClick={handlePayment}
+                    disabled={isProcessing}
                     style={{
-                        width: "100%",
-                        padding: "24px",
-                        fontSize: "20px",
+                        padding: "20px 60px",
+                        fontSize: "18px",
                         fontWeight: 700,
                         color: "#fff",
-                        background: isLoading
-                            ? "#ccc"
-                            : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                        background: isProcessing ? "#ccc" : "#1a1a1a",
                         border: "none",
-                        borderRadius: "16px",
-                        cursor: isLoading ? "wait" : "pointer",
-                        boxShadow: "0 8px 24px rgba(102, 126, 234, 0.4)",
-                        transition: "all 0.2s"
+                        borderRadius: "12px",
+                        cursor: isProcessing ? "wait" : "pointer"
                     }}
                 >
-                    {isLoading ? "처리 중..." : "💳 구독하기"}
+                    {isProcessing ? "처리 중..." : "구독하기"}
                 </button>
             </div>
         </div>
