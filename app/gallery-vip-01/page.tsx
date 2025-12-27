@@ -156,7 +156,7 @@ function VIPContent() {
                         <div className="text-center py-20" style={{ color: "#888" }}><p>불러오는 중...</p></div>
                     ) : artworks.length === 0 ? (
                         <div className="text-center py-20" style={{ color: "#666" }}>
-                            <p style={{ fontSize: "48px", marginBottom: "16px", opacity: 0.3 }}>◻</p>
+                            <p style={{ fontSize: "48px", marginBottom: "16px", opacity: 0.3 }}>💎</p>
                             <p style={{ fontSize: "15px", color: textColor, marginBottom: "8px" }}>VIP 갤러리 준비 중입니다</p>
                         </div>
                     ) : (

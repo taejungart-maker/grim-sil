@@ -133,9 +133,11 @@ function HomeContent() {
 
   // 공유 핸들러 (시스템 공유창 우선 연동)
   const handleKakaoShare = () => {
+    if (typeof window === 'undefined') return;
+
     const shareData = {
-      title: `${settings.galleryNameKo}`,
-      text: `${settings.artistName} 작가님의 온라인 화첩입니다.`,
+      title: settings.galleryNameKo || `${settings.artistName} 작가님의 온라인 화첩`,
+      text: `${settings.artistName} 작가의 작품세계를 담은 온라인 화첩입니다.`,
       url: window.location.href,
     };
 
@@ -343,7 +345,12 @@ function HomeContent() {
               <button
                 onClick={handleKakaoShare}
                 className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
-                style={{ background: "#FEE500", color: "#2a2a2a", border: "none" }}
+                style={{
+                  background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
+                  color: "#fff",
+                  border: "none",
+                  boxShadow: "0 4px 15px rgba(99, 102, 241, 0.4)"
+                }}
                 aria-label="화첩 공유"
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
