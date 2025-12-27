@@ -192,23 +192,9 @@ export default function MembershipPage() {
                 onClose={() => setShowModal(false)}
                 onSuccess={() => {
                     alert("멤버십 구독이 성공적으로 완료되었습니다!");
-                    router.refresh();
+                    window.location.reload();
                 }}
             />
         </div>
-    );
-}
-
-<p style={{
-    textAlign: "center",
-    fontSize: "13px",
-    color: "#999",
-    marginTop: "16px",
-    fontFamily: "'Noto Sans KR', sans-serif"
-}}>
-    결제 시스템이 준비되는 대로 바로 알려드리겠습니다!
-</p>
-            </main >
-        </div >
     );
 }
