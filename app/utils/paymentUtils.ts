@@ -1,7 +1,8 @@
-import * as PortOne from "@portone/browser-sdk/v2";
-
 export async function startSubscription() {
     try {
+        // Port One V2 SDK 동적 로드
+        const PortOne = await import("@portone/browser-sdk/v2");
+
         const response = await PortOne.requestPayment({
             storeId: "store-69b1a422-27db-4295-818d-84a9a7e5136e",
             channelKey: "channel-key-4f2a8b54-c09c-4575-9a1c-de33285b2b20",
