@@ -34,7 +34,15 @@ export async function processPayment(): Promise<boolean> {
         IMP.init(STORE_ID);
     } catch (initError) {
         // PG 설정이 없어도 테스트 환경에서는 계속 진행
-        console.warn('Port One initialization warning (safe to ignore in test mode):', initError);
+        console.warn(
+            '%c포트원(Port One) 초기화 경고',
+            'color: #ff9800; font-weight: bold; font-size: 14px; padding: 4px 0;',
+            '\n\n⚠️ 상용 결제를 위해서는 Vercel 환경변수에 실제 가맹점 ID를 등록해야 합니다.',
+            '\n📌 변수명: NEXT_PUBLIC_PORTONE_STORE_ID',
+            '\n📌 현재 값:', STORE_ID,
+            '\n\n개발/테스트 환경에서는 이 경고를 무시하셔도 됩니다.',
+            '\n초기화 에러:', initError
+        );
     }
 
     try {

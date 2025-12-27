@@ -1006,8 +1006,8 @@ export default function AdminPage() {
                         </div>
                     )}
 
-                    {/* Base64 이미지 → Storage 마이그레이션 */}
-                    {base64ImageCount > 0 && (
+                    {/* 프로덕션 모드: Base64 이미지 마이그레이션 섹션 비활성화 */}
+                    {/* base64ImageCount > 0 && (
                         <div
                             style={{
                                 marginTop: "24px",
@@ -1107,9 +1107,11 @@ export default function AdminPage() {
                                 {isImageMigrating ? "마이그레이션 중..." : "이미지 최적화 시작"}
                             </button>
                         </div>
-                    )}
+                    ) */}
 
+                    {/* 프로덕션 모드: 나의 화첩 보고서 섹션 비활성화 */}
                     {/* 나의 화첩 보고서 (방문자 통계) */}
+                    {/*
                     <div
                         style={{
                             marginTop: "48px",
@@ -1163,6 +1165,7 @@ export default function AdminPage() {
                             )}
                         </div>
                     </div>
+                    */}
 
                     {/* 홍보 도구: QR 디지털 명함 */}
                     <div
