@@ -198,22 +198,8 @@ export default function Header({
 
                         {/* 화첩 공유 버튼 (Native API 우선) */}
                         <button
-                            onClick={async () => {
-                                const shareData = {
-                                    title: `${galleryNameKo}`,
-                                    text: `작가님의 작품세계를 담은 온라인 화첩입니다.`,
-                                    url: typeof window !== 'undefined' ? window.location.href : '',
-                                };
-                                if (navigator.share) {
-                                    try {
-                                        await navigator.share(shareData);
-                                    } catch (err: any) {
-                                        if (err.name !== 'AbortError') onKakaoShare();
-                                    }
-                                } else {
-                                    onKakaoShare();
-                                }
-                            }}
+                            id="header-share-btn-v2"
+                            onClick={onKakaoShare}
                             className="flex items-center gap-1.5"
                             style={{
                                 padding: "6px 12px",
@@ -240,3 +226,4 @@ export default function Header({
         </header>
     );
 }
+```

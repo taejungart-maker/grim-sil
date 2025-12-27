@@ -131,22 +131,21 @@ function HomeContent() {
     refreshArtworks();
   }, [refreshArtworks]);
 
-  // 공유 핸들러 (Native API 우선)
-  const handleKakaoShare = async () => {
+  // 공유 핸들러 (시스템 공유창 우선 연동)
+  const handleKakaoShare = () => {
     const shareData = {
-      title: `${settings.artistName} 작가님의 온라인 화첩`,
-      text: `${settings.artistName} 작가의 작품세계를 담은 공간입니다.`,
-      url: window.location.origin,
+      title: `${settings.galleryNameKo}`,
+      text: `${settings.artistName} 작가님의 온라인 화첩입니다.`,
+      url: window.location.href,
     };
 
     if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-      } catch (error: any) {
-        if (error.name !== 'AbortError') {
-          setShowShareModal(true);
-        }
-      }
+      navigator.share(shareData)
+        .catch((err) => {
+          if (err.name !== 'AbortError') {
+            setShowShareModal(true);
+          }
+        });
     } else {
       setShowShareModal(true);
     }
@@ -346,115 +345,108 @@ function HomeContent() {
                 className="flex items-center justify-center shadow-lg"
                 style={{
                   width: "56px",
-                  height: "56px",
-                  borderRadius: "50%",
-                  background: "#94a3b8",
-                  color: "#fff",
-                  fontSize: "22px",
-                  border: "none",
-                  cursor: "pointer",
-                  boxShadow: "0 4px 12px rgba(148, 163, 184, 0.3)",
-                }}
-                aria-label="SNS 공유 센터 (로그인 필요)"
-                title="작가 전용 기능 - 로그인이 필요합니다"
+                  onClick={ handleKakaoShare }
+                className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
+                style={{ background: "#8b7355", color: "#fff", border: "none" }}
+            aria-label="화첩 공유"
               >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
-                  <polyline points="16 6 12 2 8 6" />
-                  <line x1="12" y1="2" x2="12" y2="15" />
-                </svg>
-              </button>
-            )}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+              <polyline points="16 6 12 2 8 6" />
+              <line x1="12" y1="2" x2="12" y2="15" />
+            </svg>
+          </button>
+        )}
 
-            {/* 작품 추가 버튼 - 작가만 접근 가능 */}
-            {(!needsPayment || isPaid) && (
-              isLoggedIn ? (
-                <Link
-                  href="/add"
-                  className="flex items-center justify-center shadow-lg"
-                  style={{
-                    width: "56px",
-                    height: "56px",
-                    borderRadius: "50%",
-                    background: settings.theme === "black" ? "#fff" : "#1a1a1a",
-                    color: settings.theme === "black" ? "#1a1a1a" : "#fff",
-                    fontSize: "24px",
-                    textDecoration: "none",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-                  }}
-                  aria-label="작품 추가"
-                >
-                  +
-                </Link>
-              ) : (
-                <button
-                  onClick={() => setShowLoginModal(true)}
-                  className="flex items-center justify-center shadow-lg"
-                  style={{
-                    width: "56px",
-                    height: "56px",
-                    borderRadius: "50%",
-                    background: "#94a3b8",
-                    color: "#fff",
-                    fontSize: "24px",
-                    border: "none",
-                    cursor: "pointer",
-                    boxShadow: "0 4px 12px rgba(148, 163, 184, 0.3)",
-                  }}
-                  aria-label="작품 추가 (로그인 필요)"
-                  title="작가 전용 기능 - 로그인이 필요합니다"
-                >
-                  +
-                </button>
-              )
-            )}
-          </div>
+      {/* 작품 추가 버튼 - 작가만 접근 가능 */}
+      {(!needsPayment || isPaid) && (
+        isLoggedIn ? (
+          <Link
+            href="/add"
+            className="flex items-center justify-center shadow-lg"
+            style={{
+              width: "56px",
+              height: "56px",
+              borderRadius: "50%",
+              background: settings.theme === "black" ? "#fff" : "#1a1a1a",
+              color: settings.theme === "black" ? "#1a1a1a" : "#fff",
+              fontSize: "24px",
+              textDecoration: "none",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+            }}
+            aria-label="작품 추가"
+          >
+            +
+          </Link>
+        ) : (
+          <button
+            onClick={() => setShowLoginModal(true)}
+            className="flex items-center justify-center shadow-lg"
+            style={{
+              width: "56px",
+              height: "56px",
+              borderRadius: "50%",
+              background: "#94a3b8",
+              color: "#fff",
+              fontSize: "24px",
+              border: "none",
+              cursor: "pointer",
+              boxShadow: "0 4px 12px rgba(148, 163, 184, 0.3)",
+            }}
+            aria-label="작품 추가 (로그인 필요)"
+            title="작가 전용 기능 - 로그인이 필요합니다"
+          >
+            +
+          </button>
         )
-      }
-
-      {/* 풀스크린 뷰어 */}
-      {
-        selectedArtwork && (
-          <ArtworkViewer
-            artworks={selectedArtwork.yearArtworks}
-            initialIndex={selectedArtwork.index}
-            onClose={() => setSelectedArtwork(null)}
-            onDelete={handleArtworkDeleted}
-            showPrice={settings.showPrice}
-            theme={settings.theme}
-          />
-        )
-      }
-
-      {/* 로그인 모달 */}
-      <LoginModal
-        isOpen={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
-        onSuccess={() => {
-          router.refresh();
-        }}
-      />
-
-      {/* 결제 모달 */}
-      <PaymentModal
-        isOpen={showPaymentModal}
-        onClose={() => setShowPaymentModal(false)}
-        onSuccess={() => {
-          // 결제 성공 시 앱 상태 업데이트
-          window.location.reload();
-        }}
-      />
-
-      {/* 공유 모달 */}
-      <ShareModal
-        isOpen={showShareModal}
-        onClose={() => setShowShareModal(false)}
-        shareUrl={typeof window !== 'undefined' ? window.location.origin : ''}
-        title={`${settings.artistName} 작가님의 온라인 화첩`}
-        description={`${settings.artistName} 작가의 작품세계를 담은 공간입니다.`}
-        theme={settings.theme}
-      />
+      )}
     </div>
+  )
+}
+
+{/* 풀스크린 뷰어 */ }
+{
+  selectedArtwork && (
+    <ArtworkViewer
+      artworks={selectedArtwork.yearArtworks}
+      initialIndex={selectedArtwork.index}
+      onClose={() => setSelectedArtwork(null)}
+      onDelete={handleArtworkDeleted}
+      showPrice={settings.showPrice}
+      theme={settings.theme}
+    />
+  )
+}
+
+{/* 로그인 모달 */ }
+<LoginModal
+  isOpen={showLoginModal}
+  onClose={() => setShowLoginModal(false)}
+  onSuccess={() => {
+    router.refresh();
+  }}
+/>
+
+{/* 결제 모달 */ }
+<PaymentModal
+  isOpen={showPaymentModal}
+  onClose={() => setShowPaymentModal(false)}
+  onSuccess={() => {
+    // 결제 성공 시 앱 상태 업데이트
+    window.location.reload();
+  }}
+/>
+
+{/* 공유 모달 */ }
+<ShareModal
+  isOpen={showShareModal}
+  onClose={() => setShowShareModal(false)}
+  shareUrl={typeof window !== 'undefined' ? window.location.origin : ''}
+  title={`${settings.artistName} 작가님의 온라인 화첩`}
+  description={`${settings.artistName} 작가의 작품세계를 담은 공간입니다.`}
+  theme={settings.theme}
+/>
+    </div >
   );
 }
 
