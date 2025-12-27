@@ -89,7 +89,7 @@ export async function processPayment(): Promise<boolean> {
             channelKey: CHANNEL_KEY,
             paymentId: `payment-${Date.now()}`,
             orderName: '그림실 프리미엄 멤버십',
-            totalAmount: isTest ? 100 : 20000,
+            totalAmount: TEST_AMOUNT, // 테스트용 100원 고정
             currency: 'CURRENCY_KRW' as const,
             payMethod: 'CARD',
             customer: {
