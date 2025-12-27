@@ -73,7 +73,7 @@ export async function processPayment(): Promise<boolean> {
     try {
         const PortOne = await import('@portone/browser-sdk/v2');
         const STORE_ID = process.env.NEXT_PUBLIC_PORTONE_STORE_ID || 'store-test';
-        const CHANNEL_KEY = process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY || 'channel-key-6cb40ac0-03da-4cc7-b0ef-f0f47da83c64';
+        const CHANNEL_KEY = process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY || 'channel-key-4f2a8b54-c09c-4575-9a1c-de33285b2b20';
 
         console.log(
             '%c포트원 V2 결제 시작',
