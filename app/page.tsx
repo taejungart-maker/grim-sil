@@ -315,23 +315,23 @@ function HomeContent() {
 
       {/* 플로팅 버튼들 - 작가 전용 (로그인 시) */}
       {isLoggedIn && (
-        <div className="fixed bottom-6 right-6 z-40 flex flex-col gap-4">
+        <div className="fixed bottom-6 right-3 z-40 flex flex-col gap-3">
           {/* SNS 공유 센터 (파란색 버튼) */}
           <Link
             href="/share"
             className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
             style={{
-              width: "56px",
-              height: "56px",
+              width: "36px",
+              height: "36px",
               borderRadius: "50%",
               background: "#6366f1",
               color: "#fff",
               textDecoration: "none",
-              boxShadow: "0 4px 15px rgba(99, 102, 241, 0.4)",
+              boxShadow: "0 2px 10px rgba(99, 102, 241, 0.4)",
             }}
             aria-label="SNS 공유 센터"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="11" width="18" height="10" rx="2" />
               <path d="M7 11V7a5 5 0 0 1 10 0v4" />
             </svg>
@@ -342,15 +342,15 @@ function HomeContent() {
             href="/add"
             className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
             style={{
-              width: "60px",
-              height: "60px",
+              width: "36px",
+              height: "36px",
               borderRadius: "50%",
               background: "#1a1a1a",
               color: "#fff",
-              fontSize: "32px",
-              fontWeight: 300,
+              fontSize: "18px",
+              fontWeight: 400,
               textDecoration: "none",
-              boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
+              boxShadow: "0 2px 10px rgba(0,0,0,0.3)",
             }}
             aria-label="작품 추가"
           >
