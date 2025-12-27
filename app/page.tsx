@@ -1,7 +1,9 @@
+```javascript
 "use client";
-
-import { useState, useEffect, useMemo, useCallback, Suspense } from "react";
+// [FORCE_DEPLOY_20251228_0325] 핵융합 배포 - 모든 사용자 동일 버튼 크기 (36px/12px) 강제 적용
+import { useState, useEffect, useMemo, useCallback, Suspense, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+// [FORCE_DEPLOY_20251228_0325] 핵융합 배포 - 캐시 무력화
 import Link from "next/link";
 import { getYearMonths, getArtworksByYearMonth, Artwork, YearMonthKey } from "./data/artworks";
 import { loadDemoDataIfEmpty } from "./utils/demoData";
@@ -136,8 +138,8 @@ function HomeContent() {
     if (typeof window === 'undefined') return;
 
     const shareData = {
-      title: settings.galleryNameKo || `${settings.artistName} 작가님의 온라인 화첩`,
-      text: `${settings.artistName} 작가의 작품세계를 담은 온라인 화첩입니다.`,
+      title: settings.galleryNameKo || `${ settings.artistName } 작가님의 온라인 화첩`,
+      text: `${ settings.artistName } 작가의 작품세계를 담은 온라인 화첩입니다.`,
       url: window.location.href,
     };
 
@@ -177,7 +179,7 @@ function HomeContent() {
         {yearMonths.length > 0 && selectedYearMonth && (
           <div
             style={{
-              borderTop: `1px solid ${borderColor}`,
+              borderTop: `1px solid ${ borderColor } `,
               background: bgColor,
             }}
           >
@@ -313,10 +315,10 @@ function HomeContent() {
         </main>
       </PaymentGate>
 
-      {/* [NUCLEAR_FIX] 강제 스타일 고정 (36px / 12px) */}
-      {isLoggedIn && (
+      {/* [NUCLEAR_ULTRA_FIX_V4] 모든 사용자 대상 버튼 (36px / 12px) - 클라이언트 사이드 강제 렌더링 */}
+      {isMounted && (
         <div
-          id="nuclear-floating-container-v2"
+          id="ultra-nuclear-floating-container-v4"
           className="fixed z-50 flex flex-col gap-3"
           style={{
             bottom: "24px",
@@ -324,47 +326,91 @@ function HomeContent() {
             width: "36px"
           }}
         >
-          {/* SNS 공유 센터 (파란색) */}
-          <Link
-            href="/share"
-            className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
-            style={{
-              width: "36px",
-              height: "36px",
-              borderRadius: "50%",
-              background: "#6366f1",
-              color: "#fff",
-              textDecoration: "none",
-              border: "none",
-              boxShadow: "0 2px 8px rgba(99, 102, 241, 0.4)",
-            }}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="11" width="18" height="10" rx="2" />
-              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </svg>
-          </Link>
+          {/* 1. SNS 공유 센터 (파란색) */}
+          {isLoggedIn ? (
+            <Link
+              href="/share"
+              className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
+              style={{
+                width: "36px",
+                height: "36px",
+                borderRadius: "50%",
+                background: "#6366f1",
+                color: "#fff",
+                textDecoration: "none",
+                border: "none",
+                boxShadow: "0 2px 8px rgba(99, 102, 241, 0.4)",
+              }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="11" width="18" height="10" rx="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            </Link>
+          ) : (
+            <button
+              onClick={handleKakaoShare}
+              className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
+              style={{
+                width: "36px",
+                height: "36px",
+                borderRadius: "50%",
+                background: "#6366f1",
+                color: "#fff",
+                border: "none",
+                boxShadow: "0 2px 8px rgba(99, 102, 241, 0.4)",
+                cursor: "pointer"
+              }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="11" width="18" height="10" rx="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            </button>
+          )}
 
-          {/* 작품 추가 (검정색) */}
-          <Link
-            href="/add"
-            className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
-            style={{
-              width: "36px",
-              height: "36px",
-              borderRadius: "50%",
-              background: "#1a1a1a",
-              color: "#fff",
-              fontSize: "20px",
-              fontWeight: "bold",
-              textDecoration: "none",
-              border: "none",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
-              lineHeight: 1
-            }}
-          >
-            +
-          </Link>
+          {/* 2. 작품 추가 (검정색) */}
+          {isLoggedIn ? (
+            <Link
+              href="/add"
+              className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
+              style={{
+                width: "36px",
+                height: "36px",
+                borderRadius: "50%",
+                background: "#1a1a1a",
+                color: "#fff",
+                fontSize: "20px",
+                fontWeight: "bold",
+                textDecoration: "none",
+                border: "none",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
+                lineHeight: 1
+              }}
+            >
+              +
+            </Link>
+          ) : (
+            <button
+              onClick={() => setShowLoginModal(true)}
+              className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
+              style={{
+                width: "36px",
+                height: "36px",
+                borderRadius: "50%",
+                background: "#1a1a1a",
+                color: "#fff",
+                fontSize: "20px",
+                fontWeight: "bold",
+                border: "none",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
+                cursor: "pointer",
+                lineHeight: 1
+              }}
+            >
+              +
+            </button>
+          )}
         </div>
       )}
 
@@ -406,8 +452,8 @@ function HomeContent() {
         isOpen={showShareModal}
         onClose={() => setShowShareModal(false)}
         shareUrl={typeof window !== 'undefined' ? window.location.origin : ''}
-        title={`${settings.artistName} 작가님의 온라인 화첩`}
-        description={`${settings.artistName} 작가의 작품세계를 담은 공간입니다.`}
+        title={`${ settings.artistName } 작가님의 온라인 화첩`}
+        description={`${ settings.artistName } 작가의 작품세계를 담은 공간입니다.`}
         theme={settings.theme}
       />
     </div >
