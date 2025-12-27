@@ -126,17 +126,41 @@ export class VercelAPI {
         console.log(`✅ Environment variables configured`);
     }
 
-    // 배포 트리거 (Git 기반)
+    // 프로젝트 정보 조회
+    async getProject(projectId: string): Promise<any> {
+        return await this.request('GET', `/v9/projects/${projectId}`);
+    }
+
+    // 배포 트리거 (Git 기반 지원)
     async triggerDeployment(projectId: string): Promise<DeploymentResponse> {
-        console.log(`🚀 Triggering deployment for project ${projectId}...`);
+        console.log(`🚀 Checking project details for ${projectId}...`);
+
+        const project = await this.getProject(projectId);
+        const deployData: any = {
+            name: project.name,
+            target: 'production',
+        };
+
+        // Git 연결이 되어 있으면 Git 소스 사용
+        if (project.link) {
+            deployData.gitSource = {
+                type: project.link.type,
+                repoId: project.link.repoId,
+                ref: 'main', // 기본값 main
+            };
+            console.log(`🔗 Found Git link: ${project.link.repo} (${project.link.type})`);
+        } else {
+            console.log(`⚠️ No Git link found for ${projectId}. Manual deployment might be needed.`);
+            // Git 링크가 없으면 어쩔 수 없이 빈 파일이라도 보내야 하지만,
+            // 이 프로젝트들은 Git 기반이므로 link가 있어야 함.
+        }
+
+        console.log(`🚀 Triggering deployment for project ${project.name}...`);
 
         const response = await this.request<DeploymentResponse>(
             'POST',
             `/v13/deployments`,
-            {
-                name: projectId,
-                target: 'production',
-            }
+            deployData
         );
 
         console.log(`✅ Deployment triggered: ${response.url}`);

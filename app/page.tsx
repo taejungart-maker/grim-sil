@@ -1,5 +1,6 @@
 "use client";
-// [FINAL_VISIBILITY_GUARD] 모든 동기화 완료 및 버튼 권한 제어 적용
+// [GLOBAL_SYNC_TRIGGER_V1] Triggering automatic redeploy for all artist galleries via GitHub webhook
+// Timestamp: 2025-12-28 04:50:00 (KST)
 import { useState, useEffect, useMemo, useCallback, Suspense, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
