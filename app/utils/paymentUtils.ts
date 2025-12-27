@@ -26,8 +26,9 @@ export async function processPayment(): Promise<boolean> {
         return false;
     }
 
-    // 🔥 시뮬레이션 모드 활성화 (실제 결제 연동 전까지)
-    const ENABLE_SIMULATION = true; // Port One 설정 완료 시 false로 변경
+    // 🔥 실제 포트원 결제 모드 (테스트: 100원)
+    const ENABLE_SIMULATION = false; // 실제 결제창 활성화
+    const TEST_AMOUNT = 100; // 테스트용 100원
 
     if (ENABLE_SIMULATION) {
         console.log(
