@@ -62,7 +62,7 @@ export async function startSubscription(): Promise<boolean> {
                 buyer_email: 'test@example.com',
                 buyer_name: '테스트',
                 buyer_tel: '010-0000-0000',
-                m_redirect_url: window.location.origin + '/membership', // 모바일 결제 후 리디렉션 URL
+                m_redirect_url: window.location.origin + '/subscription', // 모바일 결제 후 리디렉션 URL
 
             }, (response: any) => {
                 console.log('Payment response:', response);

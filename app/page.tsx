@@ -313,10 +313,18 @@ function HomeContent() {
         </main>
       </PaymentGate>
 
-      {/* 플로팅 버튼들 - 작가 전용 (로그인 시) */}
+      {/* [NUCLEAR_FIX] 강제 스타일 고정 (36px / 12px) */}
       {isLoggedIn && (
-        <div className="fixed bottom-6 right-3 z-40 flex flex-col gap-3">
-          {/* SNS 공유 센터 (파란색 버튼) */}
+        <div
+          id="nuclear-floating-container-v2"
+          className="fixed z-50 flex flex-col gap-3"
+          style={{
+            bottom: "24px",
+            right: "12px",
+            width: "36px"
+          }}
+        >
+          {/* SNS 공유 센터 (파란색) */}
           <Link
             href="/share"
             className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
@@ -327,9 +335,9 @@ function HomeContent() {
               background: "#6366f1",
               color: "#fff",
               textDecoration: "none",
-              boxShadow: "0 2px 10px rgba(99, 102, 241, 0.4)",
+              border: "none",
+              boxShadow: "0 2px 8px rgba(99, 102, 241, 0.4)",
             }}
-            aria-label="SNS 공유 센터"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="11" width="18" height="10" rx="2" />
@@ -337,7 +345,7 @@ function HomeContent() {
             </svg>
           </Link>
 
-          {/* 작품 추가 (검은색 버튼) */}
+          {/* 작품 추가 (검정색) */}
           <Link
             href="/add"
             className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
@@ -347,12 +355,13 @@ function HomeContent() {
               borderRadius: "50%",
               background: "#1a1a1a",
               color: "#fff",
-              fontSize: "18px",
-              fontWeight: 400,
+              fontSize: "20px",
+              fontWeight: "bold",
               textDecoration: "none",
-              boxShadow: "0 2px 10px rgba(0,0,0,0.3)",
+              border: "none",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
+              lineHeight: 1
             }}
-            aria-label="작품 추가"
           >
             +
           </Link>
