@@ -25,3 +25,18 @@ export async function startSubscription() {
         return false;
     }
 }
+
+// Alias for backward compatibility
+export const processPayment = startSubscription;
+
+// Payment status check
+export function checkPaymentStatus(): boolean {
+    if (typeof window === 'undefined') return false;
+    return localStorage.getItem('payment_status') === 'paid';
+}
+
+// Reset payment status
+export function resetPaymentStatus(): void {
+    if (typeof window === 'undefined') return;
+    localStorage.removeItem('payment_status');
+}
