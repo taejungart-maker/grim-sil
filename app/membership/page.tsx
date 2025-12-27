@@ -1,27 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { requestPayment } from "../utils/paymentUtils";
+import { startSubscription } from "../utils/paymentUtils";
 
 export default function MembershipPage() {
-    const [isProcessing, setIsProcessing] = useState(false);
-
     const handleClick = async () => {
-        setIsProcessing(true);
-        try {
-            const success = await requestPayment();
-            if (success) {
-                alert('✅ 구독 완료!');
-                window.location.href = '/';
-            } else {
-                alert('결제 취소 또는 실패');
-            }
-        } catch (error) {
-            console.error(error);
-            alert('오류 발생');
-        } finally {
-            setIsProcessing(false);
+        const success = await startSubscription();
+        if (success) {
+            alert('구독 완료!');
+            window.location.href = '/';
         }
     };
 
@@ -31,30 +17,20 @@ export default function MembershipPage() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            background: "#f5f5f5"
+            background: "#fafafa"
         }}>
-            <Link href="/" style={{
-                position: "absolute",
-                top: "20px",
-                left: "20px",
-                color: "#666",
-                textDecoration: "none"
-            }}>
-                ← 뒤로
-            </Link>
-
             <button
                 onClick={handleClick}
-                disabled={isProcessing}
                 style={{
                     padding: "24px 80px",
                     fontSize: "20px",
                     fontWeight: 700,
                     color: "#fff",
-                    background: isProcessing ? "#999" : "#000",
+                    background: "#000",
                     border: "none",
                     borderRadius: "12px",
-                    cursor: isProcessing ? "wait" : "pointer"
+                    cursor: "pointer",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.2)"
                 }}
             >
                 구독하기
