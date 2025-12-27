@@ -1,10 +1,21 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useState, useEffect } from "react";
+import { usePayment } from "../contexts/PaymentContext";
+import PaymentModal from "../components/PaymentModal";
 
 export default function MembershipPage() {
     const router = useRouter();
+    const { isPaid } = usePayment();
+    const [showModal, setShowModal] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    if (!isMounted) return null;
 
     return (
         <div className="min-h-screen bg-white">
@@ -30,6 +41,11 @@ export default function MembershipPage() {
                     >
                         ← 돌아가기
                     </button>
+                    {isPaid && (
+                        <span style={{ fontSize: '14px', color: '#6366f1', fontWeight: 600 }}>
+                            멤버십 활성 상태
+                        </span>
+                    )}
                 </div>
             </header>
 
@@ -118,7 +134,7 @@ export default function MembershipPage() {
                         fontFamily: "'Noto Sans KR', sans-serif",
                         color: "#2a2a2a"
                     }}>
-                        💳 결제 시스템 준비 중
+                        💳 시연용 결제 시스템
                     </h3>
                     <p style={{
                         fontSize: "14px",
@@ -127,7 +143,7 @@ export default function MembershipPage() {
                         fontFamily: "'Noto Sans KR', sans-serif",
                         marginBottom: "8px"
                     }}>
-                        포트원(PortOne) API를 통한 안전한 결제 시스템을 준비하고 있습니다.
+                        시연을 위해 카드번호에 <strong>4242</strong>를 입력하면 가상 승인 처리됩니다.
                     </p>
                     <p style={{
                         fontSize: "14px",
@@ -135,29 +151,29 @@ export default function MembershipPage() {
                         lineHeight: "1.6",
                         fontFamily: "'Noto Sans KR', sans-serif"
                     }}>
-                        • 카카오페이<br />
-                        • 신용/체크카드<br />
-                        • 간편결제
+                        • 테스트 결제 지원<br />
+                        • 즉시 가입 확인 가능
                     </p>
                 </div>
 
-                {/* 구독 버튼 (준비 중) */}
+                {/* 구독 버튼 */}
                 <button
-                    disabled
+                    onClick={() => setShowModal(true)}
+                    disabled={isPaid}
                     style={{
                         width: "100%",
                         padding: "18px",
                         fontSize: "16px",
                         fontWeight: 600,
                         color: "#fff",
-                        background: "#ccc",
+                        background: isPaid ? "#94a3b8" : "#1a1a1a",
                         border: "none",
                         borderRadius: "12px",
-                        cursor: "not-allowed",
+                        cursor: isPaid ? "not-allowed" : "pointer",
                         fontFamily: "'Noto Sans KR', sans-serif",
                     }}
                 >
-                    곧 오픈 예정입니다
+                    {isPaid ? "이미 구독 중입니다" : "멤버십 시작하기"}
                 </button>
 
                 <p style={{
@@ -167,9 +183,32 @@ export default function MembershipPage() {
                     marginTop: "16px",
                     fontFamily: "'Noto Sans KR', sans-serif"
                 }}>
-                    결제 시스템이 준비되는 대로 바로 알려드리겠습니다!
+                    시연을 위한 가상 결제 시스템입니다.
                 </p>
             </main>
+
+            <PaymentModal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                onSuccess={() => {
+                    alert("멤버십 구독이 성공적으로 완료되었습니다!");
+                    router.refresh();
+                }}
+            />
         </div>
+    );
+}
+
+<p style={{
+    textAlign: "center",
+    fontSize: "13px",
+    color: "#999",
+    marginTop: "16px",
+    fontFamily: "'Noto Sans KR', sans-serif"
+}}>
+    결제 시스템이 준비되는 대로 바로 알려드리겠습니다!
+</p>
+            </main >
+        </div >
     );
 }
