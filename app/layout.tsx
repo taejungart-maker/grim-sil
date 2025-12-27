@@ -37,11 +37,12 @@ export async function generateMetadata() {
         title,
         description,
         url: baseUrl,
-        siteName: title,
+        siteName: `${settings.artistName} 작가님의 온라인 화첩`,
         images: [
           {
             url: finalImageUrl,
-            // 실제 이미지 크기에 맞게 자동 조정 (하드코딩 제거)
+            width: 800,
+            height: 400,
             alt: `${settings.artistName} 작가 프로필`,
           }
         ],
@@ -59,6 +60,7 @@ export async function generateMetadata() {
         // 카카오톡 공유 시 이미지 캐시 방지
         'og:image:secure_url': finalImageUrl,
         'og:image:type': 'image/jpeg',
+        'og:site_name': `${settings.artistName} 작가님의 온라인 화첩`,
       },
     };
   } catch (error) {

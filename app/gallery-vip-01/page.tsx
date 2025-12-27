@@ -109,8 +109,7 @@ function VIPContent() {
     const handleKakaoShare = async () => {
         const shareUrl = window.location.href; // 현재 VIP 페이지 URL
         const title = `[VIP] ${settings.artistName} 작가님의 온라인 화첩`;
-        const description = `프리미엄 구독 전용 갤러리입니다.`;
-
+        const description = `프리미엄 구독 전용 공간입니다.`;
         if (navigator.share) {
             try {
                 await navigator.share({ title, text: description, url: shareUrl });

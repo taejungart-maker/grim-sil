@@ -167,26 +167,28 @@ export default function Header({
                         </Link>
                     </div>
 
-                    {/* 오른쪽 그룹: Premium + 화첩 공유 */}
-                    <div className="flex items-center gap-2 sm:gap-3 sm:ml-auto">
-                        {/* 구독하기 버튼 - 무료 모드가 아니고, 결제 안했으며, 절대 금지 호스트가 아닐 때만 표시 */}
+                    {/* [ZERO_CACHE_FORCE] 구조 변경으로 캐시 무력화 */}
+                    <div id="nav-actions-container-v2" className="flex items-center gap-2 sm:gap-3 sm:ml-auto">
+                        {/* 구독하기 버튼 - 호스트네임 하드 가드 (V2) */}
                         {isMounted && !isPaid && !isAlwaysFreeMode() && !isFreeArtistHost && (
                             <button
+                                id="force-sub-btn-v2"
                                 onClick={onOpenPayment}
                                 className="flex items-center gap-1"
                                 style={{
-                                    padding: "6px 12px",
-                                    background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
+                                    padding: "7px 14px",
+                                    backgroundColor: "#6366f1",
+                                    backgroundImage: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
                                     color: "#ffffff",
-                                    borderRadius: "6px",
+                                    borderRadius: "8px",
                                     border: "none",
                                     cursor: "pointer",
                                     fontFamily: "'Noto Sans KR', sans-serif",
-                                    fontWeight: 600,
+                                    fontWeight: 700,
                                     fontSize: "13px",
-                                    letterSpacing: "0.02em",
+                                    letterSpacing: "0.01em",
                                     whiteSpace: "nowrap",
-                                    boxShadow: "0 2px 6px rgba(99, 102, 241, 0.25)",
+                                    boxShadow: "0 4px 10px rgba(99, 102, 241, 0.3)",
                                 }}
                             >
                                 <span className="hidden sm:inline">구독하기</span>
