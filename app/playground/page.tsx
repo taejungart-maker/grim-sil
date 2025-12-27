@@ -2,6 +2,8 @@
 
 import { useState, useEffect, Suspense } from "react";
 import Header from "../components/Header";
+import LoginModal from "../components/LoginModal";
+import PaymentModal from "../components/PaymentModal";
 import { useAuth } from "../contexts/AuthContext";
 import { usePayment } from "../contexts/PaymentContext";
 import { isPaymentRequired } from "../utils/deploymentMode";
