@@ -145,7 +145,7 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }: PaymentModa
                         <div style={{ padding: '8px 0', marginBottom: '12px' }}>
                             <span style={{ fontSize: '12px', color: '#6366f1', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Member Special</span>
                         </div>
-                        <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '12px', color: '#1a1a1a' }}>프리미엄 멤버십</h2>
+                        <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '12px', color: '#1a1a1a' }}>프리미엄 구독</h2>
                         <p style={{ fontSize: '15px', color: '#666', marginBottom: '30px', lineHeight: 1.6 }}>
                             작품 무제한 등록 및 편집,<br />고급 통계 기능을 즉시 시작하세요.
                         </p>
@@ -265,7 +265,7 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }: PaymentModa
                         </div>
                         <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '12px', color: '#065f46' }}>결제 완료!</h2>
                         <p style={{ fontSize: '15px', color: '#666', marginBottom: '32px', lineHeight: 1.6 }}>
-                            프리미엄 멤버십이 활성화되었습니다.<br />이제 모든 기능을 자유롭게 사용하세요.
+                            프리미엄 구독이 활성화되었습니다.<br />이제 모든 기능을 자유롭게 사용하세요.
                         </p>
                         <button
                             onClick={handleFinalClose}

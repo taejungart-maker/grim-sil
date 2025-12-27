@@ -127,9 +127,9 @@ export default function VIPPaymentModal({ isOpen, onClose, onSuccess }: VIPPayme
                         <div style={{ padding: '8px 0', marginBottom: '12px' }}>
                             <span style={{ fontSize: '12px', color: '#6366f1', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em' }}>VIP Gallery Access</span>
                         </div>
-                        <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '12px', color: '#1a1a1a' }}>VIP 멤버십</h2>
-                        <p style={{ fontSize: '15px', color: '#666', marginBottom: '30px', lineHeight: 1.6 }}>
-                            프리미엄 작품 컬렉션에 접근하려면<br />멤버십을 구독해주세요.
+                        <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '12px', color: '#1a1a1a' }}>VIP 구독</h2>
+                        <p style={{ color: '#666', fontSize: '15px', lineHeight: 1.6, marginBottom: '24px' }}>
+                            프리미엄 작품 컬렉션에 접근하려면<br />구독을 시작해주세요.
                         </p>
 
                         <div style={{ background: '#f8fafc', borderRadius: '20px', padding: '24px', marginBottom: '32px', border: '1px solid #e2e8f0' }}>
@@ -209,7 +209,7 @@ export default function VIPPaymentModal({ isOpen, onClose, onSuccess }: VIPPayme
                         </div>
                         <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '12px', color: '#065f46' }}>결제 완료!</h2>
                         <p style={{ fontSize: '15px', color: '#666', marginBottom: '32px', lineHeight: 1.6 }}>
-                            VIP 멤버십이 활성화되었습니다.<br />프리미엄 작품을 감상하세요.
+                            VIP 구독이 활성화되었습니다.<br />프리미엄 작품을 감상하세요.
                         </p>
                         <button
                             onClick={handleFinalClose}

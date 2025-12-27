@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import ShareModal from "../components/ShareModal";
 import { loadSettings } from "../utils/settingsDb";
 import { defaultSiteConfig, SiteConfig } from "../config/site";
 
@@ -34,59 +35,30 @@ const CURATED_LINKS = [
 ];
 
 export default function NewsroomPage() {
-    const [news, setNews] = useState<NewsItem[]>([]);
+    const [allNews, setAllNews] = useState<NewsItem[]>([]);
+    const [displayedNews, setDisplayedNews] = useState<NewsItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [showShareModal, setShowShareModal] = useState(false);
     const [settings, setSettings] = useState<SiteConfig>(defaultSiteConfig);
+    const [itemsToShow, setItemsToShow] = useState(10);
 
     useEffect(() => {
         async function fetchNews() {
             try {
+                // 사이트 설정 로드
                 const siteData = await loadSettings();
                 setSettings(siteData);
 
-                let allNews: NewsItem[] = [];
+                // 최적화된 내부 API 호출 (ISR 적용됨)
+                const response = await fetch('/api/news');
+                if (!response.ok) throw new Error("Failed to fetch news");
 
-                for (const src of SOURCES) {
-                    try {
-                        // AllOrigins 프록시를 사용하여 CORS 문제 해결 및 XML 자체 파싱
-                        const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(src.rss)}`);
-                        if (!response.ok) continue;
+                const data = await response.json();
 
-                        const data = await response.json();
-                        const xmlContent = data.contents;
-
-                        const parser = new DOMParser();
-                        const xmlDoc = parser.parseFromString(xmlContent, "text/xml");
-                        const items = xmlDoc.querySelectorAll("item");
-
-                        const parsedItems = Array.from(items).slice(0, 10).map((item) => {
-                            const title = item.querySelector("title")?.textContent || "제목 없음";
-                            const link = item.querySelector("link")?.textContent || "#";
-                            const pubDate = item.querySelector("pubDate")?.textContent || new Date().toISOString();
-
-                            // 제목에서 " - 출처" 부분 제거 (구글 뉴스 특유의 포맷)
-                            const cleanTitle = title.split(" - ")[0];
-                            const sourceFromTitle = title.split(" - ")[1] || src.name;
-
-                            return {
-                                title: cleanTitle,
-                                link: link,
-                                pubDate: pubDate,
-                                source: sourceFromTitle,
-                                category: src.category,
-                                description: ""
-                            };
-                        });
-                        allNews.push(...parsedItems);
-                    } catch (e) {
-                        console.error(`Failed to fetch from ${src.name}:`, e);
-                    }
-                }
-
-                // 중복 제거 및 정렬
-                const uniqueNews = Array.from(new Map(allNews.map(item => [item.title, item])).values());
-                uniqueNews.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
-                setNews(uniqueNews.slice(0, 15));
+                setAllNews(data);
+                // 광속 로딩을 위해 처음에는 5개만 즉시 표시
+                setDisplayedNews(data.slice(0, 5));
+                setItemsToShow(5);
             } catch (error) {
                 console.error("Failed to fetch news:", error);
             } finally {
@@ -119,7 +91,39 @@ export default function NewsroomPage() {
                     <span style={{ fontSize: "20px" }}>🏠</span>
                 </Link>
                 <h1 style={{ fontSize: "18px", fontWeight: 700, margin: 0, letterSpacing: "-0.02em" }}>미술계 소식통</h1>
-                <div style={{ width: "40px" }} />
+                <div style={{ display: "flex", justifyContent: "flex-end", width: "40px" }}>
+                    <button
+                        onClick={async () => {
+                            const shareData = {
+                                title: "미술계 소식통 - 실시간 미술 정보",
+                                text: "작가님들을 위한 실시간 미술계 동향과 전시/공모전 소식을 확인해보세요.",
+                                url: window.location.href,
+                            };
+                            if (navigator.share) {
+                                try {
+                                    await navigator.share(shareData);
+                                } catch (error: any) {
+                                    if (error.name !== 'AbortError') setShowShareModal(true);
+                                }
+                            } else {
+                                setShowShareModal(true);
+                            }
+                        }}
+                        style={{
+                            background: "none",
+                            border: "none",
+                            padding: 0,
+                            cursor: "pointer",
+                            color: textColor
+                        }}
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                            <polyline points="16 6 12 2 8 6" />
+                            <line x1="12" y1="2" x2="12" y2="15" />
+                        </svg>
+                    </button>
+                </div>
             </header>
 
             <main style={{ maxWidth: "600px", margin: "0 auto", padding: "32px 24px" }}>
@@ -162,12 +166,12 @@ export default function NewsroomPage() {
                 ) : (
                     <>
                         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                            {news.length === 0 ? (
+                            {displayedNews.length === 0 ? (
                                 <div style={{ padding: "40px", textAlign: "center", border: `2px dashed ${borderColor}`, borderRadius: "24px" }}>
                                     <p style={{ color: mutedColor }}>현재 업데이트된 소식이 없습니다.</p>
                                 </div>
                             ) : (
-                                news.map((item, idx) => (
+                                displayedNews.map((item, idx) => (
                                     <a
                                         key={idx}
                                         href={item.link}
@@ -217,6 +221,33 @@ export default function NewsroomPage() {
                             )}
                         </div>
 
+                        {/* 더 보기 버튼 */}
+                        {displayedNews.length < allNews.length && (
+                            <div style={{ textAlign: "center", marginTop: "32px" }}>
+                                <button
+                                    onClick={() => {
+                                        const nextItems = itemsToShow + 10;
+                                        setItemsToShow(nextItems);
+                                        setDisplayedNews(allNews.slice(0, nextItems));
+                                    }}
+                                    style={{
+                                        padding: "16px 48px",
+                                        fontSize: "16px",
+                                        fontWeight: 600,
+                                        color: "#fff",
+                                        background: "#8b7355",
+                                        border: "none",
+                                        borderRadius: "12px",
+                                        cursor: "pointer",
+                                        transition: "all 0.2s",
+                                        boxShadow: "0 4px 12px rgba(139, 115, 85, 0.3)"
+                                    }}
+                                >
+                                    더 많은 소식 보기 ({allNews.length - displayedNews.length}개)
+                                </button>
+                            </div>
+                        )}
+
                         <div style={{ marginTop: "64px" }}>
                             <h4 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "20px" }}>주요 미술 기관 바로가기</h4>
                             <div style={{ display: "grid", gap: "12px" }}>
@@ -249,6 +280,16 @@ export default function NewsroomPage() {
                     </>
                 )}
             </main>
+
+            {/* 공유 모달 */}
+            <ShareModal
+                isOpen={showShareModal}
+                onClose={() => setShowShareModal(false)}
+                shareUrl={typeof window !== 'undefined' ? window.location.href : ''}
+                title="미술계 소식통 - 실시간 미술 정보"
+                description="작가님들을 위한 실시간 미술계 동향과 전시/공모전 소식을 확인해보세요."
+                theme={settings.theme}
+            />
         </div>
     );
 }

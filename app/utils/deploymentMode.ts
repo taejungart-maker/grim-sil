@@ -19,6 +19,19 @@ export function getDeploymentMode(): DeploymentMode {
         return mode;
     }
 
+    // 클라이언트 사이드에서 호스트네임을 통한 자동 감지 (환경 변수 누락 대비)
+    if (typeof window !== 'undefined') {
+        const hostname = window.location.hostname;
+        if (
+            hostname.includes('hahyunju') ||
+            hostname.includes('moonhyekyung') ||
+            hostname.includes('hwangmikyung') ||
+            hostname.includes('free')
+        ) {
+            return 'always_free';
+        }
+    }
+
     // 기본값: 안전하게 무료 모드
     return 'always_free';
 }

@@ -30,7 +30,7 @@ function PlaygroundContent() {
             const success = Math.random() > 0.3; // 70% 성공률 시뮬레이션
             if (success) {
                 localStorage.removeItem('payment_status');
-                setRefundStatus("✅ 환불 성공! 멤버십이 취소되었습니다.");
+                setRefundStatus("✅ 환불 성공! 구독이 취소되었습니다.");
                 setTimeout(() => window.location.reload(), 1500);
             } else {
                 setRefundStatus("❌ 환불 실패: API 오류가 발생했습니다.");
@@ -97,7 +97,7 @@ function PlaygroundContent() {
                             </h2>
                             <div className="space-y-3">
                                 <div className="p-3 bg-white rounded border text-sm">
-                                    멤버십: {isPaid ? "💎 프리미엄" : "🆓 무료"}
+                                    구독 상태: {isPaid ? "💎 프리미엄" : "🆓 무료"}
                                 </div>
                                 <button
                                     onClick={() => setShowPaymentModal(true)}

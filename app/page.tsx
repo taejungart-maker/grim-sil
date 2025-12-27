@@ -16,6 +16,7 @@ import PaymentGate from "./components/PaymentGate";
 import PaymentModal from "./components/PaymentModal";
 import Header from "./components/Header";
 import LoginModal from "./components/LoginModal";
+import ShareModal from "./components/ShareModal";
 
 function HomeContent() {
   // URL 쿼리 파라미터 읽기
@@ -50,6 +51,7 @@ function HomeContent() {
   const [demoLoaded, setDemoLoaded] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   // URL 파라미터 처리 (클라이언트에서만)
@@ -129,47 +131,24 @@ function HomeContent() {
     refreshArtworks();
   }, [refreshArtworks]);
 
-  // 클립보드 복사 폴백 함수
-  const fallbackToCopy = async (url: string) => {
-    try {
-      await navigator.clipboard.writeText(url);
-      alert('갤러리 주소가 복사되었습니다!\n카카오톡 대화창에 붙여넣기 해주세요.');
-    } catch (error) {
-      // 클립보드 API도 실패한 경우 수동 복사 안내
-      const userInput = prompt('갤러리 주소를 복사하세요:', url);
-      if (userInput === null) {
-        console.log('공유 취소됨');
-      }
-    }
-  };
-
-  // 네이티브 공유 핸들러 (스마트폰 공유 메뉴)
+  // 공유 핸들러 (Native API 우선)
   const handleKakaoShare = async () => {
-    const shareUrl = window.location.origin;
-    const title = `${settings.artistName} 작가님의 온라인 화첩`;
-    const description = `${settings.artistName} 작가의 작품세계를 담은 공간입니다.`;
+    const shareData = {
+      title: `${settings.artistName} 작가님의 온라인 화첩`,
+      text: `${settings.artistName} 작가의 작품세계를 담은 공간입니다.`,
+      url: window.location.origin,
+    };
 
-    // 네이티브 공유 API 사용 (모바일에서 카카오톡 포함)
     if (navigator.share) {
       try {
-        await navigator.share({
-          title: title,
-          text: description,
-          url: shareUrl,
-        });
-        // 공유 성공 (사용자가 공유를 완료함)
-        console.log('공유 완료');
+        await navigator.share(shareData);
       } catch (error: any) {
-        // AbortError는 사용자가 공유를 취소한 경우 (정상 동작)
         if (error.name !== 'AbortError') {
-          console.error('공유 실패:', error);
-          // 공유 실패 시 클립보드 복사로 폴백
-          await fallbackToCopy(shareUrl);
+          setShowShareModal(true);
         }
       }
     } else {
-      // 데스크톱 또는 Web Share API 미지원: URL 복사
-      await fallbackToCopy(shareUrl);
+      setShowShareModal(true);
     }
   };
 
@@ -464,6 +443,16 @@ function HomeContent() {
           // 결제 성공 시 앱 상태 업데이트
           window.location.reload();
         }}
+      />
+
+      {/* 공유 모달 */}
+      <ShareModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        shareUrl={typeof window !== 'undefined' ? window.location.origin : ''}
+        title={`${settings.artistName} 작가님의 온라인 화첩`}
+        description={`${settings.artistName} 작가의 작품세계를 담은 공간입니다.`}
+        theme={settings.theme}
       />
     </div>
   );

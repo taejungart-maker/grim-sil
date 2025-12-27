@@ -9,6 +9,7 @@ import { migrateLocalDataToSupabase, hasLegacyData, MigrationResult } from "../u
 import { migrateAllImagesToStorage, countBase64Images, MigrationProgress } from "../utils/imageMigration";
 import { useAuth } from "../contexts/AuthContext";
 import { resetPaymentStatus } from "../utils/paymentUtils";
+import { isAlwaysFreeMode } from "../utils/deploymentMode";
 import QRCode from "qrcode";
 
 export default function AdminPage() {
@@ -671,7 +672,7 @@ export default function AdminPage() {
                                 }}>
                                     {settings.aboutmeImage ? (
                                         <img
-                                            src={settings.aboutmeImage}
+                                            src={`${settings.aboutmeImage}?t=${Date.now()}`}
                                             alt="프로필"
                                             style={{ width: "100%", height: "100%", objectFit: "cover" }}
                                         />
@@ -1364,29 +1365,31 @@ export default function AdminPage() {
                     {isSaving ? "저장 중..." : "설정 저장하기"}
                 </button>
 
-                {/* 구독 취소 (테스트용) */}
-                <button
-                    onClick={() => {
-                        if (confirm('구독 상태를 초기화하시겠습니까? (테스트용)')) {
-                            resetPaymentStatus();
-                            alert('구독이 초기화되었습니다. 페이지를 새로고침하세요.');
-                        }
-                    }}
-                    style={{
-                        width: "100%",
-                        marginTop: "16px",
-                        padding: "16px",
-                        fontSize: "16px",
-                        fontWeight: 600,
-                        color: "#fff",
-                        background: "#dc2626",
-                        border: "none",
-                        borderRadius: "12px",
-                        cursor: "pointer",
-                    }}
-                >
-                    🔓 구독 취소 (테스트용)
-                </button>
+                {/* 구독 취소 (테스트용) - 무료 모드가 아닐 때만 표시 */}
+                {!isAlwaysFreeMode() && (
+                    <button
+                        onClick={() => {
+                            if (confirm('구독 상태를 초기화하시겠습니까? (테스트용)')) {
+                                resetPaymentStatus();
+                                alert('구독이 초기화되었습니다. 페이지를 새로고침하세요.');
+                            }
+                        }}
+                        style={{
+                            width: "100%",
+                            marginTop: "16px",
+                            padding: "16px",
+                            fontSize: "16px",
+                            fontWeight: 600,
+                            color: "#fff",
+                            background: "#dc2626",
+                            border: "none",
+                            borderRadius: "12px",
+                            cursor: "pointer",
+                        }}
+                    >
+                        🔓 구독 취소 (테스트용)
+                    </button>
+                )}
 
                 {/* 힌트 */}
                 < p

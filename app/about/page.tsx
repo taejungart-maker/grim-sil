@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import ShareModal from "../components/ShareModal";
 import { loadSettings } from "../utils/settingsDb";
 import { defaultSiteConfig, SiteConfig } from "../config/site";
 
@@ -11,6 +12,7 @@ export default function AboutPage() {
     const router = useRouter();
     const [settings, setSettings] = useState<SiteConfig>(defaultSiteConfig);
     const [isLoading, setIsLoading] = useState(true);
+    const [showShareModal, setShowShareModal] = useState(false);
     const [currentYear, setCurrentYear] = useState(2025); // 기본값
 
     useEffect(() => {
@@ -62,14 +64,50 @@ export default function AboutPage() {
                             {settings.galleryNameKo}
                         </span>
                     </Link>
-                    <Link href="/" style={{
-                        fontSize: "15px",
-                        fontWeight: 500,
-                        color: mutedColor,
-                        textDecoration: "none"
-                    }}>
-                        닫기 ✕
-                    </Link>
+                    <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+                        <button
+                            onClick={async () => {
+                                const shareData = {
+                                    title: `${settings.artistName} 작가님 소개`,
+                                    text: `${settings.artistName} 작가의 작품 세계와 작가 노트를 만나보세요.`,
+                                    url: window.location.href,
+                                };
+                                if (navigator.share) {
+                                    try {
+                                        await navigator.share(shareData);
+                                    } catch (error: any) {
+                                        if (error.name !== 'AbortError') setShowShareModal(true);
+                                    }
+                                } else {
+                                    setShowShareModal(true);
+                                }
+                            }}
+                            style={{
+                                background: "none",
+                                border: "none",
+                                padding: 0,
+                                cursor: "pointer",
+                                color: mutedColor,
+                                display: "flex",
+                                alignItems: "center"
+                            }}
+                            aria-label="공유"
+                        >
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                                <polyline points="16 6 12 2 8 6" />
+                                <line x1="12" y1="2" x2="12" y2="15" />
+                            </svg>
+                        </button>
+                        <Link href="/" style={{
+                            fontSize: "15px",
+                            fontWeight: 500,
+                            color: mutedColor,
+                            textDecoration: "none"
+                        }}>
+                            닫기 ✕
+                        </Link>
+                    </div>
                 </div>
             </header>
 
@@ -89,7 +127,7 @@ export default function AboutPage() {
                                 : "0 20px 40px rgba(0,0,0,0.05)"
                         }}>
                             <Image
-                                src={settings.aboutmeImage}
+                                src={`${settings.aboutmeImage}?t=${Date.now()}`}
                                 alt={settings.artistName}
                                 fill
                                 priority
@@ -197,6 +235,16 @@ export default function AboutPage() {
                     )}
                 </div>
             </main>
+
+            {/* 공유 모달 */}
+            <ShareModal
+                isOpen={showShareModal}
+                onClose={() => setShowShareModal(false)}
+                shareUrl={typeof window !== 'undefined' ? window.location.href : ''}
+                title={`${settings.artistName} 작가님 소개`}
+                description={`${settings.artistName} 작가의 작품 세계와 작가 노트를 만나보세요.`}
+                theme={settings.theme}
+            />
 
             <footer className="py-20 text-center" style={{ borderTop: `1px solid ${borderColor}`, marginTop: "64px" }}>
                 <p style={{ fontSize: "14px", color: mutedColor }}>

@@ -6,7 +6,7 @@ import Image from "next/image";
 import { getArtwork, updateArtwork, uploadImageToStorage } from "../../utils/db";
 import { Artwork } from "../../data/artworks";
 import ProtectedRoute from "../../components/ProtectedRoute";
-import { isPaymentRequired } from "../../utils/deploymentMode";
+import { isPaymentRequired, isAlwaysFreeMode } from "../../utils/deploymentMode";
 import { usePayment } from "../../contexts/PaymentContext";
 import PaymentGate from "../../components/PaymentGate";
 
@@ -218,27 +218,33 @@ export default function EditArtworkPage({ params }: EditArtworkPageProps) {
                             <h1 className="text-xl font-bold" style={{ letterSpacing: "-0.02em" }}>작품 수정</h1>
                         </div>
 
-                        {/* 멤버십 활성화 버튼 - 데모용 강제 노출 */}
-                        {isMounted && !isPaid && (
-                            <button
-                                onClick={() => router.push("/?showPayment=true")}
-                                style={{
-                                    padding: "8px 16px",
-                                    background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
-                                    color: "#ffffff",
-                                    borderRadius: "8px",
-                                    border: "none",
-                                    cursor: "pointer",
-                                    fontFamily: "'Noto Sans KR', sans-serif",
-                                    fontWeight: 600,
-                                    fontSize: "14px",
-                                    boxShadow: "0 2px 8px rgba(99, 102, 241, 0.3)",
-                                }}
-                            >
-                                멤버십 활성화
-                            </button>
-                        )}
-                    </header>
+                        {/* 구독하기 버튼 - 무료 모드가 아니고, 결제 안했으며, 절대 금지 호스트가 아닐 때만 표시 */}
+                        {isMounted && !isPaid && !isAlwaysFreeMode() && (function () {
+                            if (typeof window !== 'undefined') {
+                                const h = window.location.hostname;
+                                if (h.includes('hahyunju') || h.includes('moonhyekyung') || h.includes('hwangmikyung')) return null;
+                            }
+                            return (
+                                <button
+                                    onClick={() => router.push("/?showPayment=true")}
+                                    style={{
+                                        padding: "8px 16px",
+                                        background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
+                                        color: "#ffffff",
+                                        borderRadius: "6px",
+                                        border: "none",
+                                        cursor: "pointer",
+                                        fontFamily: "'Noto Sans KR', sans-serif",
+                                        fontWeight: 600,
+                                        fontSize: "14px",
+                                        boxShadow: "0 2px 6px rgba(99, 102, 241, 0.25)",
+                                    }}
+                                    type="button"
+                                >
+                                    구독하기
+                                </button>
+                            );
+                        })()}</header>
 
                     {/* 폼 */}
                     <form
@@ -301,7 +307,7 @@ export default function EditArtworkPage({ params }: EditArtworkPageProps) {
                                                 }}
                                             >
                                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                                                    <path d="M23 19a2 0 0 1-2 2H3a2 0 0 1-2-2V8a2 0 0 1 2-2h4l2-3h6l2 3h4a2 0 0 1 2 2z" />
                                                     <circle cx="12" cy="13" r="4" />
                                                 </svg>
                                                 이미지 변경
@@ -500,19 +506,14 @@ export default function EditArtworkPage({ params }: EditArtworkPageProps) {
                         {/* 저장 버튼 - 결제 여부에 따라 비활성화 가능 */}
                         {isMounted && needsPayment && !isPaid ? (
                             <div className="mt-8 p-6 rounded-2xl text-center" style={{ background: "#fff5f5", border: "1px solid #feb2b2" }}>
-                                <p className="text-red-600 font-semibold mb-3">멤버십 활성화가 필요합니다</p>
-                                <p className="text-sm text-gray-600 mb-4">변경사항을 저장하시려면 먼저 프리미엄 멤버십을 활성화해주세요.</p>
+                                <p className="text-red-600 font-semibold mb-3">구독하기가 필요합니다</p>
+                                <p className="text-sm text-gray-600 mb-4">변경사항을 저장하시려면 먼저 프리미엄 구독을 시작해주세요.</p>
                                 <button
                                     type="button"
                                     onClick={() => router.push("/?showPayment=true")}
-                                    className="w-full btn btn-primary"
-                                    style={{
-                                        minHeight: "56px",
-                                        fontSize: "16px",
-                                        background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
-                                    }}
+                                    className="w-full py-2 bg-indigo-600 text-white rounded-lg font-semibold"
                                 >
-                                    멤버십 활성화하러 가기
+                                    구독하러 가기
                                 </button>
                             </div>
                         ) : (

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { isAlwaysFreeMode } from "../utils/deploymentMode";
 
 interface HeaderProps {
     galleryNameKo: string;
@@ -29,6 +30,12 @@ export default function Header({
     useEffect(() => {
         setIsMounted(true);
     }, []);
+
+    // [절대 금지 구역] 하현주, 문혜경, 황미경 작가님 사이트에서는 어떤 경우에도 구독 버튼이 보이지 않도록 이중 보안
+    const isFreeArtistHost = typeof window !== 'undefined' &&
+        (window.location.hostname.includes('hahyunju') ||
+            window.location.hostname.includes('moonhyekyung') ||
+            window.location.hostname.includes('hwangmikyung'));
 
     if (!isMounted) return null;
 
@@ -112,7 +119,7 @@ export default function Header({
                 </div>
             </div>
 
-            {/* 하단: 작가소개 + 미술 소식 + 멤버십 + 화첩 공유 */}
+            {/* 하단: 작가소개 + 미술 소식 + 구독하기 + 화첩 공유 */}
             <div
                 className="max-w-6xl mx-auto px-4 sm:px-6"
                 style={{
@@ -162,8 +169,8 @@ export default function Header({
 
                     {/* 오른쪽 그룹: Premium + 화첩 공유 */}
                     <div className="flex items-center gap-2 sm:gap-3 sm:ml-auto">
-                        {/* 멤버십 활성화 버튼 - 데모/상용 모드 구분 없이 미결제 시 무조건 표시 (하이드레이션 보호) */}
-                        {isMounted && !isPaid && (
+                        {/* 구독하기 버튼 - 무료 모드가 아니고, 결제 안했으며, 절대 금지 호스트가 아닐 때만 표시 */}
+                        {isMounted && !isPaid && !isAlwaysFreeMode() && !isFreeArtistHost && (
                             <button
                                 onClick={onOpenPayment}
                                 className="flex items-center gap-1"
@@ -182,14 +189,29 @@ export default function Header({
                                     boxShadow: "0 2px 6px rgba(99, 102, 241, 0.25)",
                                 }}
                             >
-                                <span className="hidden sm:inline">멤버십 활성화</span>
-                                <span className="sm:hidden">멤버십</span>
+                                <span className="hidden sm:inline">구독하기</span>
+                                <span className="sm:hidden">구독</span>
                             </button>
                         )}
 
-                        {/* 화첩 공유 버튼 */}
+                        {/* 화첩 공유 버튼 (Native API 우선) */}
                         <button
-                            onClick={onKakaoShare}
+                            onClick={async () => {
+                                const shareData = {
+                                    title: `${galleryNameKo}`,
+                                    text: `작가님의 작품세계를 담은 온라인 화첩입니다.`,
+                                    url: typeof window !== 'undefined' ? window.location.href : '',
+                                };
+                                if (navigator.share) {
+                                    try {
+                                        await navigator.share(shareData);
+                                    } catch (err: any) {
+                                        if (err.name !== 'AbortError') onKakaoShare();
+                                    }
+                                } else {
+                                    onKakaoShare();
+                                }
+                            }}
                             className="flex items-center gap-1.5"
                             style={{
                                 padding: "6px 12px",
