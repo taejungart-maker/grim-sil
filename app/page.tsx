@@ -1,9 +1,8 @@
 ```javascript
 "use client";
-// [FORCE_DEPLOY_20251228_0325] 핵융합 배포 - 모든 사용자 동일 버튼 크기 (36px/12px) 강제 적용
+// [NUCLEAR_SYNC_V5] 캐시 무력화 및 모든 사용자(guest 포함) 36px 버튼 강제 적용
 import { useState, useEffect, useMemo, useCallback, Suspense, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-// [FORCE_DEPLOY_20251228_0325] 핵융합 배포 - 캐시 무력화
 import Link from "next/link";
 import { getYearMonths, getArtworksByYearMonth, Artwork, YearMonthKey } from "./data/artworks";
 import { loadDemoDataIfEmpty } from "./utils/demoData";
