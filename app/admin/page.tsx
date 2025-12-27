@@ -3,15 +3,16 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { defaultSiteConfig, SiteConfig } from "../config/site";
-import { loadSettings, saveSettings, verifyPassword, savePassword } from "../utils/settingsDb";
+import { loadSettings, saveSettings, savePassword } from "../utils/settingsDb";
 import { exportAllData, importAllData, exportToClipboard, importFromClipboard, getAllArtworks, addArtwork, updateArtwork, uploadImageToStorage, getVisitorStats } from "../utils/db";
 import { migrateLocalDataToSupabase, hasLegacyData, MigrationResult } from "../utils/migration";
 import { migrateAllImagesToStorage, countBase64Images, MigrationProgress } from "../utils/imageMigration";
+import { useAuth } from "../contexts/AuthContext";
 import QRCode from "qrcode";
 
 export default function AdminPage() {
     const router = useRouter();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const { isAuthenticated, login } = useAuth();
     const [password, setPassword] = useState("");
     const [passwordError, setPasswordError] = useState(false);
 
@@ -83,12 +84,13 @@ export default function AdminPage() {
         countBase64Images().then(setBase64ImageCount);
     }, []);
 
-    // 비밀번호 확인
+    // 비밀번호 확인 (전역 로그인 사용)
     const handleLogin = async () => {
-        const isValid = await verifyPassword(password);
-        if (isValid) {
-            setIsAuthenticated(true);
+        const success = await login(password);
+        if (success) {
             setPasswordError(false);
+            // 로그인 성공 시 메인 화면으로 이동 (안전 정책)
+            router.push("/");
         } else {
             setPasswordError(true);
         }
@@ -161,7 +163,7 @@ export default function AdminPage() {
                             marginBottom: "8px",
                         }}
                     >
-                        🔐 관리자 로그인
+                        관리자 로그인
                     </h1>
                     <p
                         style={{
@@ -258,8 +260,13 @@ export default function AdminPage() {
                     alignItems: "center",
                 }}
             >
-                <h1 style={{ fontSize: "28px", fontWeight: 700, fontFamily: "'Noto Sans KR', sans-serif" }}>
-                    ⚙️ 갤러리 설정
+                <h1 style={{
+                    fontSize: "28px",
+                    fontWeight: 700,
+                    fontFamily: "'Noto Sans KR', sans-serif",
+                    color: settings.theme === "black" ? "#ffffff" : "#8b7355"
+                }}>
+                    갤러리 설정
                 </h1>
                 <button
                     onClick={() => router.push("/")}
@@ -296,7 +303,7 @@ export default function AdminPage() {
                             fontWeight: 600,
                         }}
                     >
-                        ✓ 설정이 저장되었습니다!
+                        설정이 저장되었습니다!
                     </div>
                 )}
 
@@ -401,7 +408,7 @@ export default function AdminPage() {
                                 marginBottom: "12px",
                             }}
                         >
-                            🏷️ 사이트 제목 (브라우저 탭 & 링크 공유)
+                            사이트 제목 (브라우저 탭 & 링크 공유)
                         </label>
                         <input
                             type="text"
@@ -434,7 +441,7 @@ export default function AdminPage() {
                                 marginBottom: "12px",
                             }}
                         >
-                            📝 사이트 설명 (SEO)
+                            사이트 설명 (SEO)
                         </label>
                         <textarea
                             value={settings.siteDescription}
@@ -485,7 +492,7 @@ export default function AdminPage() {
                                     cursor: "pointer",
                                 }}
                             >
-                                ☀️ 화이트
+                                화이트
                             </button>
                             <button
                                 onClick={() => setSettings({ ...settings, theme: "black" })}
@@ -501,7 +508,7 @@ export default function AdminPage() {
                                     cursor: "pointer",
                                 }}
                             >
-                                🌙 블랙
+                                블랙
                             </button>
                         </div>
                     </div>
@@ -558,7 +565,7 @@ export default function AdminPage() {
                                 marginBottom: "12px",
                             }}
                         >
-                            💰 가격 표시
+                            가격 표시
                         </label>
                         <div style={{ display: "flex", gap: "12px" }}>
                             <button
@@ -577,7 +584,7 @@ export default function AdminPage() {
                                     cursor: "pointer",
                                 }}
                             >
-                                👁️ 노출
+                                노출
                             </button>
                             <button
                                 onClick={() => setSettings({ ...settings, showPrice: false })}
@@ -595,7 +602,7 @@ export default function AdminPage() {
                                     cursor: "pointer",
                                 }}
                             >
-                                🙈 비노출
+                                비노출
                             </button>
                         </div>
                         <p style={{ marginTop: "8px", fontSize: "14px", color: "#888" }}>
@@ -613,7 +620,7 @@ export default function AdminPage() {
                                 marginBottom: "12px",
                             }}
                         >
-                            📝 대표 작가노트
+                            대표 작가노트
                         </label>
                         <textarea
                             value={settings.defaultArtistNote || ""}
@@ -643,7 +650,7 @@ export default function AdminPage() {
                         borderTop: `2px solid ${borderColor}`,
                     }}>
                         <h2 style={{ fontSize: "24px", fontWeight: 700, marginBottom: "24px" }}>
-                            👤 작가 소개 & 평론 설정
+                            작가 소개 & 평론 설정
                         </h2>
 
                         {/* 작가 사진 업로드 */}
@@ -668,8 +675,11 @@ export default function AdminPage() {
                                             style={{ width: "100%", height: "100%", objectFit: "cover" }}
                                         />
                                     ) : (
-                                        <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "40px" }}>
-                                            👤
+                                        <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#ccc" }}>
+                                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                                <circle cx="12" cy="7" r="4" />
+                                            </svg>
                                         </div>
                                     )}
                                 </div>
@@ -716,7 +726,7 @@ export default function AdminPage() {
                         {/* 작가노트 노출 여부 */}
                         <div style={{ marginBottom: "24px" }}>
                             <label style={{ display: "block", fontSize: "18px", fontWeight: 600, marginBottom: "12px" }}>
-                                📑 작가노트 노출
+                                작가노트 노출
                             </label>
                             <div style={{ display: "flex", gap: "12px" }}>
                                 <button
@@ -733,7 +743,7 @@ export default function AdminPage() {
                                         cursor: "pointer",
                                     }}
                                 >
-                                    👁️ 노출
+                                    노출
                                 </button>
                                 <button
                                     onClick={() => setSettings({ ...settings, showArtistNote: false })}
@@ -749,7 +759,7 @@ export default function AdminPage() {
                                         cursor: "pointer",
                                     }}
                                 >
-                                    🙈 비노출
+                                    비노출
                                 </button>
                             </div>
                         </div>
@@ -780,7 +790,7 @@ export default function AdminPage() {
                         {/* 평론 노출 여부 */}
                         <div style={{ marginBottom: "24px" }}>
                             <label style={{ display: "block", fontSize: "18px", fontWeight: 600, marginBottom: "12px" }}>
-                                ✍️ 평론 노출
+                                평론 노출
                             </label>
                             <div style={{ display: "flex", gap: "12px" }}>
                                 <button
@@ -797,7 +807,7 @@ export default function AdminPage() {
                                         cursor: "pointer",
                                     }}
                                 >
-                                    👁️ 노출
+                                    노출
                                 </button>
                                 <button
                                     onClick={() => setSettings({ ...settings, showCritique: false })}
@@ -813,7 +823,7 @@ export default function AdminPage() {
                                         cursor: "pointer",
                                     }}
                                 >
-                                    🙈 비노출
+                                    비노출
                                 </button>
                             </div>
                         </div>
@@ -844,7 +854,7 @@ export default function AdminPage() {
                         {/* 약력 노출 여부 */}
                         <div style={{ marginBottom: "24px" }}>
                             <label style={{ display: "block", fontSize: "18px", fontWeight: 600, marginBottom: "12px" }}>
-                                📜 약력(경력) 노출
+                                약력(경력) 노출
                             </label>
                             <div style={{ display: "flex", gap: "12px" }}>
                                 <button
@@ -861,7 +871,7 @@ export default function AdminPage() {
                                         cursor: "pointer",
                                     }}
                                 >
-                                    👁️ 노출
+                                    노출
                                 </button>
                                 <button
                                     onClick={() => setSettings({ ...settings, showHistory: false })}
@@ -877,7 +887,7 @@ export default function AdminPage() {
                                         cursor: "pointer",
                                     }}
                                 >
-                                    🙈 비노출
+                                    비노출
                                 </button>
                             </div>
                         </div>
@@ -923,7 +933,7 @@ export default function AdminPage() {
                                 marginBottom: "16px",
                                 color: settings.theme === "black" ? "#ff6b6b" : "#dc143c",
                             }}>
-                                🔄 로컬 데이터 발견! 클라우드로 이전하기
+                                로컬 데이터 발견! 클라우드로 이전하기
                             </h3>
                             <p style={{
                                 fontSize: "14px",
@@ -948,14 +958,14 @@ export default function AdminPage() {
                                 }}>
                                     {migrationResult.success ? (
                                         <>
-                                            ✅ 마이그레이션 완료!
+                                            마이그레이션 완료!
                                             <br />
                                             • 작품 {migrationResult.artworksCount}개 이전됨
                                             {migrationResult.settingsMigrated && " • 설정 이전됨"}
                                             {migrationResult.passwordMigrated && " • 비밀번호 이전됨"}
                                         </>
                                     ) : (
-                                        <>❌ 오류: {migrationResult.errors.join(", ")}</>
+                                        <>오류: {migrationResult.errors.join(", ")}</>
                                     )}
                                 </div>
                             )}
@@ -991,7 +1001,7 @@ export default function AdminPage() {
                                     opacity: isMigrating ? 0.7 : 1,
                                 }}
                             >
-                                {isMigrating ? "🔄 마이그레이션 중..." : "🚀 클라우드로 이전 시작"}
+                                {isMigrating ? "마이그레이션 중..." : "클라우드로 이전 시작"}
                             </button>
                         </div>
                     )}
@@ -1013,7 +1023,7 @@ export default function AdminPage() {
                                 marginBottom: "16px",
                                 color: settings.theme === "black" ? "#6bb3ff" : "#2255aa",
                             }}>
-                                🖼️ 이미지 최적화 (Base64 → Storage)
+                                이미지 최적화 (Base64 → Storage)
                             </h3>
                             <p style={{
                                 fontSize: "14px",
@@ -1057,7 +1067,7 @@ export default function AdminPage() {
                                     )}
                                     {imageMigrationProgress.completed === imageMigrationProgress.total && imageMigrationProgress.total > 0 && (
                                         <div style={{ marginTop: "8px", color: "#22c55e", fontWeight: 600 }}>
-                                            ✅ 완료! {imageMigrationProgress.completed}개 성공, {imageMigrationProgress.failed}개 실패
+                                            완료! {imageMigrationProgress.completed}개 성공, {imageMigrationProgress.failed}개 실패
                                         </div>
                                     )}
                                 </div>
@@ -1094,7 +1104,7 @@ export default function AdminPage() {
                                     opacity: isImageMigrating ? 0.7 : 1,
                                 }}
                             >
-                                {isImageMigrating ? "🔄 마이그레이션 중..." : "🚀 이미지 최적화 시작"}
+                                {isImageMigrating ? "마이그레이션 중..." : "이미지 최적화 시작"}
                             </button>
                         </div>
                     )}
@@ -1110,7 +1120,7 @@ export default function AdminPage() {
                         }}
                     >
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px" }}>
-                            <h2 style={{ fontSize: "22px", fontWeight: 800 }}>📊 나의 화첩 보고서</h2>
+                            <h2 style={{ fontSize: "22px", fontWeight: 800 }}>나의 화첩 보고서</h2>
                             <div style={{ textAlign: "right" }}>
                                 <p style={{ fontSize: "13px", color: mutedColor, margin: 0 }}>최근 7일 누적</p>
                                 <p style={{ fontSize: "24px", fontWeight: 900, color: "#6366f1", margin: 0 }}>{totalViews}명</p>
@@ -1184,7 +1194,7 @@ export default function AdminPage() {
                                 marginTop: "16px",
                                 letterSpacing: "-0.03em"
                             }}>
-                                📇 작가님의 디지털 명함 (QR)
+                                작가님의 디지털 명함 (QR)
                             </h2>
                             <p style={{ color: mutedColor, fontSize: "15px", marginTop: "8px" }}>
                                 전시장이나 명함에 인쇄하여 관람객을 갤러리로 초대하세요.
@@ -1240,7 +1250,7 @@ export default function AdminPage() {
                                 marginBottom: "16px",
                             }}
                         >
-                            🔐 비밀번호 변경
+                            비밀번호 변경
                         </label>
 
                         {passwordChangeSuccess && (
@@ -1255,7 +1265,7 @@ export default function AdminPage() {
                                     fontSize: "14px",
                                 }}
                             >
-                                ✓ 비밀번호가 변경되었습니다!
+                                비밀번호가 변경되었습니다!
                             </div>
                         )}
 
@@ -1330,8 +1340,7 @@ export default function AdminPage() {
                     </div>
                 </div >
 
-                {/* 저장 버튼 */}
-                < button
+                <button
                     onClick={handleSave}
                     disabled={isSaving}
                     style={{
@@ -1346,11 +1355,10 @@ export default function AdminPage() {
                         borderRadius: "12px",
                         cursor: isSaving ? "not-allowed" : "pointer",
                         opacity: isSaving ? 0.7 : 1,
-                    }
-                    }
+                    }}
                 >
-                    {isSaving ? "저장 중..." : "✓ 설정 저장하기"}
-                </button >
+                    {isSaving ? "저장 중..." : "설정 저장하기"}
+                </button>
 
                 {/* 힌트 */}
                 < p

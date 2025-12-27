@@ -72,10 +72,16 @@ export default function ShareModal({ isOpen, onClose, shareUrl, title, descripti
                         border: "none",
                         fontSize: "24px",
                         cursor: "pointer",
-                        color: mutedColor
+                        color: mutedColor,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center"
                     }}
                 >
-                    ✕
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="12"></line>
+                    </svg>
                 </button>
 
                 <div style={{ textAlign: "center", marginBottom: "32px" }}>
@@ -93,7 +99,11 @@ export default function ShareModal({ isOpen, onClose, shareUrl, title, descripti
                         color: "#fff",
                         boxShadow: "0 10px 20px rgba(99, 102, 241, 0.2)"
                     }}>
-                        📤
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                            <polyline points="16 6 12 2 8 6" />
+                            <line x1="12" y1="2" x2="12" y2="15" />
+                        </svg>
                     </div>
                     <h2 style={{ fontSize: "22px", fontWeight: 800, color: textColor, marginBottom: "8px" }}>갤러리 공유하기</h2>
                     <p style={{ color: mutedColor, fontSize: "14px", lineHeight: 1.5 }}>
@@ -120,7 +130,7 @@ export default function ShareModal({ isOpen, onClose, shareUrl, title, descripti
                             gap: "8px"
                         }}
                     >
-                        {isCopied ? "✓ 주소가 복사되었습니다" : "🔗 갤러리 주소 복사하기"}
+                        {isCopied ? "주소가 복사되었습니다" : "갤러리 주소 복사하기"}
                     </button>
 
                     {typeof navigator !== 'undefined' && (navigator as any).share && (
@@ -138,7 +148,7 @@ export default function ShareModal({ isOpen, onClose, shareUrl, title, descripti
                                 transition: "all 0.2s"
                             }}
                         >
-                            📱 시스템 앱으로 공유 (카톡 등)
+                            시스템 앱으로 공유 (카톡 등)
                         </button>
                     )}
                 </div>

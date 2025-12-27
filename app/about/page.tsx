@@ -11,12 +11,15 @@ export default function AboutPage() {
     const router = useRouter();
     const [settings, setSettings] = useState<SiteConfig>(defaultSiteConfig);
     const [isLoading, setIsLoading] = useState(true);
+    const [currentYear, setCurrentYear] = useState(2025); // 기본값
 
     useEffect(() => {
         loadSettings().then((s) => {
             setSettings(s);
             setIsLoading(false);
         });
+        // 클라이언트에서만 현재 연도 설정
+        setCurrentYear(new Date().getFullYear());
     }, []);
 
     const bgColor = settings.theme === "black" ? "#000000" : "#ffffff";
@@ -197,7 +200,7 @@ export default function AboutPage() {
 
             <footer className="py-20 text-center" style={{ borderTop: `1px solid ${borderColor}`, marginTop: "64px" }}>
                 <p style={{ fontSize: "14px", color: mutedColor }}>
-                    © {new Date().getFullYear()} {settings.artistName}. All rights reserved.
+                    © {currentYear} {settings.artistName}. All rights reserved.
                 </p>
             </footer>
         </div>

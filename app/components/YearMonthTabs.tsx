@@ -10,10 +10,10 @@ interface YearMonthTabsProps {
 }
 
 export default function YearMonthTabs({ yearMonths, selectedYearMonth, onYearMonthSelect, theme = "white" }: YearMonthTabsProps) {
-    // 고대비 색상 - 국립현대미술관 수준
-    const activeTextColor = theme === "black" ? "#ffffff" : "#000000"; // 순수 검정
-    const inactiveTextColor = theme === "black" ? "#d0d0d0" : "#000000"; // 비활성도 검정
-    const activeBgColor = theme === "black" ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.1)";
+    // 연도 탭 색상 - 사용자 요구사항에 맞춘 색상
+    const activeTextColor = theme === "black" ? "#ffffff" : "#1a1a1a"; // 선택된 탭: 진한 글씨
+    const inactiveTextColor = "#6B7280"; // 비선택 탭: 진한 회색 (#6B7280)
+    const activeBgColor = "#E5E7EB"; // 선택된 탭: 사각 그레이 배경 (#E5E7EB)
     const hoverBgColor = theme === "black" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)";
 
     return (
@@ -80,10 +80,8 @@ export default function YearMonthTabs({ yearMonths, selectedYearMonth, onYearMon
                                 style={{
                                     fontFamily: "'Noto Sans KR', sans-serif",
                                     fontSize: month ? "13px" : "20px", // 월은 작게 13px, 연도만 있으면 20px
-                                    fontWeight: isSelected ? 600 : 500, // 조금 가볍게
-                                    color: isSelected
-                                        ? (theme === "black" ? "#c0c0c0" : "#666666")
-                                        : (theme === "black" ? "#888888" : "#888888"),
+                                    fontWeight: isSelected ? 600 : 400,
+                                    color: isSelected ? activeTextColor : inactiveTextColor,
                                     letterSpacing: "0.02em",
                                     lineHeight: 1.2,
                                     order: 2, // 연도 아래에 표시
@@ -98,10 +96,8 @@ export default function YearMonthTabs({ yearMonths, selectedYearMonth, onYearMon
                                     style={{
                                         fontFamily: "'Noto Sans KR', sans-serif",
                                         fontSize: "18px", // 연도 크게
-                                        fontWeight: 700, // Bold
-                                        color: isSelected
-                                            ? (theme === "black" ? "#ffffff" : "#000000")
-                                            : (theme === "black" ? "#d0d0d0" : "#1a1a1a"),
+                                        fontWeight: isSelected ? 700 : 400, // 선택 시에만 Bold
+                                        color: isSelected ? activeTextColor : inactiveTextColor,
                                         letterSpacing: "0.01em",
                                         lineHeight: 1.2,
                                         order: 1, // 위에 표시

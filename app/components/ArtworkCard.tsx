@@ -65,8 +65,11 @@ export default function ArtworkCard({
                         style={{
                             objectFit: "cover",
                             transition: "transform 0.3s ease",
+                            userSelect: "none"
                         }}
                         className="group-hover:scale-105"
+                        draggable={false}
+                        onContextMenu={(e) => e.preventDefault()}
                     />
                 ) : (
                     <div style={{ width: "100%", height: "100%", background: "#e0e0e0", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -130,7 +133,12 @@ export default function ArtworkCard({
                     fill
                     sizes="(max-width: 768px) 50vw, 33vw"
                     priority={priority}
-                    style={{ objectFit: "cover" }}
+                    style={{
+                        objectFit: "cover",
+                        userSelect: "none"
+                    }}
+                    draggable={false}
+                    onContextMenu={(e) => e.preventDefault()}
                 />
             ) : (
                 <div style={{ position: "absolute", inset: 0, background: "#e0e0e0", display: "flex", alignItems: "center", justifyContent: "center" }}>

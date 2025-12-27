@@ -126,7 +126,7 @@ export default function NewsroomPage() {
                 <div style={{ marginBottom: "48px" }}>
                     <p style={{
                         fontSize: "14px",
-                        color: "#6366f1",
+                        color: "#8b7355",
                         fontWeight: 700,
                         marginBottom: "12px",
                         letterSpacing: "0.05em"
@@ -151,7 +151,7 @@ export default function NewsroomPage() {
                             width: "40px",
                             height: "40px",
                             border: `3px solid ${borderColor}`,
-                            borderTopColor: "#6366f1",
+                            borderTopColor: "#8b7355",
                             borderRadius: "50%",
                             margin: "0 auto 20px",
                             animation: "spin 1s linear infinite"
@@ -161,7 +161,7 @@ export default function NewsroomPage() {
                     </div>
                 ) : (
                     <>
-                        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                             {news.length === 0 ? (
                                 <div style={{ padding: "40px", textAlign: "center", border: `2px dashed ${borderColor}`, borderRadius: "24px" }}>
                                     <p style={{ color: mutedColor }}>현재 업데이트된 소식이 없습니다.</p>
@@ -190,7 +190,7 @@ export default function NewsroomPage() {
                                                 fontWeight: 800,
                                                 padding: "3px 8px",
                                                 borderRadius: "6px",
-                                                backgroundColor: "#6366f1",
+                                                backgroundColor: "#8b7355",
                                                 color: "#fff"
                                             }}>
                                                 {item.category}
@@ -210,7 +210,7 @@ export default function NewsroomPage() {
                                             <span style={{ fontSize: "13px", color: mutedColor }}>
                                                 {new Date(item.pubDate).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })}
                                             </span>
-                                            <span style={{ fontSize: "14px", fontWeight: 600, color: "#6366f1" }}>원문 보기 →</span>
+                                            <span style={{ fontSize: "14px", fontWeight: 500, color: mutedColor }}>원문 보기 →</span>
                                         </div>
                                     </a>
                                 ))
@@ -218,7 +218,7 @@ export default function NewsroomPage() {
                         </div>
 
                         <div style={{ marginTop: "64px" }}>
-                            <h4 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "20px" }}>🏛️ 주요 미술 기관 바로가기</h4>
+                            <h4 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "20px" }}>주요 미술 기관 바로가기</h4>
                             <div style={{ display: "grid", gap: "12px" }}>
                                 {CURATED_LINKS.map((link, idx) => (
                                     <a
@@ -241,7 +241,7 @@ export default function NewsroomPage() {
                                             <p style={{ fontSize: "16px", fontWeight: 700, margin: "0 0 2px 0" }}>{link.name}</p>
                                             <p style={{ fontSize: "12px", color: mutedColor, margin: 0 }}>{link.desc}</p>
                                         </div>
-                                        <span style={{ color: "#6366f1" }}>↗</span>
+                                        <span style={{ color: "#8b7355" }}>↗</span>
                                     </a>
                                 ))}
                             </div>

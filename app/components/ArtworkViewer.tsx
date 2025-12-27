@@ -6,6 +6,7 @@ import { Artwork } from "../data/artworks";
 import { deleteArtwork } from "../utils/db";
 import { getExchangeRate, convertKRWtoUSD } from "../utils/exchangeRate";
 import { useState, useEffect, useRef } from "react";
+import { useImageProtection, useDevToolsDetection } from "../hooks/useImageProtection";
 
 interface ArtworkViewerProps {
     artworks: Artwork[];
@@ -39,6 +40,10 @@ export default function ArtworkViewer({
     const captionRef = useRef<HTMLDivElement>(null);
 
     const currentArtwork = artworks[currentIndex];
+
+    // Level 1 이미지 보호 활성화
+    useImageProtection();
+    useDevToolsDetection();
 
     // 실시간 환율 가져오기
     useEffect(() => {
@@ -308,8 +313,14 @@ export default function ArtworkViewer({
                         alt={currentArtwork.title}
                         fill
                         priority
-                        style={{ objectFit: "contain" }}
+                        style={{
+                            objectFit: "contain",
+                            userSelect: "none",
+                            pointerEvents: "none"
+                        }}
                         sizes="100vw"
+                        draggable={false}
+                        onContextMenu={(e) => e.preventDefault()}
                     />
                 </div>
             </div>

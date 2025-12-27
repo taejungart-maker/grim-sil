@@ -59,6 +59,20 @@ body {
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
   letter-spacing: -0.01em;
+  /* 깜빡임 방지 - 부드러운 렌더링 */
+  opacity: 1;
+  transition: opacity 0s;
+}
+
+/* 페이지 전환 시 깜빡임 방지 */
+html.loading {
+  opacity: 1;
+}
+
+/* 하이드레이션 깜빡임 방지 */
+html:not(.hydrated) body {
+  visibility: visible;
+  opacity: 1;
 }
 
 /* 시니어 친화적 버튼 기본 스타일 */
@@ -318,4 +332,32 @@ body {
   font-size: 14px;
   color: #555;
   font-weight: 500;
+}
+
+/* ============================================
+   Level 1 이미지 보호 규칙
+   ============================================ */
+
+/* 모든 이미지 선택 방지 */
+img {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* 이미지 드래그 방지 */
+img {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+}
+
+/* 작품 카드 및 뷰어 보호 */
+.artwork-card img,
+.minimal-artwork-card img {
+  pointer-events: none;
 }

@@ -5,6 +5,10 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { addArtwork, uploadImageToStorage } from "../utils/db";
 import { loadSettings } from "../utils/settingsDb";
+import ProtectedRoute from "../components/ProtectedRoute";
+import { isPaymentRequired } from "../utils/deploymentMode";
+import { usePayment } from "../contexts/PaymentContext";
+import PaymentGate from "../components/PaymentGate";
 
 export default function AddArtworkPage() {
     const router = useRouter();
@@ -22,9 +26,12 @@ export default function AddArtworkPage() {
     const [artistName, setArtistName] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const { isPaid, isLoading: paymentLoading } = usePayment();
+    const [isMounted, setIsMounted] = useState(false);
 
-    // 대표 작가노트 및 작가 이름 자동 불러오기
+    // 초기 데이터 확인
     useEffect(() => {
+        setIsMounted(true);
         loadSettings().then((settings) => {
             if (settings.defaultArtistNote && !description) {
                 setDescription(settings.defaultArtistNote);
@@ -112,333 +119,385 @@ export default function AddArtworkPage() {
     // 월 옵션
     const monthOptions = Array.from({ length: 12 }, (_, i) => i + 1);
 
+    // 결제 필요 여부
+    const needsPayment = isPaymentRequired();
+
     return (
-        <div className="min-h-screen bg-white">
-            {/* 헤더 */}
-            <header
-                className="sticky top-0 z-30 bg-white border-b flex items-center justify-between"
-                style={{
-                    borderColor: "var(--border)",
-                    padding: "var(--spacing-md)",
-                }}
-            >
-                <button
-                    onClick={() => router.push("/")}
-                    className="touch-target flex items-center justify-center"
-                    style={{
-                        width: "56px",
-                        height: "56px",
-                        borderRadius: "12px",
-                        background: "var(--secondary)",
-                        border: "none",
-                        cursor: "pointer",
-                    }}
-                    aria-label="뒤로 가기"
-                >
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                        <path d="M15 18l-6-6 6-6" />
-                    </svg>
-                </button>
-
-                <h1
-                    className="font-bold"
-                    style={{ fontSize: "var(--font-size-xl)" }}
-                >
-                    작품 추가
-                </h1>
-
-                <div style={{ width: "56px" }} /> {/* 균형을 위한 빈 공간 */}
-            </header>
-
-            {/* 폼 */}
-            <form
-                onSubmit={handleSubmit}
-                className="max-w-2xl mx-auto"
-                style={{ padding: "var(--spacing-lg)" }}
-            >
-                {/* 에러 메시지 */}
-                {error && (
-                    <div
-                        className="mb-6 p-4 rounded-xl text-center"
+        <ProtectedRoute>
+            <PaymentGate>
+                <div className="min-h-screen bg-white">
+                    {/* 헤더 */}
+                    <header
+                        className="sticky top-0 z-30 bg-white border-b flex items-center justify-between"
                         style={{
-                            background: "#fef2f2",
-                            color: "#dc2626",
-                            fontSize: "var(--font-size-base)",
+                            borderColor: "var(--border)",
+                            padding: "var(--spacing-md)",
                         }}
                     >
-                        {error}
-                    </div>
-                )}
+                        <div className="flex items-center gap-3">
+                            <button
+                                onClick={() => router.push("/")}
+                                className="touch-target flex items-center justify-center"
+                                style={{
+                                    width: "48px",
+                                    height: "48px",
+                                    borderRadius: "12px",
+                                    background: "var(--secondary)",
+                                    border: "none",
+                                    cursor: "pointer",
+                                }}
+                                aria-label="뒤로 가기"
+                            >
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                    <path d="M15 18l-6-6 6-6" />
+                                </svg>
+                            </button>
+                            <h1 className="text-xl font-bold" style={{ letterSpacing: "-0.02em" }}>새 작품 등록</h1>
+                        </div>
 
-                {/* 이미지 업로드 영역 */}
-                <div className="mb-8">
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageSelect}
-                        className="hidden"
-                    />
-
-                    <button
-                        type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        className="w-full aspect-square rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all"
-                        style={{
-                            border: "3px dashed var(--border)",
-                            background: imagePreview ? "transparent" : "var(--secondary)",
-                            position: "relative",
-                            overflow: "hidden",
-                        }}
-                    >
-                        {imagePreview ? (
-                            <>
-                                <Image
-                                    src={imagePreview}
-                                    alt="작품 미리보기"
-                                    fill
-                                    style={{ objectFit: "cover" }}
-                                />
-                                <div
-                                    className="absolute inset-0 flex items-center justify-center"
-                                    style={{ background: "rgba(0,0,0,0.3)" }}
-                                >
-                                    <span
-                                        className="text-white font-semibold px-6 py-3 rounded-xl"
-                                        style={{
-                                            background: "rgba(0,0,0,0.5)",
-                                            fontSize: "var(--font-size-lg)",
-                                        }}
-                                    >
-                                        📷 다시 선택
-                                    </span>
-                                </div>
-                            </>
-                        ) : (
-                            <>
-                                <span style={{ fontSize: "64px", marginBottom: "16px" }}>📷</span>
-                                <span
-                                    className="font-semibold"
-                                    style={{
-                                        fontSize: "var(--font-size-xl)",
-                                        color: "var(--text-muted)",
-                                    }}
-                                >
-                                    작품 사진 선택
-                                </span>
-                                <span
-                                    style={{
-                                        fontSize: "var(--font-size-base)",
-                                        color: "var(--text-muted)",
-                                        marginTop: "8px",
-                                    }}
-                                >
-                                    탭하여 사진첩에서 선택
-                                </span>
-                            </>
+                        {/* 멤버십 활성화 버튼 - 데모용 강제 노출 */}
+                        {isMounted && !isPaid && (
+                            <button
+                                onClick={() => router.push("/?showPayment=true")}
+                                style={{
+                                    padding: "8px 16px",
+                                    background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
+                                    color: "#ffffff",
+                                    borderRadius: "8px",
+                                    border: "none",
+                                    cursor: "pointer",
+                                    fontFamily: "'Noto Sans KR', sans-serif",
+                                    fontWeight: 600,
+                                    fontSize: "14px",
+                                    boxShadow: "0 2px 8px rgba(99, 102, 241, 0.3)",
+                                }}
+                            >
+                                멤버십 활성화
+                            </button>
                         )}
-                    </button>
+
+                        <div style={{ width: "56px" }} /> {/* 균형을 위한 빈 공간 */}
+                    </header>
+
+                    {/* 폼 */}
+                    <form
+                        onSubmit={handleSubmit}
+                        className="max-w-2xl mx-auto"
+                        style={{ padding: "var(--spacing-lg)" }}
+                    >
+                        {/* 에러 메시지 */}
+                        {error && (
+                            <div
+                                className="mb-6 p-4 rounded-xl text-center"
+                                style={{
+                                    background: "#fef2f2",
+                                    color: "#dc2626",
+                                    fontSize: "var(--font-size-base)",
+                                }}
+                            >
+                                {error}
+                            </div>
+                        )}
+
+                        {/* 이미지 업로드 영역 */}
+                        <div className="mb-8">
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageSelect}
+                                className="hidden"
+                            />
+
+                            <button
+                                type="button"
+                                onClick={() => fileInputRef.current?.click()}
+                                className="w-full aspect-square rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all"
+                                style={{
+                                    border: "3px dashed var(--border)",
+                                    background: imagePreview ? "transparent" : "var(--secondary)",
+                                    position: "relative",
+                                    overflow: "hidden",
+                                }}
+                            >
+                                {imagePreview ? (
+                                    <>
+                                        <Image
+                                            src={imagePreview}
+                                            alt="작품 미리보기"
+                                            fill
+                                            style={{ objectFit: "cover" }}
+                                        />
+                                        <div
+                                            className="absolute inset-0 flex items-center justify-center"
+                                            style={{ background: "rgba(0,0,0,0.3)" }}
+                                        >
+                                            <span
+                                                className="text-white font-semibold px-6 py-3 rounded-xl flex items-center gap-2"
+                                                style={{
+                                                    background: "rgba(0,0,0,0.5)",
+                                                    fontSize: "var(--font-size-lg)",
+                                                }}
+                                            >
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                                                    <circle cx="12" cy="13" r="4" />
+                                                </svg>
+                                                다시 선택
+                                            </span>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <div style={{ marginBottom: "16px", color: "var(--text-muted)", opacity: 0.5 }}>
+                                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                                                <circle cx="12" cy="13" r="4" />
+                                            </svg>
+                                        </div>
+                                        <span
+                                            className="font-semibold"
+                                            style={{
+                                                fontSize: "var(--font-size-xl)",
+                                                color: "var(--text-muted)",
+                                            }}
+                                        >
+                                            작품 사진 선택
+                                        </span>
+                                        <span
+                                            style={{
+                                                fontSize: "var(--font-size-base)",
+                                                color: "var(--text-muted)",
+                                                marginTop: "8px",
+                                            }}
+                                        >
+                                            탭하여 사진첩에서 선택
+                                        </span>
+                                    </>
+                                )}
+                            </button>
+                        </div>
+
+                        {/* 작품 정보 입력 */}
+                        <div className="space-y-6">
+                            {/* 제목 (필수) */}
+                            <div>
+                                <label
+                                    htmlFor="title"
+                                    className="block font-semibold mb-3"
+                                    style={{ fontSize: "var(--font-size-lg)" }}
+                                >
+                                    작품 제목 <span style={{ color: "#dc2626" }}>*</span>
+                                </label>
+                                <input
+                                    id="title"
+                                    type="text"
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    placeholder="예: 봄날의 정원"
+                                    className="w-full rounded-xl"
+                                    style={{
+                                        padding: "16px 20px",
+                                        fontSize: "var(--font-size-lg)",
+                                        border: "2px solid var(--border)",
+                                        outline: "none",
+                                    }}
+                                />
+                            </div>
+
+                            {/* 재료 */}
+                            <div>
+                                <label
+                                    htmlFor="medium"
+                                    className="block font-semibold mb-3"
+                                    style={{ fontSize: "var(--font-size-lg)" }}
+                                >
+                                    재료
+                                </label>
+                                <input
+                                    id="medium"
+                                    type="text"
+                                    value={medium}
+                                    onChange={(e) => setMedium(e.target.value)}
+                                    placeholder="예: 캔버스에 유채"
+                                    className="w-full rounded-xl"
+                                    style={{
+                                        padding: "16px 20px",
+                                        fontSize: "var(--font-size-lg)",
+                                        border: "2px solid var(--border)",
+                                        outline: "none",
+                                    }}
+                                />
+                            </div>
+
+                            {/* 크기 */}
+                            <div>
+                                <label
+                                    htmlFor="dimensions"
+                                    className="block font-semibold mb-3"
+                                    style={{ fontSize: "var(--font-size-lg)" }}
+                                >
+                                    크기
+                                </label>
+                                <input
+                                    id="dimensions"
+                                    type="text"
+                                    value={dimensions}
+                                    onChange={(e) => setDimensions(e.target.value)}
+                                    placeholder="예: 100 × 80 cm"
+                                    className="w-full rounded-xl"
+                                    style={{
+                                        padding: "16px 20px",
+                                        fontSize: "var(--font-size-lg)",
+                                        border: "2px solid var(--border)",
+                                        outline: "none",
+                                    }}
+                                />
+                            </div>
+
+                            {/* 제작 연도 */}
+                            <div>
+                                <label
+                                    htmlFor="year"
+                                    className="block font-semibold mb-3"
+                                    style={{ fontSize: "var(--font-size-lg)" }}
+                                >
+                                    제작 연도
+                                </label>
+                                <select
+                                    id="year"
+                                    value={year}
+                                    onChange={(e) => setYear(Number(e.target.value))}
+                                    className="w-full rounded-xl appearance-none"
+                                    style={{
+                                        padding: "16px 20px",
+                                        fontSize: "var(--font-size-lg)",
+                                        border: "2px solid var(--border)",
+                                        background: "white",
+                                        cursor: "pointer",
+                                    }}
+                                >
+                                    {yearOptions.map((y) => (
+                                        <option key={y} value={y}>{y}년</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* 제작 월 */}
+                            <div>
+                                <label
+                                    htmlFor="month"
+                                    className="block font-semibold mb-3"
+                                    style={{ fontSize: "var(--font-size-lg)" }}
+                                >
+                                    제작 월 <span style={{ color: "var(--text-muted)", fontWeight: "normal" }}>(선택)</span>
+                                </label>
+                                <select
+                                    id="month"
+                                    value={month || ""}
+                                    onChange={(e) => setMonth(e.target.value ? Number(e.target.value) : undefined)}
+                                    className="w-full rounded-xl appearance-none"
+                                    style={{
+                                        padding: "16px 20px",
+                                        fontSize: "var(--font-size-lg)",
+                                        border: "2px solid var(--border)",
+                                        background: "white",
+                                        cursor: "pointer",
+                                    }}
+                                >
+                                    <option value="">월 선택 안함</option>
+                                    {monthOptions.map((m) => (
+                                        <option key={m} value={m}>{m}월</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* 설명 (선택) */}
+                            <div>
+                                <label
+                                    htmlFor="description"
+                                    className="block font-semibold mb-3"
+                                    style={{ fontSize: "var(--font-size-lg)" }}
+                                >
+                                    작품 설명 <span style={{ color: "var(--text-muted)", fontWeight: "normal" }}>(선택)</span>
+                                </label>
+                                <textarea
+                                    id="description"
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    placeholder="작품에 대한 설명이나 이야기를 적어주세요"
+                                    rows={4}
+                                    className="w-full rounded-xl resize-none"
+                                    style={{
+                                        padding: "16px 20px",
+                                        fontSize: "var(--font-size-lg)",
+                                        border: "2px solid var(--border)",
+                                        outline: "none",
+                                    }}
+                                />
+                            </div>
+
+                            {/* 가격 (선택) */}
+                            <div>
+                                <label
+                                    htmlFor="price"
+                                    className="block font-semibold mb-3"
+                                    style={{ fontSize: "var(--font-size-lg)" }}
+                                >
+                                    가격 <span style={{ color: "var(--text-muted)", fontWeight: "normal" }}>(선택)</span>
+                                </label>
+                                <input
+                                    id="price"
+                                    type="text"
+                                    value={price}
+                                    onChange={(e) => setPrice(e.target.value)}
+                                    placeholder="예: 1,500,000원"
+                                    className="w-full rounded-xl"
+                                    style={{
+                                        padding: "16px 20px",
+                                        fontSize: "var(--font-size-lg)",
+                                        border: "2px solid var(--border)",
+                                        outline: "none",
+                                    }}
+                                />
+                            </div>
+                        </div>
+
+                        {/* 저장 버튼 - 결제 여부에 따라 비활성화 가능 */}
+                        {isMounted && needsPayment && !isPaid ? (
+                            <div className="mt-8 p-6 rounded-2xl text-center" style={{ background: "#fff5f5", border: "1px solid #feb2b2" }}>
+                                <p className="text-red-600 font-semibold mb-3">멤버십 활성화가 필요합니다</p>
+                                <p className="text-sm text-gray-600 mb-4">작품을 저장하시려면 먼저 프리미엄 멤버십을 활성화해주세요.</p>
+                                <button
+                                    type="button"
+                                    onClick={() => router.push("/?showPayment=true")}
+                                    className="w-full btn btn-primary"
+                                    style={{
+                                        minHeight: "56px",
+                                        fontSize: "16px",
+                                        background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
+                                    }}
+                                >
+                                    멤버십 활성화하러 가기
+                                </button>
+                            </div>
+                        ) : (
+                            <button
+                                type="submit"
+                                disabled={isLoading}
+                                className="w-full mt-8 btn btn-primary flex items-center justify-center gap-2"
+                                style={{
+                                    minHeight: "64px",
+                                    fontSize: "var(--font-size-xl)",
+                                    opacity: isLoading ? 0.7 : 1,
+                                }}
+                            >
+                                {isLoading ? "저장 중..." : "작품 저장하기"}
+                            </button>
+                        )}
+                    </form>
                 </div>
-
-                {/* 작품 정보 입력 */}
-                <div className="space-y-6">
-                    {/* 제목 (필수) */}
-                    <div>
-                        <label
-                            htmlFor="title"
-                            className="block font-semibold mb-3"
-                            style={{ fontSize: "var(--font-size-lg)" }}
-                        >
-                            작품 제목 <span style={{ color: "#dc2626" }}>*</span>
-                        </label>
-                        <input
-                            id="title"
-                            type="text"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            placeholder="예: 봄날의 정원"
-                            className="w-full rounded-xl"
-                            style={{
-                                padding: "16px 20px",
-                                fontSize: "var(--font-size-lg)",
-                                border: "2px solid var(--border)",
-                                outline: "none",
-                            }}
-                        />
-                    </div>
-
-                    {/* 재료 */}
-                    <div>
-                        <label
-                            htmlFor="medium"
-                            className="block font-semibold mb-3"
-                            style={{ fontSize: "var(--font-size-lg)" }}
-                        >
-                            재료
-                        </label>
-                        <input
-                            id="medium"
-                            type="text"
-                            value={medium}
-                            onChange={(e) => setMedium(e.target.value)}
-                            placeholder="예: 캔버스에 유채"
-                            className="w-full rounded-xl"
-                            style={{
-                                padding: "16px 20px",
-                                fontSize: "var(--font-size-lg)",
-                                border: "2px solid var(--border)",
-                                outline: "none",
-                            }}
-                        />
-                    </div>
-
-                    {/* 크기 */}
-                    <div>
-                        <label
-                            htmlFor="dimensions"
-                            className="block font-semibold mb-3"
-                            style={{ fontSize: "var(--font-size-lg)" }}
-                        >
-                            크기
-                        </label>
-                        <input
-                            id="dimensions"
-                            type="text"
-                            value={dimensions}
-                            onChange={(e) => setDimensions(e.target.value)}
-                            placeholder="예: 100 × 80 cm"
-                            className="w-full rounded-xl"
-                            style={{
-                                padding: "16px 20px",
-                                fontSize: "var(--font-size-lg)",
-                                border: "2px solid var(--border)",
-                                outline: "none",
-                            }}
-                        />
-                    </div>
-
-                    {/* 제작 연도 */}
-                    <div>
-                        <label
-                            htmlFor="year"
-                            className="block font-semibold mb-3"
-                            style={{ fontSize: "var(--font-size-lg)" }}
-                        >
-                            제작 연도
-                        </label>
-                        <select
-                            id="year"
-                            value={year}
-                            onChange={(e) => setYear(Number(e.target.value))}
-                            className="w-full rounded-xl appearance-none"
-                            style={{
-                                padding: "16px 20px",
-                                fontSize: "var(--font-size-lg)",
-                                border: "2px solid var(--border)",
-                                background: "white",
-                                cursor: "pointer",
-                            }}
-                        >
-                            {yearOptions.map((y) => (
-                                <option key={y} value={y}>{y}년</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {/* 제작 월 */}
-                    <div>
-                        <label
-                            htmlFor="month"
-                            className="block font-semibold mb-3"
-                            style={{ fontSize: "var(--font-size-lg)" }}
-                        >
-                            제작 월 <span style={{ color: "var(--text-muted)", fontWeight: "normal" }}>(선택)</span>
-                        </label>
-                        <select
-                            id="month"
-                            value={month || ""}
-                            onChange={(e) => setMonth(e.target.value ? Number(e.target.value) : undefined)}
-                            className="w-full rounded-xl appearance-none"
-                            style={{
-                                padding: "16px 20px",
-                                fontSize: "var(--font-size-lg)",
-                                border: "2px solid var(--border)",
-                                background: "white",
-                                cursor: "pointer",
-                            }}
-                        >
-                            <option value="">월 선택 안함</option>
-                            {monthOptions.map((m) => (
-                                <option key={m} value={m}>{m}월</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {/* 설명 (선택) */}
-                    <div>
-                        <label
-                            htmlFor="description"
-                            className="block font-semibold mb-3"
-                            style={{ fontSize: "var(--font-size-lg)" }}
-                        >
-                            작품 설명 <span style={{ color: "var(--text-muted)", fontWeight: "normal" }}>(선택)</span>
-                        </label>
-                        <textarea
-                            id="description"
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            placeholder="작품에 대한 설명이나 이야기를 적어주세요"
-                            rows={4}
-                            className="w-full rounded-xl resize-none"
-                            style={{
-                                padding: "16px 20px",
-                                fontSize: "var(--font-size-lg)",
-                                border: "2px solid var(--border)",
-                                outline: "none",
-                            }}
-                        />
-                    </div>
-
-                    {/* 가격 (선택) */}
-                    <div>
-                        <label
-                            htmlFor="price"
-                            className="block font-semibold mb-3"
-                            style={{ fontSize: "var(--font-size-lg)" }}
-                        >
-                            가격 <span style={{ color: "var(--text-muted)", fontWeight: "normal" }}>(선택)</span>
-                        </label>
-                        <input
-                            id="price"
-                            type="text"
-                            value={price}
-                            onChange={(e) => setPrice(e.target.value)}
-                            placeholder="예: 1,500,000원"
-                            className="w-full rounded-xl"
-                            style={{
-                                padding: "16px 20px",
-                                fontSize: "var(--font-size-lg)",
-                                border: "2px solid var(--border)",
-                                outline: "none",
-                            }}
-                        />
-                    </div>
-                </div>
-
-                {/* 저장 버튼 */}
-                <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="w-full mt-8 btn btn-primary"
-                    style={{
-                        minHeight: "64px",
-                        fontSize: "var(--font-size-xl)",
-                        opacity: isLoading ? 0.7 : 1,
-                    }}
-                >
-                    {isLoading ? "저장 중..." : "✓ 작품 저장하기"}
-                </button>
-            </form>
-        </div>
+            </PaymentGate>
+        </ProtectedRoute>
     );
 }
