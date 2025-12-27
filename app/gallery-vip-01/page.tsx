@@ -13,7 +13,7 @@ import ArtworkViewer from "../components/ArtworkViewer";
 import { isPaymentRequired } from "../utils/deploymentMode";
 import { usePayment } from "../contexts/PaymentContext";
 import PaymentGate from "../components/PaymentGate";
-import PaymentModal from "../components/PaymentModal";
+import VIPPaymentModal from "../components/VIPPaymentModal";
 import Header from "../components/Header";
 
 function VIPContent() {
@@ -193,7 +193,7 @@ function VIPContent() {
                 />
             )}
 
-            <PaymentModal
+            <VIPPaymentModal
                 isOpen={showPaymentModal}
                 onClose={() => setShowPaymentModal(false)}
                 onSuccess={() => window.location.reload()}
