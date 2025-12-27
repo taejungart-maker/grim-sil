@@ -173,7 +173,7 @@ export default function MembershipPage() {
                         fontFamily: "'Noto Sans KR', sans-serif",
                     }}
                 >
-                    {isPaid ? "이미 구독 중입니다" : "멤버십 시작하기"}
+                    {isPaid ? "이미 구독 중입니다" : "구독하기"}
                 </button>
 
                 <p style={{

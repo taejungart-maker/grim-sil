@@ -74,20 +74,20 @@ export async function processPayment(): Promise<boolean> {
     try {
         const PortOne = await import('@portone/browser-sdk/v2');
         const STORE_ID = process.env.NEXT_PUBLIC_PORTONE_STORE_ID || 'store-test';
-        const CHANNEL_KEY = process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY || 'channel-key-4f2a8b54-c09c-4575-9a1c-de33285b2b20';
+        const CHANNEL_ID = process.env.NEXT_PUBLIC_PORTONE_CHANNEL_ID || 'channel-key-4f2a8b54-c09c-4575-9a1c-de33285b2b20';
 
         console.log(
             '%c포트원 V2 결제 시작',
             'color: #4CAF50; font-weight: bold; font-size: 14px;',
             '\n상점 ID:', STORE_ID,
-            '\n채널 키:', CHANNEL_KEY.substring(0, 20) + '...'
+            '\n채널 ID:', CHANNEL_ID.substring(0, 20) + '...'
         );
 
         const isTest = isTestPaymentMode();
 
         const response = await PortOne.requestPayment({
             storeId: STORE_ID,
-            channelKey: CHANNEL_KEY,
+            channelKey: CHANNEL_ID,
             paymentId: `payment-${Date.now()}`,
             orderName: '그림실 프리미엄 멤버십',
             totalAmount: TEST_AMOUNT, // 테스트용 100원 고정
