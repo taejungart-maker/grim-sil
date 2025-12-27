@@ -1,5 +1,5 @@
 "use client";
-// [NUCLEAR_SYNC_FINAL_V6] 모든 사용자(방문객 포함) 36px/12px 부유식 버튼 고정 적용
+// [FINAL_VISIBILITY_GUARD] 모든 동기화 완료 및 버튼 권한 제어 적용
 import { useState, useEffect, useMemo, useCallback, Suspense, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -186,10 +186,10 @@ function HomeContent() {
         </main>
       </PaymentGate>
 
-      {/* [최종 단계] 모든 사용자 대상 버튼 (36px / 12px) 강제 적용 */}
-      {isMounted && (
+      {/* [FINAL_VISIBILITY_FIX] 작가(로그인) 전용 부유식 버튼 (36px / 12px) */}
+      {isMounted && isLoggedIn && (
         <div
-          id="final-nuclear-sync-v6"
+          id="author-only-floating-v7"
           className="fixed z-50 flex flex-col gap-3"
           style={{
             bottom: "24px",
@@ -198,42 +198,46 @@ function HomeContent() {
           }}
         >
           {/* 1. SNS 공유 센터 (파란색) */}
-          {isLoggedIn ? (
-            <Link
-              href="/share"
-              className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
-              style={{ width: "36px", height: "36px", borderRadius: "50%", background: "#6366f1", color: "#fff", textDecoration: "none", border: "none", boxShadow: "0 2px 8px rgba(99, 102, 241, 0.4)" }}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
-            </Link>
-          ) : (
-            <button
-              onClick={handleKakaoShare}
-              className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
-              style={{ width: "36px", height: "36px", borderRadius: "50%", background: "#6366f1", color: "#fff", border: "none", boxShadow: "0 2px 8px rgba(99, 102, 241, 0.4)", cursor: "pointer" }}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
-            </button>
-          )}
+          <Link
+            href="/share"
+            className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
+            style={{
+              width: "36px",
+              height: "36px",
+              borderRadius: "50%",
+              background: "#6366f1",
+              color: "#fff",
+              textDecoration: "none",
+              border: "none",
+              boxShadow: "0 2px 8px rgba(99, 102, 241, 0.4)",
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="11" width="18" height="10" rx="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+          </Link>
 
           {/* 2. 작품 추가 (검정색) */}
-          {isLoggedIn ? (
-            <Link
-              href="/add"
-              className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
-              style={{ width: "36px", height: "36px", borderRadius: "50%", background: "#1a1a1a", color: "#fff", fontSize: "20px", fontWeight: "bold", textDecoration: "none", border: "none", boxShadow: "0 2px 8px rgba(0,0,0,0.3)", lineHeight: 1 }}
-            >
-              +
-            </Link>
-          ) : (
-            <button
-              onClick={() => setShowLoginModal(true)}
-              className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
-              style={{ width: "36px", height: "36px", borderRadius: "50%", background: "#1a1a1a", color: "#fff", fontSize: "20px", fontWeight: "bold", border: "none", boxShadow: "0 2px 8px rgba(0,0,0,0.3)", cursor: "pointer", lineHeight: 1 }}
-            >
-              +
-            </button>
-          )}
+          <Link
+            href="/add"
+            className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
+            style={{
+              width: "36px",
+              height: "36px",
+              borderRadius: "50%",
+              background: "#1a1a1a",
+              color: "#fff",
+              fontSize: "20px",
+              fontWeight: "bold",
+              textDecoration: "none",
+              border: "none",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
+              lineHeight: 1
+            }}
+          >
+            +
+          </Link>
         </div>
       )}
 
