@@ -15,6 +15,8 @@ import { usePayment } from "../contexts/PaymentContext";
 import PaymentGate from "../components/PaymentGate";
 import VIPPaymentModal from "../components/VIPPaymentModal";
 import Header from "../components/Header";
+import EncouragementSection from "../components/EncouragementSection";
+import ArtistPicksSection from "../components/ArtistPicksSection";
 
 function VIPContent() {
     const searchParams = useSearchParams();
@@ -182,6 +184,14 @@ function VIPContent() {
                         </div>
                     )}
                 </main>
+
+                {/* 응원 메시지 섹션 */}
+                <EncouragementSection theme={settings.theme} />
+
+                {/* 추천 작가 섹션 */}
+                {settings.artistPicks && settings.artistPicks.length > 0 && (
+                    <ArtistPicksSection picks={settings.artistPicks} theme={settings.theme} />
+                )}
             </PaymentGate>
 
             {selectedArtwork && (
