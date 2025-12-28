@@ -134,65 +134,62 @@ function VIPContent() {
                 galleryNameKo={`${settings.galleryNameKo} VIP`}
                 theme={settings.theme}
                 isLoggedIn={isLoggedIn}
-                isPaid={isPaid}
+                isPaid={true}
                 needsPayment={needsPayment}
                 onLogout={handleLogout}
                 onOpenPayment={() => setShowPaymentModal(true)}
                 onKakaoShare={handleKakaoShare}
             />
 
-            {/* Paywall 강제 적용 (forcedMode="commercial") */}
-            <PaymentGate forcedMode="commercial">
-                {yearMonths.length > 0 && selectedYearMonth && (
-                    <div style={{ borderTop: `1px solid ${borderColor}`, background: bgColor }}>
-                        <div className="max-w-6xl mx-auto">
-                            <YearMonthTabs
-                                yearMonths={yearMonths}
-                                selectedYearMonth={selectedYearMonth}
-                                onYearMonthSelect={setSelectedYearMonth}
-                                theme={settings.theme}
-                            />
-                        </div>
+            {yearMonths.length > 0 && selectedYearMonth && (
+                <div style={{ borderTop: `1px solid ${borderColor}`, background: bgColor }}>
+                    <div className="max-w-6xl mx-auto">
+                        <YearMonthTabs
+                            yearMonths={yearMonths}
+                            selectedYearMonth={selectedYearMonth}
+                            onYearMonthSelect={setSelectedYearMonth}
+                            theme={settings.theme}
+                        />
+                    </div>
+                </div>
+            )}
+
+            <main className="max-w-6xl mx-auto" style={{ padding: "32px 24px" }}>
+                {isLoading ? (
+                    <div className="text-center py-20" style={{ color: "#888" }}><p>불러오는 중...</p></div>
+                ) : artworks.length === 0 ? (
+                    <div className="text-center py-20" style={{ color: "#666" }}>
+                        <p style={{ fontSize: "48px", marginBottom: "16px", opacity: 0.3 }}>💎</p>
+                        <p style={{ fontSize: "15px", color: textColor, marginBottom: "8px" }}>VIP 갤러리 준비 중입니다</p>
+                    </div>
+                ) : (
+                    <div style={{
+                        display: "grid",
+                        gridTemplateColumns: settings.gridColumns === 1 ? "1fr" : settings.gridColumns === 3 ? "repeat(3, 1fr)" : "repeat(4, 1fr)",
+                        gridAutoRows: settings.gridColumns === 1 ? "auto" : "180px",
+                        gap: settings.gridColumns === 1 ? "24px" : "8px",
+                    }}>
+                        {currentYearMonthArtworks.map((artwork: Artwork, index: number) => (
+                            <div key={artwork.id}>
+                                <ArtworkCard
+                                    artwork={artwork}
+                                    onClick={() => handleArtworkClick(artwork, index)}
+                                    priority={index < 6}
+                                    minimal
+                                />
+                            </div>
+                        ))}
                     </div>
                 )}
+            </main>
 
-                <main className="max-w-6xl mx-auto" style={{ padding: "32px 24px" }}>
-                    {isLoading ? (
-                        <div className="text-center py-20" style={{ color: "#888" }}><p>불러오는 중...</p></div>
-                    ) : artworks.length === 0 ? (
-                        <div className="text-center py-20" style={{ color: "#666" }}>
-                            <p style={{ fontSize: "48px", marginBottom: "16px", opacity: 0.3 }}>💎</p>
-                            <p style={{ fontSize: "15px", color: textColor, marginBottom: "8px" }}>VIP 갤러리 준비 중입니다</p>
-                        </div>
-                    ) : (
-                        <div style={{
-                            display: "grid",
-                            gridTemplateColumns: settings.gridColumns === 1 ? "1fr" : settings.gridColumns === 3 ? "repeat(3, 1fr)" : "repeat(4, 1fr)",
-                            gridAutoRows: settings.gridColumns === 1 ? "auto" : "180px",
-                            gap: settings.gridColumns === 1 ? "24px" : "8px",
-                        }}>
-                            {currentYearMonthArtworks.map((artwork: Artwork, index: number) => (
-                                <div key={artwork.id}>
-                                    <ArtworkCard
-                                        artwork={artwork}
-                                        onClick={() => handleArtworkClick(artwork, index)}
-                                        priority={index < 6}
-                                        minimal
-                                    />
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </main>
+            {/* 응원 메시지 섹션 */}
+            <EncouragementSection theme={settings.theme} />
 
-                {/* 응원 메시지 섹션 */}
-                <EncouragementSection theme={settings.theme} />
-
-                {/* 추천 작가 섹션 */}
-                {settings.artistPicks && settings.artistPicks.length > 0 && (
-                    <ArtistPicksSection picks={settings.artistPicks} theme={settings.theme} />
-                )}
-            </PaymentGate>
+            {/* 추천 작가 섹션 */}
+            {settings.artistPicks && settings.artistPicks.length > 0 && (
+                <ArtistPicksSection picks={settings.artistPicks} theme={settings.theme} />
+            )}
 
             {selectedArtwork && (
                 <ArtworkViewer
