@@ -165,8 +165,26 @@ export default function Header({
                                 whiteSpace: "nowrap"
                             }}
                         >
-                            미술 소식 ✨
+                            미술 소식
                         </Link>
+
+                        {/* 동료 갤러리 (로그인 시에만 표시) */}
+                        {isLoggedIn && (
+                            <Link
+                                href="/colleagues"
+                                className="text-sm sm:text-base"
+                                style={{
+                                    textDecoration: "none",
+                                    fontFamily: "'Noto Sans KR', sans-serif",
+                                    color: theme === "black" ? "#FEE500" : SIGNATURE_COLORS.antiqueBurgundy,
+                                    fontWeight: 600,
+                                    letterSpacing: "0.02em",
+                                    whiteSpace: "nowrap"
+                                }}
+                            >
+                                동료 갤러리
+                            </Link>
+                        )}
                     </div>
 
                     {/* [ZERO_CACHE_FORCE] 구조 변경으로 캐시 무력화 */}

@@ -30,6 +30,8 @@ import ArtistPicksSection from "./components/ArtistPicksSection";
 function HomeContent() {
   const searchParams = useSearchParams();
   const yearMonthParam = searchParams.get("yearMonth");
+  const visitorId = searchParams.get("visitor");
+  const visitorName = searchParams.get("visitorName");
   const router = useRouter();
 
   const { artworks, isLoading: artworksLoading, refresh: refreshArtworks } = useSyncedArtworks();
@@ -110,14 +112,17 @@ function HomeContent() {
       currentOwnerId = localStorage.getItem('admin_owner_id');
     }
 
-    if (!currentOwnerId) {
+    // 방문자 ID 결정: URL 파라미터 우선, 그다음 ownerId
+    const effectiveVisitorId = visitorId || ownerId;
+
+    if (!effectiveVisitorId) {
       alert("로그인 정보가 부족합니다. 관리자 페이지에서 다시 로그인해 주세요.");
       return;
     }
 
     setIsSubmitting(true);
     try {
-      await quickAddPick(currentOwnerId, {
+      await quickAddPick(effectiveVisitorId, {
         name: settings.artistName,
         archiveUrl: window.location.href,
         imageUrl: settings.aboutmeImage
@@ -166,8 +171,8 @@ function HomeContent() {
 
       {showNewsTicker && <NewsTicker theme={settings.theme} newsText={settings.newsText} />}
 
-      {/* 🚀 중장년 작가용 초간단 상생 추천 버튼 (로그인한 작가가 타인 화첩 방문 시) */}
-      {showQuickAdd && isLoggedIn && ownerId && ownerId !== ARTIST_ID && (
+      {/* 🚀 동료 갤러리에서 방문한 작가에게 추천 버튼 표시 */}
+      {showQuickAdd && (visitorId || (isLoggedIn && ownerId && ownerId !== ARTIST_ID)) && (
         <div style={{
           position: "fixed",
           bottom: "100px",
