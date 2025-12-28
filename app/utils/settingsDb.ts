@@ -24,6 +24,8 @@ interface SettingsRow {
     aboutme_critique: string;
     aboutme_history: string;
     aboutme_image: string;
+    artist_picks: { name: string; archiveUrl: string; imageUrl?: string }[];
+    news_text: string;
     admin_password: string;
     updated_at: string;
 }
@@ -47,6 +49,8 @@ function rowToConfig(row: SettingsRow): SiteConfig {
         aboutmeCritique: row.aboutme_critique || "",
         aboutmeHistory: row.aboutme_history || "",
         aboutmeImage: row.aboutme_image || "",
+        artistPicks: row.artist_picks || [],
+        newsText: row.news_text || "",
     };
 }
 
@@ -69,26 +73,33 @@ function configToRow(config: SiteConfig): Partial<SettingsRow> {
         aboutme_critique: config.aboutmeCritique || "",
         aboutme_history: config.aboutmeHistory || "",
         aboutme_image: config.aboutmeImage || "",
+        artist_picks: config.artistPicks || [],
+        news_text: config.newsText || "",
     };
 }
 
 // 설정 불러오기
 export async function loadSettings(): Promise<SiteConfig> {
+    return loadSettingsById(SETTINGS_ID);
+}
+
+// 특정 작가 ID의 설정 불러오기
+export async function loadSettingsById(artistId: string): Promise<SiteConfig> {
     try {
         const { data, error } = await supabase
             .from("settings")
             .select("*")
-            .eq("id", SETTINGS_ID)
+            .eq("id", artistId)
             .single();
 
         if (error || !data) {
-            console.log("No settings found, using defaults");
+            console.log(`No settings found for ${artistId}, using defaults`);
             return defaultSiteConfig;
         }
 
         return rowToConfig(data as SettingsRow);
     } catch {
-        console.error("Failed to load settings");
+        console.error(`Failed to load settings for ${artistId}`);
         return defaultSiteConfig;
     }
 }
@@ -109,6 +120,36 @@ export async function saveSettings(config: SiteConfig): Promise<void> {
         console.error("Failed to save settings:", error);
         throw error;
     }
+}
+
+/**
+ * [초간단 상생] 동료 작가 추천 즉시 추가
+ * @param ownerId 추천을 추가할 작가 나의 ID
+ * @param pick 추가할 동료 작가 정보
+ */
+export async function quickAddPick(ownerId: string, pick: { name: string; archiveUrl: string; imageUrl?: string }): Promise<void> {
+    const config = await loadSettingsById(ownerId);
+
+    // 중복 확인 (URL 기준)
+    const exists = config.artistPicks.some(p => p.archiveUrl === pick.archiveUrl);
+    if (exists) return;
+
+    const updatedConfig = {
+        ...config,
+        artistPicks: [...config.artistPicks, pick]
+    };
+
+    const row = {
+        id: ownerId,
+        ...configToRow(updatedConfig),
+        updated_at: new Date().toISOString(),
+    };
+
+    const { error } = await supabase
+        .from("settings")
+        .upsert(row, { onConflict: "id" });
+
+    if (error) throw error;
 }
 
 // 설정 초기화

@@ -1,6 +1,7 @@
 "use client";
 
 import { YearMonthKey, parseYearMonthKey } from "../data/artworks";
+import { getThemeColors, SIGNATURE_COLORS } from "../utils/themeColors";
 
 interface YearMonthTabsProps {
     yearMonths: YearMonthKey[];
@@ -11,10 +12,11 @@ interface YearMonthTabsProps {
 
 export default function YearMonthTabs({ yearMonths, selectedYearMonth, onYearMonthSelect, theme = "white" }: YearMonthTabsProps) {
     // 연도 탭 색상 - 사용자 요구사항에 맞춘 색상
-    const activeTextColor = theme === "black" ? "#ffffff" : "#1a1a1a"; // 선택된 탭: 진한 글씨
-    const inactiveTextColor = "#6B7280"; // 비선택 탭: 진한 회색 (#6B7280)
-    const activeBgColor = "#E5E7EB"; // 선택된 탭: 사각 그레이 배경 (#E5E7EB)
-    const hoverBgColor = theme === "black" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)";
+    const colors = getThemeColors(theme);
+    const activeTextColor = theme === "black" ? "#ffffff" : "#ffffff";
+    const inactiveTextColor = theme === "black" ? "#6B7280" : SIGNATURE_COLORS.sandGray;
+    const activeBgColor = theme === "black" ? "#6366f1" : SIGNATURE_COLORS.royalIndigo;
+    const hoverBgColor = theme === "black" ? "rgba(255,255,255,0.08)" : "rgba(194, 188, 178, 0.2)";
 
     return (
         <div

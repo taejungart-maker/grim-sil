@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { isAlwaysFreeMode } from "../utils/deploymentMode";
+import { getThemeColors, SIGNATURE_COLORS } from "../utils/themeColors";
 
 interface HeaderProps {
     galleryNameKo: string;
@@ -39,9 +40,10 @@ export default function Header({
 
     if (!isMounted) return null;
 
-    const bgColor = theme === "black" ? "#1a1a1a" : "#fafafa";
-    const textColor = theme === "black" ? "#ffffff" : "#1a1a1a";
-    const borderColor = theme === "black" ? "#333" : "#eee";
+    const colors = getThemeColors(theme);
+    const bgColor = colors.bg;
+    const textColor = colors.text;
+    const borderColor = colors.border;
 
     return (
         <header
@@ -67,7 +69,7 @@ export default function Header({
                             fontFamily: "'Noto Sans KR', sans-serif",
                             fontWeight: 600,
                             letterSpacing: "0.03em",
-                            color: theme === "black" ? "#ffffff" : "#8b7355",
+                            color: theme === "black" ? "#ffffff" : SIGNATURE_COLORS.royalIndigo,
                             whiteSpace: "nowrap",
                         }}
                     >
@@ -203,8 +205,8 @@ export default function Header({
                             className="flex items-center gap-1.5"
                             style={{
                                 padding: "6px 12px",
-                                background: "#FEE500",
-                                color: "#2a2a2a",
+                                background: theme === "black" ? "#FEE500" : SIGNATURE_COLORS.antiqueBurgundy,
+                                color: theme === "black" ? "#2a2a2a" : "#fff",
                                 borderRadius: "6px",
                                 border: "none",
                                 cursor: "pointer",
@@ -213,7 +215,7 @@ export default function Header({
                                 fontSize: "13px",
                                 letterSpacing: "0.02em",
                                 whiteSpace: "nowrap",
-                                boxShadow: "0 2px 6px rgba(254, 229, 0, 0.3)",
+                                boxShadow: `0 2px 6px ${theme === "black" ? "rgba(0,0,0,0.3)" : "rgba(128, 48, 48, 0.2)"}`,
                             }}
                             aria-label="화첩 공유"
                         >

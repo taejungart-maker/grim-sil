@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { toDataURL } from "qrcode";
+import { SIGNATURE_COLORS, getThemeColors } from "../utils/themeColors";
 
 interface ShareModalProps {
     isOpen: boolean;
@@ -13,16 +15,34 @@ interface ShareModalProps {
 
 export default function ShareModal({ isOpen, onClose, shareUrl, title, description, theme = "white" }: ShareModalProps) {
     const [isCopied, setIsCopied] = useState(false);
+    const [qrCodeUrl, setQrCodeUrl] = useState("");
+    const [invitationMessage, setInvitationMessage] = useState(`선생님, 평안하신지요?\n작가 정성스럽게 준비한 온라인 아트를 초대합니다.\n\n화첩 방문하기:\n${shareUrl}`);
+
+    useEffect(() => {
+        if (isOpen && shareUrl) {
+            toDataURL(shareUrl, {
+                width: 256,
+                margin: 2,
+                color: {
+                    dark: theme === "black" ? "#ffffff" : SIGNATURE_COLORS.royalIndigo,
+                    light: theme === "black" ? "#00000000" : "#ffffff",
+                },
+            })
+                .then((url) => setQrCodeUrl(url))
+                .catch((err) => console.error("QR Code error:", err));
+        }
+    }, [isOpen, shareUrl, theme]);
 
     if (!isOpen) return null;
 
-    const bgColor = theme === "black" ? "#1a1a1a" : "#ffffff";
-    const textColor = theme === "black" ? "#ffffff" : "#1a1a1a";
-    const borderColor = theme === "black" ? "#333" : "#eee";
-    const mutedColor = theme === "black" ? "#a0a0a0" : "#6b7280";
+    const colors = getThemeColors(theme);
+    const bgColor = colors.bg;
+    const textColor = colors.text;
+    const borderColor = colors.border;
+    const mutedColor = theme === "black" ? "#a0a0a0" : SIGNATURE_COLORS.sandGray;
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(shareUrl);
+        navigator.clipboard.writeText(invitationMessage);
         setIsCopied(true);
         setTimeout(() => setIsCopied(false), 2000);
     };
@@ -84,31 +104,51 @@ export default function ShareModal({ isOpen, onClose, shareUrl, title, descripti
                     </svg>
                 </button>
 
-                <div style={{ textAlign: "center", marginBottom: "32px" }}>
-                    <div style={{
-                        fontSize: "40px",
-                        marginBottom: "16px",
-                        backgroundColor: "#6366f1",
-                        width: "80px",
-                        height: "80px",
-                        borderRadius: "50%",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        margin: "0 auto 20px",
-                        color: "#fff",
-                        boxShadow: "0 10px 20px rgba(99, 102, 241, 0.2)"
-                    }}>
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
-                            <polyline points="16 6 12 2 8 6" />
-                            <line x1="12" y1="2" x2="12" y2="15" />
-                        </svg>
+                <div style={{ textAlign: "center", marginBottom: "24px" }}>
+                    <h2 style={{ fontSize: "20px", fontWeight: 700, color: textColor, marginBottom: "24px" }}>화첩 정중히 공유하기</h2>
+
+                    {/* QR Code Section */}
+                    {qrCodeUrl && (
+                        <div style={{
+                            backgroundColor: "#fff",
+                            padding: "12px",
+                            borderRadius: "16px",
+                            margin: "0 auto 24px",
+                            width: "160px",
+                            height: "160px",
+                            boxShadow: `0 8px 30px ${theme === "black" ? "rgba(255,255,255,0.1)" : "rgba(194, 188, 178, 0.4)"}`,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            border: `2px solid ${SIGNATURE_COLORS.sandGray}`
+                        }}>
+                            <img src={qrCodeUrl} alt="Gallery QR Code" style={{ width: "100%", height: "100%" }} />
+                        </div>
+                    )}
+
+                    {/* Invitation Message Section */}
+                    <div style={{ marginBottom: "24px", textAlign: "left" }}>
+                        <label style={{ fontSize: "12px", color: mutedColor, marginBottom: "8px", display: "block", marginLeft: "4px" }}>
+                            초대 메시지 (수정 가능)
+                        </label>
+                        <textarea
+                            value={invitationMessage}
+                            onChange={(e) => setInvitationMessage(e.target.value)}
+                            style={{
+                                width: "100%",
+                                height: "120px",
+                                padding: "16px",
+                                borderRadius: "12px",
+                                border: `1px solid ${borderColor}`,
+                                backgroundColor: theme === "black" ? "#2a2a2a" : "rgba(194, 188, 178, 0.1)",
+                                color: textColor,
+                                fontSize: "14px",
+                                lineHeight: "1.6",
+                                resize: "none",
+                                fontFamily: "'Noto Sans KR', sans-serif"
+                            }}
+                        />
                     </div>
-                    <h2 style={{ fontSize: "22px", fontWeight: 800, color: textColor, marginBottom: "8px" }}>갤러리 공유하기</h2>
-                    <p style={{ color: mutedColor, fontSize: "14px", lineHeight: 1.5 }}>
-                        동료 작가님이나 컬렉터분들에게<br />작가님의 작품 세계를 소개해보세요.
-                    </p>
                 </div>
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
@@ -118,8 +158,8 @@ export default function ShareModal({ isOpen, onClose, shareUrl, title, descripti
                             padding: "16px",
                             borderRadius: "16px",
                             border: "none",
-                            backgroundColor: isCopied ? "#22c55e" : (theme === "black" ? "#333" : "#f3f4f6"),
-                            color: isCopied ? "#fff" : textColor,
+                            backgroundColor: isCopied ? "#22c55e" : (theme === "black" ? "#333" : SIGNATURE_COLORS.royalIndigo),
+                            color: "#fff",
                             fontSize: "16px",
                             fontWeight: 700,
                             cursor: "pointer",
@@ -127,10 +167,18 @@ export default function ShareModal({ isOpen, onClose, shareUrl, title, descripti
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
-                            gap: "8px"
+                            gap: "8px",
+                            boxShadow: isCopied ? "none" : `0 4px 12px ${theme === "black" ? "rgba(0,0,0,0.4)" : "rgba(27, 38, 59, 0.3)"}`
                         }}
                     >
-                        {isCopied ? "주소가 복사되었습니다" : "갤러리 주소 복사하기"}
+                        {isCopied ? (
+                            <>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                메시지가 복사되었습니다
+                            </>
+                        ) : "메시지 및 주소 복사하기"}
                     </button>
 
                     {typeof navigator !== 'undefined' && (navigator as any).share && (
@@ -139,27 +187,27 @@ export default function ShareModal({ isOpen, onClose, shareUrl, title, descripti
                             style={{
                                 padding: "16px",
                                 borderRadius: "16px",
-                                border: `2px solid #6366f1`,
+                                border: `2px solid ${SIGNATURE_COLORS.antiqueBurgundy}`,
                                 backgroundColor: "transparent",
-                                color: "#6366f1",
-                                fontSize: "16px",
-                                fontWeight: 700,
+                                color: SIGNATURE_COLORS.antiqueBurgundy,
+                                fontSize: "15px",
+                                fontWeight: 600,
                                 cursor: "pointer",
                                 transition: "all 0.2s"
                             }}
                         >
-                            시스템 앱으로 공유 (카톡 등)
+                            카카오톡·문자 띄우기
                         </button>
                     )}
                 </div>
 
                 <p style={{
                     textAlign: "center",
-                    fontSize: "12px",
+                    fontSize: "11px",
                     color: mutedColor,
                     marginTop: "24px"
                 }}>
-                    복사된 주소를 카카오톡 대화창에 붙여넣기 하시면 됩니다.
+                    복사된 내용을 지인에게 붙여넣어 보내주세요.
                 </p>
             </div>
         </div>

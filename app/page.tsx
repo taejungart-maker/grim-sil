@@ -5,6 +5,10 @@ import { useState, useEffect, useMemo, useCallback, Suspense, useRef } from "rea
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { getYearMonths, getArtworksByYearMonth, Artwork, YearMonthKey } from "./data/artworks";
+import { loadSettings, quickAddPick } from "./utils/settingsDb";
+import { ARTIST_ID } from "./utils/supabase";
+import { getThemeColors, SIGNATURE_COLORS } from "./utils/themeColors";
+import type { SiteConfig } from "./config/site";
 import { loadDemoDataIfEmpty } from "./utils/demoData";
 import { useSyncedArtworks, useSyncedSettings } from "./hooks/useSyncedArtworks";
 import { useAuth } from "./contexts/AuthContext";
@@ -18,6 +22,9 @@ import PaymentModal from "./components/PaymentModal";
 import Header from "./components/Header";
 import LoginModal from "./components/LoginModal";
 import ShareModal from "./components/ShareModal";
+import NewsTicker from "./components/NewsTicker";
+import EncouragementSection from "./components/EncouragementSection";
+import ArtistPicksSection from "./components/ArtistPicksSection";
 
 
 function HomeContent() {
@@ -27,7 +34,7 @@ function HomeContent() {
 
   const { artworks, isLoading: artworksLoading, refresh: refreshArtworks } = useSyncedArtworks();
   const { settings, isLoading: settingsLoading } = useSyncedSettings();
-  const { isAuthenticated: isLoggedIn, logout } = useAuth();
+  const { isAuthenticated: isLoggedIn, ownerId, logout } = useAuth();
   const { isPaid, isLoading: paymentLoading } = usePayment();
   const needsPayment = isPaymentRequired();
 
@@ -41,6 +48,12 @@ function HomeContent() {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showNewsTicker, setShowNewsTicker] = useState(true);
+  const [showEncouragement, setShowEncouragement] = useState(true);
+  const [showArtistPicks, setShowArtistPicks] = useState(true);
+  const [quickAdded, setQuickAdded] = useState(false);
+  const [showQuickAdd, setShowQuickAdd] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [isMounted, setIsMounted] = useState(false);
 
@@ -78,13 +91,46 @@ function HomeContent() {
   }, [artworks, yearMonthParam]);
 
   const isLoading = artworksLoading || settingsLoading;
-  const bgColor = settings.theme === "black" ? "#1a1a1a" : "#fafafa";
-  const textColor = settings.theme === "black" ? "#ffffff" : "#1a1a1a";
-  const borderColor = settings.theme === "black" ? "#333" : "#eee";
+  const colors = getThemeColors(settings.theme);
+  const bgColor = colors.bg;
+  const textColor = colors.text;
+  const borderColor = colors.border;
 
   const yearMonths = useMemo(() => getYearMonths(artworks), [artworks]);
   const artworksByYearMonth = useMemo(() => getArtworksByYearMonth(artworks), [artworks]);
   const currentYearMonthArtworks = selectedYearMonth ? artworksByYearMonth.get(selectedYearMonth) || [] : [];
+
+  const handleQuickAdd = async () => {
+    if (isSubmitting) return;
+
+    let currentOwnerId = ownerId;
+
+    // 🛠 강력 보정: context에 없으면 직접 storage에서 꺼내옴
+    if (!currentOwnerId && typeof window !== 'undefined') {
+      currentOwnerId = localStorage.getItem('admin_owner_id');
+    }
+
+    if (!currentOwnerId) {
+      alert("로그인 정보가 부족합니다. 관리자 페이지에서 다시 로그인해 주세요.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await quickAddPick(currentOwnerId, {
+        name: settings.artistName,
+        archiveUrl: window.location.href,
+        imageUrl: settings.aboutmeImage
+      });
+      setQuickAdded(true);
+      setTimeout(() => setShowQuickAdd(false), 3000);
+    } catch (error) {
+      console.error("Failed to quick add pick:", error);
+      alert("추천 등록 중 오류가 발생했습니다.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleArtworkClick = (artwork: Artwork, index: number) => {
     setSelectedArtwork({
@@ -100,37 +146,7 @@ function HomeContent() {
   }, [refreshArtworks]);
 
   const handleKakaoShare = async () => {
-    if (typeof window === 'undefined') return;
-
-    const shareUrl = window.location.href;
-    const shareTitle = settings.galleryNameKo || `${settings.artistName} 작가님의 온라인 화첩`;
-
-    // Native Share API 사용 (안드로이드/iOS 공유 메뉴)
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: shareTitle,
-          url: shareUrl
-        });
-        return; // 성공하면 여기서 종료
-      } catch (err: any) {
-        // 사용자가 취소한 경우는 아무것도 안 함
-        if (err.name === 'AbortError') {
-          return;
-        }
-        // 다른 오류는 fallback으로 진행
-        console.error('Share failed:', err);
-      }
-    }
-
-    // Fallback: 클립보드 복사
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      alert('갤러리 주소가 복사되었습니다!\n카카오톡 대화창에 붙여넣기 해주세요.');
-    } catch {
-      // 그것도 안되면 수동 복사창
-      prompt('갤러리 주소를 복사하세요:', shareUrl);
-    }
+    setShowShareModal(true);
   };
 
   if (!isMounted) return null;
@@ -148,6 +164,59 @@ function HomeContent() {
         onKakaoShare={handleKakaoShare}
       />
 
+      {showNewsTicker && <NewsTicker theme={settings.theme} newsText={settings.newsText} />}
+
+      {/* 🚀 중장년 작가용 초간단 상생 추천 버튼 (로그인한 작가가 타인 화첩 방문 시) */}
+      {showQuickAdd && isLoggedIn && ownerId && ownerId !== ARTIST_ID && (
+        <div style={{
+          position: "fixed",
+          bottom: "100px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: 9999,
+          width: "90%",
+          maxWidth: "400px",
+          touchAction: "manipulation"
+        }}>
+          <button
+            onClick={handleQuickAdd}
+            type="button"
+            disabled={quickAdded || isSubmitting}
+            style={{
+              width: "100%",
+              padding: "20px",
+              background: quickAdded ? "#22c55e" : (isSubmitting ? "#4a5568" : SIGNATURE_COLORS.antiqueBurgundy),
+              color: "#fff",
+              border: "none",
+              borderRadius: "50px",
+              fontSize: "18px",
+              fontWeight: 800,
+              boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
+              cursor: quickAdded ? "default" : "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "10px",
+              animation: (quickAdded || isSubmitting) ? "none" : "pulse 2s infinite",
+              transition: "all 0.1s",
+              userSelect: "none",
+              WebkitTapHighlightColor: "transparent",
+              transform: isSubmitting ? "scale(0.98)" : "none"
+            }}
+          >
+            {quickAdded ? "✅ 내 화첩에 추천되었습니다!" : (isSubmitting ? "⏳ 등록 중..." : "🤝 내 화첩에 이 작가 추천하기")}
+          </button>
+
+          <style jsx>{`
+            @keyframes pulse {
+              0% { transform: scale(1); box-shadow: 0 10px 30px rgba(128, 48, 48, 0.3); }
+              50% { transform: scale(1.05); box-shadow: 0 15px 40px rgba(128, 48, 48, 0.5); }
+              100% { transform: scale(1); box-shadow: 0 10px 30px rgba(128, 48, 48, 0.3); }
+            }
+          `}</style>
+        </div>
+      )}
+
       <PaymentGate>
         {yearMonths.length > 0 && selectedYearMonth && (
           <div style={{ borderTop: `1px solid ${borderColor}`, background: bgColor }}>
@@ -161,117 +230,131 @@ function HomeContent() {
             </div>
           </div>
         )}
-
-        <main className="max-w-6xl mx-auto" style={{ padding: "32px 24px" }}>
-          {isLoading ? (
-            <div className="text-center py-20" style={{ color: "#888" }}>
-              <p style={{ fontSize: "14px" }}>불러오는 중...</p>
-            </div>
-          ) : artworks.length === 0 ? (
-            <div className="text-center py-20" style={{ color: "#666" }}>
-              <p style={{ fontSize: "48px", marginBottom: "16px", opacity: 0.3 }}>◻</p>
-              <p style={{ fontSize: "15px", color: "#1a1a1a", marginBottom: "8px" }}>아직 등록된 작품이 없습니다</p>
-              <p style={{ fontSize: "13px", color: "#888", marginBottom: "24px" }}>첫 번째 작품을 추가해보세요</p>
-              <Link href="/add" className="inline-flex items-center justify-center" style={{ padding: "14px 32px", fontSize: "14px", fontWeight: 500, color: "#fff", background: "#1a1a1a", borderRadius: "6px", textDecoration: "none" }}>+ 작품 추가</Link>
-            </div>
-          ) : (
-            <>
-              <div style={{
-                display: "grid",
-                gridTemplateColumns: settings.gridColumns === 1 ? "1fr" : settings.gridColumns === 3 ? "repeat(3, 1fr)" : "repeat(4, 1fr)",
-                gridAutoRows: settings.gridColumns === 1 ? "auto" : "180px",
-                gap: settings.gridColumns === 1 ? "24px" : "8px",
-              }}>
-                {currentYearMonthArtworks.map((artwork: Artwork, index: number) => {
-                  let gridStyle: React.CSSProperties = {};
-                  if (settings.gridColumns >= 3 && currentYearMonthArtworks.length > 1) {
-                    if (index === 0) gridStyle = { gridColumn: "span 2", gridRow: "span 2" };
-                    else if (index === 5) gridStyle = { gridRow: "span 2" };
-                    else if (index === 6) gridStyle = { gridColumn: "span 2" };
-                    else if (index === 7) gridStyle = { gridRow: "span 2" };
-                  } else if (settings.gridColumns === 1) {
-                    gridStyle = { aspectRatio: "16/10" };
-                  }
-                  return (
-                    <div key={artwork.id} style={gridStyle}>
-                      <ArtworkCard artwork={artwork} onClick={() => handleArtworkClick(artwork, index)} priority={index < 6} minimal />
-                    </div>
-                  );
-                })}
-              </div>
-              {currentYearMonthArtworks.length === 0 && selectedYearMonth && (
-                <div className="text-center py-20" style={{ color: "#888" }}><p style={{ fontSize: "14px" }}>선택된 기간에 작품이 없습니다</p></div>
-              )}
-            </>
-          )}
-        </main>
       </PaymentGate>
 
-      {/* [FINAL_VISIBILITY_FIX] 작가(로그인) 전용 부유식 버튼 (36px / 12px) */}
-      {isMounted && isLoggedIn && (
-        <div
-          id="author-only-floating-v7"
-          className="fixed z-50 flex flex-col gap-3"
-          style={{
-            bottom: "24px",
-            right: "12px",
-            width: "36px"
-          }}
-        >
-          {/* 1. SNS 공유 센터 (파란색) */}
-          <Link
-            href="/share"
-            className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
+      <main className="max-w-6xl mx-auto" style={{ padding: "32px 24px" }}>
+        {isLoading ? (
+          <div className="text-center py-20" style={{ color: "#888" }}>
+            <p style={{ fontSize: "14px" }}>불러오는 중...</p>
+          </div>
+        ) : artworks.length === 0 ? (
+          <div className="text-center py-20" style={{ color: "#666" }}>
+            <p style={{ fontSize: "48px", marginBottom: "16px", opacity: 0.3 }}>◻</p>
+            <p style={{ fontSize: "15px", color: "#1a1a1a", marginBottom: "8px" }}>아직 등록된 작품이 없습니다</p>
+            <p style={{ fontSize: "13px", color: "#888", marginBottom: "24px" }}>첫 번째 작품을 추가해보세요</p>
+            <Link href="/add" className="inline-flex items-center justify-center" style={{ padding: "14px 32px", fontSize: "14px", fontWeight: 500, color: "#fff", background: "#1a1a1a", borderRadius: "6px", textDecoration: "none" }}>+ 작품 추가</Link>
+          </div>
+        ) : (
+          <>
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: settings.gridColumns === 1 ? "1fr" : settings.gridColumns === 3 ? "repeat(3, 1fr)" : "repeat(4, 1fr)",
+              gridAutoRows: settings.gridColumns === 1 ? "auto" : "180px",
+              gap: settings.gridColumns === 1 ? "24px" : "8px",
+            }}>
+              {currentYearMonthArtworks.map((artwork: Artwork, index: number) => {
+                let gridStyle: React.CSSProperties = {};
+                if (settings.gridColumns >= 3 && currentYearMonthArtworks.length > 1) {
+                  if (index === 0) gridStyle = { gridColumn: "span 2", gridRow: "span 2" };
+                  else if (index === 5) gridStyle = { gridRow: "span 2" };
+                  else if (index === 6) gridStyle = { gridColumn: "span 2" };
+                  else if (index === 7) gridStyle = { gridRow: "span 2" };
+                } else if (settings.gridColumns === 1) {
+                  gridStyle = { aspectRatio: "16/10" };
+                }
+                return (
+                  <div key={artwork.id} style={gridStyle}>
+                    <ArtworkCard artwork={artwork} onClick={() => handleArtworkClick(artwork, index)} priority={index < 6} minimal />
+                  </div>
+                );
+              })}
+            </div>
+            {currentYearMonthArtworks.length === 0 && selectedYearMonth && (
+              <div className="text-center py-20" style={{ color: "#888" }}><p style={{ fontSize: "14px" }}>선택된 기간에 작품이 없습니다</p></div>
+            )}
+          </>
+        )}
+      </main>
+
+      {showArtistPicks && <ArtistPicksSection theme={settings.theme} picks={settings.artistPicks} />}
+
+      {showEncouragement && <EncouragementSection theme={settings.theme} />}
+
+      {/* [FINAL_VISIBILITY_FIX] 작가(로그인) 전용 부유식 버튼 (원형 디자인 복원: 텍스트 직관성 강화) */}
+      {
+        isMounted && isLoggedIn && (
+          <div
+            id="author-only-floating-v9"
+            className="fixed z-50 flex flex-col gap-3"
             style={{
-              width: "36px",
-              height: "36px",
-              borderRadius: "50%",
-              background: "#6366f1",
-              color: "#fff",
-              textDecoration: "none",
-              border: "none",
-              boxShadow: "0 2px 8px rgba(99, 102, 241, 0.4)",
+              bottom: "30px",
+              right: "20px",
             }}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="11" width="18" height="10" rx="2" />
-              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </svg>
-          </Link>
+            {/* 1. SNS 공유 (로얄 인디고) */}
+            <Link
+              href="/share"
+              className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
+              style={{
+                width: "46px",
+                height: "46px",
+                borderRadius: "50%",
+                background: settings.theme === "black" ? "#4f46e5" : SIGNATURE_COLORS.royalIndigo,
+                color: "#fff",
+                textDecoration: "none",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
+                fontSize: "12px",
+                fontWeight: 800,
+                lineHeight: 1.1,
+              }}
+            >
+              <span>공유</span>
+            </Link>
 
-          {/* 2. 작품 추가 (검정색) */}
-          <Link
-            href="/add"
-            className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
-            style={{
-              width: "36px",
-              height: "36px",
-              borderRadius: "50%",
-              background: "#1a1a1a",
-              color: "#fff",
-              fontSize: "20px",
-              fontWeight: "bold",
-              textDecoration: "none",
-              border: "none",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
-              lineHeight: 1
-            }}
-          >
-            +
-          </Link>
-        </div>
-      )}
+            {/* 2. 작품 등록 (앤틱 버건디) */}
+            <Link
+              href="/add"
+              className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
+              style={{
+                width: "46px",
+                height: "46px",
+                borderRadius: "50%",
+                background: settings.theme === "black" ? "#1a1a1a" : SIGNATURE_COLORS.antiqueBurgundy,
+                color: "#fff",
+                textDecoration: "none",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
+                fontSize: "12px",
+                fontWeight: 800,
+                lineHeight: 1.1,
+              }}
+            >
+              <span style={{ fontSize: "14px", marginBottom: "-2px" }}>+</span>
+              <span>등록</span>
+            </Link>
+          </div>
+        )
+      }
 
-      {selectedArtwork && (
-        <ArtworkViewer
-          artworks={selectedArtwork.yearArtworks}
-          initialIndex={selectedArtwork.index}
-          onClose={() => setSelectedArtwork(null)}
-          onDelete={handleArtworkDeleted}
-          showPrice={settings.showPrice}
-          theme={settings.theme}
-        />
-      )}
+      {
+        selectedArtwork && (
+          <ArtworkViewer
+            artworks={selectedArtwork.yearArtworks}
+            initialIndex={selectedArtwork.index}
+            onClose={() => setSelectedArtwork(null)}
+            onDelete={handleArtworkDeleted}
+            showPrice={settings.showPrice}
+            theme={settings.theme}
+          />
+        )
+      }
 
       <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} onSuccess={() => router.refresh()} />
       <PaymentModal isOpen={showPaymentModal} onClose={() => setShowPaymentModal(false)} onSuccess={() => window.location.reload()} />
@@ -283,7 +366,7 @@ function HomeContent() {
         description={`${settings.artistName} 작가의 작품세계를 담은 공간입니다.`}
         theme={settings.theme}
       />
-    </div>
+    </div >
   );
 }
 

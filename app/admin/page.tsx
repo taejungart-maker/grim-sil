@@ -11,6 +11,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { resetPaymentStatus } from "../utils/paymentUtils";
 import { isAlwaysFreeMode } from "../utils/deploymentMode";
 import QRCode from "qrcode";
+import { SIGNATURE_COLORS } from "../utils/themeColors";
 
 export default function AdminPage() {
     const router = useRouter();
@@ -137,6 +138,23 @@ export default function AdminPage() {
             console.error("Failed to change password:", error);
             setPasswordChangeError("비밀번호 변경에 실패했습니다");
         }
+    };
+
+    // 동료 작가 추천 (Artist's Pick) 추가/수정/삭제 로직
+    const handleAddPick = () => {
+        const newPicks = [...(settings.artistPicks || []), { name: "", archiveUrl: "", imageUrl: "" }];
+        setSettings({ ...settings, artistPicks: newPicks });
+    };
+
+    const handleRemovePick = (index: number) => {
+        const newPicks = (settings.artistPicks || []).filter((_, i) => i !== index);
+        setSettings({ ...settings, artistPicks: newPicks });
+    };
+
+    const handleUpdatePick = (index: number, field: string, value: string) => {
+        const newPicks = [...(settings.artistPicks || [])];
+        newPicks[index] = { ...newPicks[index], [field]: value };
+        setSettings({ ...settings, artistPicks: newPicks });
     };
 
     // 테마 색상
@@ -1169,6 +1187,39 @@ export default function AdminPage() {
                     </div>
                     */}
 
+                    {/* 📣 실시간 뉴스 설정 (News Ticker) */}
+                    <div style={{
+                        marginTop: "48px",
+                        padding: "32px",
+                        background: settings.theme === "black" ? "#1a1a1a" : "#fff9f0",
+                        borderRadius: "24px",
+                        border: `2px solid ${settings.theme === "black" ? "#333" : SIGNATURE_COLORS.royalIndigo}`,
+                    }}>
+                        <h3 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: SIGNATURE_COLORS.royalIndigo }}>
+                            📣 실시간 뉴스 문구 관리
+                        </h3>
+                        <p style={{ color: mutedColor, fontSize: "14px", marginBottom: "20px" }}>
+                            헤더 상단에서 흐르는 공지사항이나 전시 소식을 직접 입력해 보세요.
+                        </p>
+                        <textarea
+                            value={settings.newsText || ""}
+                            onChange={(e) => setSettings({ ...settings, newsText: e.target.value })}
+                            placeholder="전시 일정이나 환영 인사를 입력해 보세요. (예: 🎨 12월 개인전 '겨울의 기억' 진행 중...)"
+                            style={{
+                                width: "100%",
+                                height: "80px",
+                                padding: "16px",
+                                borderRadius: "12px",
+                                border: `1px solid ${borderColor}`,
+                                background: bgColor,
+                                color: textColor,
+                                fontSize: "15px",
+                                lineHeight: "1.6",
+                                resize: "none"
+                            }}
+                        />
+                    </div>
+
                     {/* 홍보 도구: QR 디지털 명함 */}
                     <div
                         style={{
@@ -1234,6 +1285,114 @@ export default function AdminPage() {
                             >
                                 QR 코드 이미지 다운로드
                             </a>
+                        </div>
+                    </div>
+
+                    {/* 🎨 동료 작가 추천 설정 (Artist's Pick) */}
+                    <div style={{
+                        marginTop: "40px",
+                        padding: "32px",
+                        background: settings.theme === "black" ? "#1a1a1a" : "#f0f4ff",
+                        borderRadius: "24px",
+                        border: `2px solid ${settings.theme === "black" ? "#333" : "#4488ff"}`,
+                    }}>
+                        <h2 style={{ fontSize: "22px", fontWeight: 700, marginBottom: "20px", display: "flex", alignItems: "center", gap: "10px" }}>
+                            🔗 동료 작가 추천 (Artist's Pick)
+                        </h2>
+                        <p style={{ color: mutedColor, fontSize: "14px", marginBottom: "24px", lineHeight: 1.6 }}>
+                            함께 활동하는 동료 작가님들을 추천해 보세요. <br />
+                            동료의 아카이브 주소와 대표 사진 링크를 입력하면 메인 화면 하단에 표시됩니다.
+                        </p>
+
+                        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                            {(settings.artistPicks || []).map((pick, index) => (
+                                <div
+                                    key={index}
+                                    style={{
+                                        padding: "20px",
+                                        background: bgColor,
+                                        borderRadius: "16px",
+                                        border: `1px solid ${borderColor}`,
+                                        position: "relative"
+                                    }}
+                                >
+                                    <button
+                                        onClick={() => handleRemovePick(index)}
+                                        style={{
+                                            position: "absolute",
+                                            top: "12px",
+                                            right: "12px",
+                                            background: "#ff4d4d",
+                                            color: "#fff",
+                                            border: "none",
+                                            width: "24px",
+                                            height: "24px",
+                                            borderRadius: "50%",
+                                            cursor: "pointer",
+                                            fontSize: "12px",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center"
+                                        }}
+                                    >
+                                        ✕
+                                    </button>
+
+                                    <div style={{ display: "grid", gap: "12px" }}>
+                                        <div>
+                                            <label style={{ fontSize: "12px", color: mutedColor, display: "block", marginBottom: "4px" }}>작가명</label>
+                                            <input
+                                                type="text"
+                                                value={pick.name}
+                                                onChange={(e) => handleUpdatePick(index, "name", e.target.value)}
+                                                placeholder="예: 문혜경 작가"
+                                                style={{ width: "100%", padding: "10px", borderRadius: "8px", border: `1px solid ${borderColor}`, background: bgColor, color: textColor }}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: "12px", color: mutedColor, display: "block", marginBottom: "4px" }}>아카이브 주소 (URL)</label>
+                                            <input
+                                                type="text"
+                                                value={pick.archiveUrl}
+                                                onChange={(e) => handleUpdatePick(index, "archiveUrl", e.target.value)}
+                                                placeholder="https://..."
+                                                style={{ width: "100%", padding: "10px", borderRadius: "8px", border: `1px solid ${borderColor}`, background: bgColor, color: textColor }}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: "12px", color: mutedColor, display: "block", marginBottom: "4px" }}>대표 이미지 주소 (선택사항)</label>
+                                            <input
+                                                type="text"
+                                                value={pick.imageUrl || ""}
+                                                onChange={(e) => handleUpdatePick(index, "imageUrl", e.target.value)}
+                                                placeholder="이미지 URL (비워두면 기본 이미지)"
+                                                style={{ width: "100%", padding: "10px", borderRadius: "8px", border: `1px solid ${borderColor}`, background: bgColor, color: textColor }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+
+                            <button
+                                onClick={handleAddPick}
+                                style={{
+                                    width: "100%",
+                                    padding: "16px",
+                                    background: "transparent",
+                                    color: settings.theme === "black" ? "#fff" : "#4488ff",
+                                    border: `2px dashed ${settings.theme === "black" ? "#555" : "#4488ff"}`,
+                                    borderRadius: "16px",
+                                    cursor: "pointer",
+                                    fontWeight: 600,
+                                    fontSize: "15px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    gap: "8px"
+                                }}
+                            >
+                                + 추천 작가 추가하기
+                            </button>
                         </div>
                     </div>
 

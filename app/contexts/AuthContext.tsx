@@ -7,6 +7,7 @@ import { verifyPassword } from "../utils/settingsDb";
 interface AuthContextType {
     isAuthenticated: boolean;
     isLoading: boolean;
+    ownerId: string | null;
     login: (password: string) => Promise<boolean>;
     logout: () => void;
 }
@@ -19,8 +20,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [isLoading, setIsLoading] = useState(true);
 
     // 클라이언트 마운트 후 인증 상태 확인
+    const [ownerId, setOwnerId] = useState<string | null>(null);
+
     useEffect(() => {
         setIsAuthenticated(checkAuth());
+        const storedOwnerId = localStorage.getItem('admin_owner_id');
+        setOwnerId(storedOwnerId);
         setIsLoading(false);
     }, []);
 
@@ -44,7 +49,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const isValid = await verifyPassword(password);
 
             if (isValid) {
-                setAuthSession(password);
+                const { ARTIST_ID } = await import("../utils/supabase");
+                setAuthSession(password, ARTIST_ID);
                 setIsAuthenticated(true);
                 return true;
             }
@@ -63,7 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, isLoading, login, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated, isLoading, ownerId, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

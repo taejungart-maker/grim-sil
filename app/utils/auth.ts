@@ -1,24 +1,38 @@
 // 세션 기반 인증 유틸리티
 
 const AUTH_KEY = 'admin_auth_session';
+const OWNER_ID_KEY = 'admin_owner_id';
 
 /**
  * 관리자 인증 세션 저장
  * @param password 검증된 비밀번호
+ * @param artistId 작가 고유 ID
  */
-export function setAuthSession(password: string): void {
+export function setAuthSession(password: string, artistId?: string): void {
     if (typeof window !== 'undefined') {
-        sessionStorage.setItem(AUTH_KEY, password);
+        localStorage.setItem(AUTH_KEY, password);
+        if (artistId) {
+            localStorage.setItem(OWNER_ID_KEY, artistId);
+        }
     }
 }
 
 /**
  * 저장된 인증 세션 가져오기
- * @returns 저장된 비밀번호 또는 null
  */
 export function getAuthSession(): string | null {
     if (typeof window !== 'undefined') {
-        return sessionStorage.getItem(AUTH_KEY);
+        return localStorage.getItem(AUTH_KEY);
+    }
+    return null;
+}
+
+/**
+ * 저장된 관리자의 작가 ID 가져오기
+ */
+export function getOwnerId(): string | null {
+    if (typeof window !== 'undefined') {
+        return localStorage.getItem(OWNER_ID_KEY);
     }
     return null;
 }
@@ -28,7 +42,8 @@ export function getAuthSession(): string | null {
  */
 export function clearAuthSession(): void {
     if (typeof window !== 'undefined') {
-        sessionStorage.removeItem(AUTH_KEY);
+        localStorage.removeItem(AUTH_KEY);
+        localStorage.removeItem(OWNER_ID_KEY);
     }
 }
 

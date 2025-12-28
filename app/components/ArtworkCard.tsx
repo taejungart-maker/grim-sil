@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { Artwork } from "../data/artworks";
 import { supabase } from "../utils/supabase";
+import { SIGNATURE_COLORS } from "../utils/themeColors";
 
 interface ArtworkCardProps {
     artwork: Artwork;
@@ -44,7 +45,7 @@ export default function ArtworkCard({
                     width: "100%",
                     height: "100%",
                     position: "relative",
-                    background: "#f0f0f0",
+                    background: SIGNATURE_COLORS.agingPaper,
                     overflow: "hidden",
                     border: "none",
                     padding: 0,
