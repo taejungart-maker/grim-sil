@@ -100,6 +100,24 @@ export default function Header({
                         </button>
                     )}
 
+                    {/* PRO 뱃지 - 구독 시 톱니바퀴 옆에 표시 */}
+                    {isMounted && isPaid && needsPayment && !isAlwaysFreeMode() && !isFreeArtistHost && (
+                        <span
+                            style={{
+                                padding: "3px 6px",
+                                background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                                color: "#fff",
+                                borderRadius: "4px",
+                                fontSize: "10px",
+                                fontWeight: 800,
+                                letterSpacing: "0.05em",
+                                boxShadow: "0 2px 4px rgba(16, 185, 129, 0.3)",
+                            }}
+                        >
+                            PRO
+                        </span>
+                    )}
+
                     <Link
                         href="/admin"
                         style={{

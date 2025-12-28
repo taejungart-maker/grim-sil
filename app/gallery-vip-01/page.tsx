@@ -21,8 +21,11 @@ function VIPContent() {
     const yearMonthParam = searchParams.get("yearMonth");
     const router = useRouter();
 
+    // 🔑 VIP 갤러리 고유 ID - 각 VIP 페이지마다 다른 ID 사용
+    const VIP_ID = "vip-gallery-01";
+
     const { artworks, isLoading: artworksLoading, refresh: refreshArtworks } = useSyncedArtworks();
-    const { settings, isLoading: settingsLoading } = useSyncedSettings();
+    const { settings, isLoading: settingsLoading } = useSyncedSettings(VIP_ID);
     const { isAuthenticated: isLoggedIn, logout } = useAuth();
 
     const handleLogout = () => {

@@ -53,6 +53,22 @@ export async function saveEncouragement(authorName: string, content: string, aut
     }
 }
 
+export async function deleteEncouragement(id: string): Promise<boolean> {
+    try {
+        const { error } = await supabase
+            .from("encouragements")
+            .delete()
+            .eq("id", id)
+            .eq("target_artist_id", ARTIST_ID);
+
+        if (error) throw error;
+        return true;
+    } catch (err) {
+        console.error("Failed to delete encouragement:", err);
+        return false;
+    }
+}
+
 // 2. 실시간 소식 피드 기능 (전체 작가 대상 자동화)
 export async function loadRecentNews(): Promise<{ id: string, text: string, type: string }[]> {
     try {

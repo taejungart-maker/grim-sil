@@ -72,7 +72,7 @@ export function useSyncedArtworks(): UseSyncedArtworksResult {
 
 // 설정 실시간 동기화 훅
 import { SiteConfig, defaultSiteConfig } from "../config/site";
-import { loadSettings } from "../utils/settingsDb";
+import { loadSettings, loadSettingsById } from "../utils/settingsDb";
 
 interface UseSyncedSettingsResult {
     settings: SiteConfig;
@@ -80,20 +80,24 @@ interface UseSyncedSettingsResult {
     refresh: () => Promise<void>;
 }
 
-export function useSyncedSettings(): UseSyncedSettingsResult {
+// vipId가 있으면 해당 VIP 갤러리 전용 설정, 없으면 기본 설정
+export function useSyncedSettings(vipId?: string): UseSyncedSettingsResult {
     const [settings, setSettings] = useState<SiteConfig>(defaultSiteConfig);
     const [isLoading, setIsLoading] = useState(true);
 
     const loadSettingsData = useCallback(async () => {
         try {
-            const data = await loadSettings();
+            // vipId가 있으면 해당 ID로 설정 불러오기, 없으면 기본 ARTIST_ID 사용
+            const data = vipId
+                ? await loadSettingsById(vipId)
+                : await loadSettings();
             setSettings(data);
         } catch (err) {
             console.error("Failed to load settings:", err);
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [vipId]);
 
     useEffect(() => {
         loadSettingsData();

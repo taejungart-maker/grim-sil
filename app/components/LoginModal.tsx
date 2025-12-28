@@ -186,14 +186,22 @@ export default function LoginModal({ isOpen, onClose, onSuccess, returnPath }: L
                     </button>
                 </form>
 
-                <p style={{
+                <div style={{
                     textAlign: 'center',
-                    fontSize: '12px',
-                    color: '#999',
-                    marginTop: '16px'
+                    marginTop: '20px',
                 }}>
-                    비밀번호를 잊으셨다면 관리자 페이지에서 변경하세요.
-                </p>
+                    <a
+                        href="/forgot-password"
+                        style={{
+                            fontSize: '13px',
+                            color: '#6366f1',
+                            textDecoration: 'none',
+                            fontWeight: 500,
+                        }}
+                    >
+                        비밀번호를 잊으셨나요?
+                    </a>
+                </div>
             </div>
 
             <style>{`

@@ -243,6 +243,21 @@ export default function AdminPage() {
                         로그인
                     </button>
 
+                    {/* 비밀번호 찾기 링크 */}
+                    <div style={{ textAlign: "center", marginTop: "20px" }}>
+                        <a
+                            href="/forgot-password"
+                            style={{
+                                fontSize: "16px",
+                                color: "#4f46e5",
+                                textDecoration: "underline",
+                                fontWeight: 600,
+                            }}
+                        >
+                            비밀번호를 잊으셨나요?
+                        </a>
+                    </div>
+
                     <button
                         onClick={() => router.push("/")}
                         style={{
@@ -1524,30 +1539,64 @@ export default function AdminPage() {
                     {isSaving ? "저장 중..." : "설정 저장하기"}
                 </button>
 
-                {/* 구독 취소 (테스트용) - 무료 모드가 아닐 때만 표시 */}
+                {/* 구독 취소 - 무료 모드가 아닐 때만 표시 */}
                 {!isAlwaysFreeMode() && (
-                    <button
-                        onClick={() => {
-                            if (confirm('구독 상태를 초기화하시겠습니까? (테스트용)')) {
-                                resetPaymentStatus();
-                                alert('구독이 초기화되었습니다. 페이지를 새로고침하세요.');
-                            }
-                        }}
-                        style={{
-                            width: "100%",
-                            marginTop: "16px",
-                            padding: "16px",
+                    <div style={{
+                        marginTop: "48px",
+                        padding: "24px",
+                        background: "rgba(220, 38, 38, 0.05)",
+                        borderRadius: "16px",
+                        border: "1px solid rgba(220, 38, 38, 0.2)",
+                    }}>
+                        <h3 style={{
                             fontSize: "16px",
-                            fontWeight: 600,
-                            color: "#fff",
-                            background: "#dc2626",
-                            border: "none",
-                            borderRadius: "12px",
-                            cursor: "pointer",
-                        }}
-                    >
-                        🔓 구독 취소 (테스트용)
-                    </button>
+                            fontWeight: 700,
+                            color: "#dc2626",
+                            marginBottom: "12px",
+                        }}>
+                            구독 관리
+                        </h3>
+                        <p style={{
+                            fontSize: "13px",
+                            color: "#666",
+                            marginBottom: "16px",
+                            lineHeight: 1.6,
+                        }}>
+                            구독을 취소하면 갤러리가 흐린 유리로 덮여 비공개 상태가 됩니다.
+                            저장된 작품과 설정은 그대로 유지되며, 다시 구독하면 복원됩니다.
+                        </p>
+                        <button
+                            onClick={() => {
+                                if (confirm('정말 구독을 취소하시겠습니까?\n\n취소 후 갤러리는 흐린 유리로 덮여 비공개 상태가 됩니다.\n작품과 설정은 그대로 유지됩니다.')) {
+                                    resetPaymentStatus();
+                                    alert('구독이 취소되었습니다.\n갤러리가 비공개 상태로 전환됩니다.');
+                                    router.push('/');
+                                }
+                            }}
+                            style={{
+                                width: "100%",
+                                padding: "14px",
+                                fontSize: "15px",
+                                fontWeight: 600,
+                                color: "#dc2626",
+                                background: "transparent",
+                                border: "2px solid #dc2626",
+                                borderRadius: "10px",
+                                cursor: "pointer",
+                                transition: "all 0.2s",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background = "#dc2626";
+                                e.currentTarget.style.color = "#fff";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background = "transparent";
+                                e.currentTarget.style.color = "#dc2626";
+                            }}
+                        >
+                            구독 취소하기
+                        </button>
+                    </div>
                 )}
 
                 {/* 힌트 */}

@@ -44,50 +44,52 @@ export default function ArtistPicksSection({ theme, picks = [] }: ArtistPicksSec
     return (
         <section
             style={{
-                padding: "80px 24px",
+                padding: "48px 24px",
                 backgroundColor: bgColor,
                 borderTop: `1px solid ${borderColor}`,
                 borderBottom: `1px solid ${borderColor}`,
             }}
         >
             <div className="max-w-6xl mx-auto">
-                <div style={{ textAlign: "center", marginBottom: "48px" }}>
+                <div style={{ textAlign: "center", marginBottom: "32px" }}>
                     <h2
                         style={{
-                            fontSize: "24px",
+                            fontSize: "18px",
                             fontWeight: 600,
                             color: textColor,
                             fontFamily: "'Noto Sans KR', sans-serif",
-                            marginBottom: "12px"
+                            marginBottom: "8px"
                         }}
                     >
-                        함께 활동하는 동료 작가 ✨
+                        함께 활동하는 동료 작가
                     </h2>
-                    <p style={{ color: SIGNATURE_COLORS.sandGray, fontSize: "14px" }}>
+                    <p style={{ color: SIGNATURE_COLORS.sandGray, fontSize: "12px" }}>
                         서로 응원하며 함께 성장하는 작가 네트워크입니다.
                     </p>
                 </div>
 
+                {/* 4열 그리드 레이아웃 (모바일: 2열) */}
                 <div
                     style={{
                         display: "grid",
-                        gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-                        gap: "24px"
+                        gridTemplateColumns: "repeat(4, 1fr)",
+                        gap: "16px"
                     }}
+                    className="grid-cols-2 sm:grid-cols-4"
                 >
-                    {displayPicks.map((pick, index) => (
+                    {displayPicks.slice(0, 8).map((pick, index) => (
                         <div
                             key={index}
                             style={{
                                 backgroundColor: theme === "black" ? "#2a2a2a" : "#ffffff",
-                                borderRadius: "16px",
+                                borderRadius: "12px",
                                 overflow: "hidden",
-                                boxShadow: `0 4px 20px ${theme === "black" ? "rgba(0,0,0,0.4)" : "rgba(0,0,0,0.05)"}`,
-                                transition: "all 0.3s ease",
+                                boxShadow: `0 2px 12px ${theme === "black" ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.04)"}`,
+                                transition: "all 0.2s ease",
                                 cursor: "pointer",
                                 border: `1px solid ${borderColor}`
                             }}
-                            className="group hover:-translate-y-2"
+                            className="group hover:-translate-y-1 hover:shadow-lg"
                             onClick={() => {
                                 if (pick.archiveUrl && pick.archiveUrl !== "#") {
                                     window.open(pick.archiveUrl, "_blank");
@@ -96,40 +98,53 @@ export default function ArtistPicksSection({ theme, picks = [] }: ArtistPicksSec
                                 }
                             }}
                         >
-                            <div style={{ position: "relative", paddingTop: "100%", overflow: "hidden" }}>
-                                <img
-                                    src={pick.imageUrl || DEFAULT_IMAGE}
-                                    alt={pick.name}
-                                    style={{
-                                        position: "absolute",
-                                        top: 0,
-                                        left: 0,
-                                        width: "100%",
-                                        height: "100%",
-                                        objectFit: "cover",
-                                        transition: "transform 0.5s ease"
-                                    }}
-                                    className="group-hover:scale-110"
-                                />
+                            {/* 컴팩트한 원형 프로필 이미지 */}
+                            <div style={{
+                                padding: "16px 16px 8px 16px",
+                                display: "flex",
+                                justifyContent: "center"
+                            }}>
+                                <div style={{
+                                    position: "relative",
+                                    width: "64px",
+                                    height: "64px",
+                                    borderRadius: "50%",
+                                    overflow: "hidden",
+                                    border: `2px solid ${borderColor}`
+                                }}>
+                                    <img
+                                        src={pick.imageUrl || DEFAULT_IMAGE}
+                                        alt={pick.name}
+                                        style={{
+                                            width: "100%",
+                                            height: "100%",
+                                            objectFit: "cover",
+                                            transition: "transform 0.3s ease"
+                                        }}
+                                        className="group-hover:scale-110"
+                                    />
+                                </div>
                             </div>
-                            <div style={{ padding: "24px" }}>
+                            {/* 컴팩트한 텍스트 영역 */}
+                            <div style={{ padding: "8px 12px 16px 12px", textAlign: "center" }}>
                                 <h3 style={{
-                                    fontSize: "18px",
+                                    fontSize: "13px",
                                     fontWeight: 600,
-                                    marginBottom: "16px",
-                                    color: textColor
+                                    marginBottom: "4px",
+                                    color: textColor,
+                                    whiteSpace: "nowrap",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis"
                                 }}>
                                     {pick.name}
                                 </h3>
                                 <div style={{
-                                    display: "inline-block",
-                                    fontSize: "13px",
-                                    fontWeight: 600,
+                                    fontSize: "11px",
+                                    fontWeight: 500,
                                     color: SIGNATURE_COLORS.royalIndigo,
-                                    borderBottom: `2px solid ${SIGNATURE_COLORS.royalIndigo}`,
-                                    paddingBottom: "2px"
+                                    opacity: 0.8
                                 }}>
-                                    아카이브 방문하기 →
+                                    방문 →
                                 </div>
                             </div>
                         </div>

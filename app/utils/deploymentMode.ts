@@ -15,7 +15,14 @@ export type DeploymentMode = 'always_free' | 'showroom' | 'commercial';
 export function getDeploymentMode(): DeploymentMode {
     const mode = process.env.NEXT_PUBLIC_DEPLOYMENT_MODE;
 
+    // 🔍 DEBUG: 환경 변수 확인용 로그 (배포 전 삭제 예정)
+    if (typeof window !== 'undefined') {
+        console.log('[DEPLOYMENT_MODE] Raw ENV value:', mode);
+        console.log('[DEPLOYMENT_MODE] Type:', typeof mode);
+    }
+
     if (mode === 'always_free' || mode === 'showroom' || mode === 'commercial') {
+        console.log('[DEPLOYMENT_MODE] Returning:', mode);
         return mode;
     }
 
@@ -29,6 +36,12 @@ export function getDeploymentMode(): DeploymentMode {
             hostname.includes('free')
         ) {
             return 'always_free';
+        }
+
+        // 🔧 TEMP FIX: localhost에서는 showroom 모드로 테스트
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            console.log('[DEPLOYMENT_MODE] Localhost detected - forcing showroom mode');
+            return 'showroom';
         }
     }
 

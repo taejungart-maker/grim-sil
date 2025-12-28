@@ -105,9 +105,10 @@ export async function loadSettingsById(artistId: string): Promise<SiteConfig> {
 }
 
 // 설정 저장 (upsert)
-export async function saveSettings(config: SiteConfig): Promise<void> {
+export async function saveSettings(config: SiteConfig, overrideId?: string): Promise<void> {
+    const settingsId = overrideId || SETTINGS_ID;
     const row = {
-        id: SETTINGS_ID,
+        id: settingsId,
         ...configToRow(config),
         updated_at: new Date().toISOString(),
     };
@@ -202,4 +203,43 @@ export async function savePassword(password: string): Promise<void> {
 export async function verifyPassword(input: string): Promise<boolean> {
     const savedPassword = await loadPassword();
     return input === savedPassword;
+}
+
+// ====================================
+// VIP 갤러리용 비밀번호 관리
+// ====================================
+
+// VIP 갤러리 비밀번호 불러오기
+export async function loadPasswordById(artistId: string): Promise<string> {
+    try {
+        const { data, error } = await supabase
+            .from("settings")
+            .select("admin_password")
+            .eq("id", artistId)
+            .single();
+
+        if (error || !data || !data.admin_password) {
+            return DEFAULT_PASSWORD;
+        }
+
+        return data.admin_password;
+    } catch {
+        return DEFAULT_PASSWORD;
+    }
+}
+
+// VIP 갤러리 비밀번호 저장
+export async function savePasswordById(artistId: string, password: string): Promise<void> {
+    const { error } = await supabase
+        .from("settings")
+        .upsert({
+            id: artistId,
+            admin_password: password,
+            updated_at: new Date().toISOString(),
+        }, { onConflict: "id" });
+
+    if (error) {
+        console.error("Failed to save password:", error);
+        throw error;
+    }
 }

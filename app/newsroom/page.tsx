@@ -5,6 +5,7 @@ import Link from "next/link";
 import ShareModal from "../components/ShareModal";
 import { loadSettings } from "../utils/settingsDb";
 import { defaultSiteConfig, SiteConfig } from "../config/site";
+import { SIGNATURE_COLORS } from "../utils/themeColors";
 
 interface NewsItem {
     title: string;
@@ -130,7 +131,7 @@ export default function NewsroomPage() {
                 <div style={{ marginBottom: "48px" }}>
                     <p style={{
                         fontSize: "14px",
-                        color: "#8b7355",
+                        color: SIGNATURE_COLORS.antiqueBurgundy,
                         fontWeight: 700,
                         marginBottom: "12px",
                         letterSpacing: "0.05em"
@@ -155,7 +156,7 @@ export default function NewsroomPage() {
                             width: "40px",
                             height: "40px",
                             border: `3px solid ${borderColor}`,
-                            borderTopColor: "#8b7355",
+                            borderTopColor: SIGNATURE_COLORS.antiqueBurgundy,
                             borderRadius: "50%",
                             margin: "0 auto 20px",
                             animation: "spin 1s linear infinite"
@@ -194,7 +195,7 @@ export default function NewsroomPage() {
                                                 fontWeight: 800,
                                                 padding: "3px 8px",
                                                 borderRadius: "6px",
-                                                backgroundColor: "#8b7355",
+                                                backgroundColor: SIGNATURE_COLORS.antiqueBurgundy,
                                                 color: "#fff"
                                             }}>
                                                 {item.category}
@@ -235,12 +236,12 @@ export default function NewsroomPage() {
                                         fontSize: "16px",
                                         fontWeight: 600,
                                         color: "#fff",
-                                        background: "#8b7355",
+                                        background: SIGNATURE_COLORS.antiqueBurgundy,
                                         border: "none",
                                         borderRadius: "12px",
                                         cursor: "pointer",
                                         transition: "all 0.2s",
-                                        boxShadow: "0 4px 12px rgba(139, 115, 85, 0.3)"
+                                        boxShadow: "0 4px 12px rgba(128, 48, 48, 0.3)"
                                     }}
                                 >
                                     더 많은 소식 보기 ({allNews.length - displayedNews.length}개)
@@ -272,7 +273,7 @@ export default function NewsroomPage() {
                                             <p style={{ fontSize: "16px", fontWeight: 700, margin: "0 0 2px 0" }}>{link.name}</p>
                                             <p style={{ fontSize: "12px", color: mutedColor, margin: 0 }}>{link.desc}</p>
                                         </div>
-                                        <span style={{ color: "#8b7355" }}>↗</span>
+                                        <span style={{ color: SIGNATURE_COLORS.antiqueBurgundy }}>↗</span>
                                     </a>
                                 ))}
                             </div>
