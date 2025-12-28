@@ -290,7 +290,7 @@ export default function ArtworkViewer({
                 className="absolute inset-0 flex items-center justify-center"
                 style={{
                     padding: "70px 16px 40px 16px",
-                    touchAction: showCaption ? "none" : "manipulation",
+                    touchAction: "manipulation",
                 }}
                 onClick={handleImageClick}
                 onTouchStart={handleImageTouchStart}
@@ -315,8 +315,7 @@ export default function ArtworkViewer({
                         priority
                         style={{
                             objectFit: "contain",
-                            userSelect: "none",
-                            pointerEvents: "none"
+                            userSelect: "none"
                         }}
                         sizes="100vw"
                         draggable={false}

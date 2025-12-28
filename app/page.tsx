@@ -102,36 +102,34 @@ function HomeContent() {
   const handleKakaoShare = async () => {
     if (typeof window === 'undefined') return;
 
-    const shareData = {
-      title: settings.galleryNameKo || `${settings.artistName} 작가님의 온라인 화첩`,
-      text: `${settings.artistName} 작가의 작품세계를 담은 온라인 화첩입니다.`,
-      url: window.location.href,
-    };
+    const shareUrl = window.location.href;
+    const shareTitle = settings.galleryNameKo || `${settings.artistName} 작가님의 온라인 화첩`;
 
-    // Native Share API 우선 사용
+    // Native Share API 사용 (안드로이드/iOS 공유 메뉴)
     if (navigator.share) {
       try {
-        await navigator.share(shareData);
+        await navigator.share({
+          title: shareTitle,
+          url: shareUrl
+        });
+        return; // 성공하면 여기서 종료
       } catch (err: any) {
-        // 사용자가 취소한 경우 (AbortError)는 무시
-        if (err.name !== 'AbortError') {
-          // Native Share 실패 시 클립보드 복사
-          try {
-            await navigator.clipboard.writeText(window.location.href);
-            alert('갤러리 주소가 복사되었습니다!\n카카오톡 대화창에 붙여넣기 해주세요.');
-          } catch {
-            prompt('갤러리 주소를 복사하세요:', window.location.href);
-          }
+        // 사용자가 취소한 경우는 아무것도 안 함
+        if (err.name === 'AbortError') {
+          return;
         }
+        // 다른 오류는 fallback으로 진행
+        console.error('Share failed:', err);
       }
-    } else {
-      // Native Share API 미지원 브라우저 → 클립보드 복사
-      try {
-        await navigator.clipboard.writeText(window.location.href);
-        alert('갤러리 주소가 복사되었습니다!\n카카오톡 대화창에 붙여넣기 해주세요.');
-      } catch {
-        prompt('갤러리 주소를 복사하세요:', window.location.href);
-      }
+    }
+
+    // Fallback: 클립보드 복사
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      alert('갤러리 주소가 복사되었습니다!\n카카오톡 대화창에 붙여넣기 해주세요.');
+    } catch {
+      // 그것도 안되면 수동 복사창
+      prompt('갤러리 주소를 복사하세요:', shareUrl);
     }
   };
 
