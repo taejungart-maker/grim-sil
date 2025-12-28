@@ -44,9 +44,10 @@ export class VercelAPI {
         data?: any
     ): Promise<T> {
         return new Promise((resolve, reject) => {
+            const separator = path.includes('?') ? '&' : '?';
             const options = {
                 hostname: this.baseUrl,
-                path: this.teamId ? `${path}?teamId=${this.teamId}` : path,
+                path: this.teamId ? `${path}${separator}teamId=${this.teamId}` : path,
                 method,
                 headers: {
                     'Authorization': `Bearer ${this.token}`,

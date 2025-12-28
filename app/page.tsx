@@ -19,6 +19,7 @@ import Header from "./components/Header";
 import LoginModal from "./components/LoginModal";
 import ShareModal from "./components/ShareModal";
 
+
 function HomeContent() {
   const searchParams = useSearchParams();
   const yearMonthParam = searchParams.get("yearMonth");
@@ -40,6 +41,7 @@ function HomeContent() {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -97,19 +99,39 @@ function HomeContent() {
     refreshArtworks();
   }, [refreshArtworks]);
 
-  const handleKakaoShare = () => {
+  const handleKakaoShare = async () => {
     if (typeof window === 'undefined') return;
+
     const shareData = {
       title: settings.galleryNameKo || `${settings.artistName} 작가님의 온라인 화첩`,
       text: `${settings.artistName} 작가의 작품세계를 담은 온라인 화첩입니다.`,
       url: window.location.href,
     };
+
+    // Native Share API 우선 사용
     if (navigator.share) {
-      navigator.share(shareData).catch((err) => {
-        if (err.name !== 'AbortError') setShowShareModal(true);
-      });
+      try {
+        await navigator.share(shareData);
+      } catch (err: any) {
+        // 사용자가 취소한 경우 (AbortError)는 무시
+        if (err.name !== 'AbortError') {
+          // Native Share 실패 시 클립보드 복사
+          try {
+            await navigator.clipboard.writeText(window.location.href);
+            alert('갤러리 주소가 복사되었습니다!\n카카오톡 대화창에 붙여넣기 해주세요.');
+          } catch {
+            prompt('갤러리 주소를 복사하세요:', window.location.href);
+          }
+        }
+      }
     } else {
-      setShowShareModal(true);
+      // Native Share API 미지원 브라우저 → 클립보드 복사
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        alert('갤러리 주소가 복사되었습니다!\n카카오톡 대화창에 붙여넣기 해주세요.');
+      } catch {
+        prompt('갤러리 주소를 복사하세요:', window.location.href);
+      }
     }
   };
 
