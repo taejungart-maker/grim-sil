@@ -7,7 +7,7 @@ const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function enforceIsolation() {
-    console.log("🚀 Starting Absolute Isolation Guard (V2)...");
+    console.log("🚀 Starting Absolute Isolation Guard (V3 - Standardizing Columns)...");
 
     const baseRow = {
         gallery_name_en: "Online Gallery",
@@ -36,6 +36,7 @@ async function enforceIsolation() {
         {
             ...baseRow,
             id: "default",
+            artist_id: "default", // Sync both
             artist_name: "박야일",
             gallery_name_ko: "박야일 갤러리",
             site_title: "박야일 갤러리",
@@ -45,6 +46,7 @@ async function enforceIsolation() {
         {
             ...baseRow,
             id: "vip-gallery-01",
+            artist_id: "vip-gallery-01",
             artist_name: "하현주",
             gallery_name_ko: "하현주 갤러리",
             site_title: "하현주 작가님의 온라인 화첩",
@@ -54,6 +56,7 @@ async function enforceIsolation() {
         {
             ...baseRow,
             id: "vip-gallery-02",
+            artist_id: "vip-gallery-02",
             artist_name: "박야일",
             gallery_name_ko: "박야일 갤러리 (VIP 02)",
             site_title: "박야일 갤러리 [VIP 02]",
@@ -63,6 +66,7 @@ async function enforceIsolation() {
         {
             ...baseRow,
             id: "vip-gallery-03",
+            artist_id: "vip-gallery-03",
             artist_name: "황미경",
             gallery_name_ko: "황미경 갤러리",
             site_title: "황미경 작가의 온라인 화첩",
@@ -72,6 +76,7 @@ async function enforceIsolation() {
         {
             ...baseRow,
             id: "vip-gallery-04",
+            artist_id: "vip-gallery-04",
             artist_name: "문혜경",
             gallery_name_ko: "문혜경 갤러리",
             site_title: "문혜경 작가님의 온라인 화첩",
@@ -81,6 +86,7 @@ async function enforceIsolation() {
         {
             ...baseRow,
             id: "vip-gallery-05",
+            artist_id: "vip-gallery-05",
             artist_name: "박야일",
             gallery_name_ko: "박야일 갤러리 (VIP 05)",
             site_title: "박야일 갤러리 [VIP 05]",
@@ -90,20 +96,14 @@ async function enforceIsolation() {
     ];
 
     try {
-        // 🧹 Clear existing (already cleared in V1 but safe to repeat)
-        console.log("🧹 Ensuring settings table is clean...");
+        console.log("🧹 Clearing settings...");
         await supabase.from('settings').delete().neq('id', 'FORCE_CLEAN');
 
-        // 💎 Insert isolated records
-        console.log("💎 Inserting 6 isolated records...");
+        console.log("💎 Inserting 6 strictly isolated records...");
         const { error: insError } = await supabase.from('settings').insert(isolatedSettings);
         if (insError) throw insError;
 
-        console.log("✅ Isolation Layer 1 Successfully Established (Settings Fixed).");
-
-        // 🛡️ Layer 1.5: Artwork Re-mapping check
-        // We ensure that all artworks under 'default' ID stay as 'default' (Bakya-il Main)
-        // and others keep their VIP IDs. The audit showed they are mostly correct.
+        console.log("✅ Absolute Isolation Guaranteed (All ID columns synced).");
 
     } catch (err) {
         console.error("❌ Isolation Failure:", err);

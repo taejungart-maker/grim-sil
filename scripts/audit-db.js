@@ -7,12 +7,12 @@ const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function checkRows() {
-    console.log("--- Settings Table Audit ---");
+    console.log("--- Settings Table Audit (DEEP) ---");
     const { data: settings, error: sError } = await supabase.from('settings').select('*');
     if (sError) console.error(sError);
     else {
         settings.forEach(s => {
-            console.log(`ID: ${s.artist_id} | Name: ${s.artist_name_ko} | Title: ${s.site_title}`);
+            console.log(`REAL_ID: ${s.id} | artist_id: ${s.artist_id} | Name: ${s.artist_name} | Title: ${s.site_title}`);
         });
     }
 
