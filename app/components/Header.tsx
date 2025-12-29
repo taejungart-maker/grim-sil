@@ -125,7 +125,7 @@ export default function Header({
                             </span>
                         )}
 
-                    {isMounted && isLoggedIn && (
+                    {isMounted && (
                         <Link
                             href={vipId ? `/admin?vipId=${vipId}` : "/admin"}
                             style={{
