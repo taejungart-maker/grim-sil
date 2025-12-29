@@ -145,7 +145,7 @@ function VIPContent() {
                 onKakaoShare={handleKakaoShare}
                 vipId={VIP_ID}
             />
-            <PaymentGate>
+            <PaymentGate forcedMode="always_free">
 
                 {yearMonths.length > 0 && selectedYearMonth && (
                     <div style={{ borderTop: `1px solid ${borderColor}`, background: bgColor }}>
@@ -197,97 +197,98 @@ function VIPContent() {
                     <ArtistPicksSection picks={settings.artistPicks} theme={settings.theme} />
                 )}
 
-                {selectedArtwork && (
-                    <ArtworkViewer
-                        artworks={selectedArtwork.yearArtworks}
-                        initialIndex={selectedArtwork.index}
-                        onClose={() => setSelectedArtwork(null)}
-                        onDelete={handleArtworkDeleted}
-                        showPrice={settings.showPrice}
-                        theme={settings.theme}
-                    />
-                )}
+            </PaymentGate>
 
-                <VIPPaymentModal
-                    isOpen={showPaymentModal}
-                    onClose={() => setShowPaymentModal(false)}
-                    onSuccess={() => window.location.reload()}
-                />
-
-                {/* 하단 플로팅 액션 버튼 (로그인 시에만 노출) */}
-                {
-                    isMounted && isLoggedIn && (
-                        <div
-                            id="author-only-floating-v9"
-                            className="fixed z-50 flex flex-col gap-3"
-                            style={{
-                                bottom: "30px",
-                                right: "20px",
-                            }}
-                        >
-                            {/* 1. SNS 공유 (로얄 인디고) */}
-                            <button
-                                onClick={() => setShowShareModal(true)}
-                                className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
-                                style={{
-                                    width: "46px",
-                                    height: "46px",
-                                    borderRadius: "50%",
-                                    background: settings.theme === "black" ? "#4f46e5" : SIGNATURE_COLORS.royalIndigo,
-                                    color: "#fff",
-                                    textDecoration: "none",
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
-                                    fontSize: "12px",
-                                    fontWeight: 800,
-                                    lineHeight: 1.1,
-                                    border: "none",
-                                    cursor: "pointer"
-                                }}
-                            >
-                                <span>공유</span>
-                            </button>
-
-                            {/* 2. 작품 등록 (앤틱 버건디) */}
-                            <Link
-                                href={`/add?vipId=${VIP_ID}`}
-                                className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
-                                style={{
-                                    width: "46px",
-                                    height: "46px",
-                                    borderRadius: "50%",
-                                    background: settings.theme === "black" ? "#1a1a1a" : SIGNATURE_COLORS.antiqueBurgundy,
-                                    color: "#fff",
-                                    textDecoration: "none",
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
-                                    fontSize: "12px",
-                                    fontWeight: 800,
-                                    lineHeight: 1.1,
-                                }}
-                            >
-                                <span style={{ fontSize: "14px", marginBottom: "-2px" }}>+</span>
-                                <span>등록</span>
-                            </Link>
-                        </div>
-                    )
-                }
-
-                <ShareModal
-                    isOpen={showShareModal}
-                    onClose={() => setShowShareModal(false)}
-                    shareUrl={typeof window !== 'undefined' ? window.location.href : ''}
-                    title={`[VIP] ${settings.artistName} 작가님의 온라인 화첩`}
-                    description={`프리미엄 구독 전용 공간입니다.`}
+            {selectedArtwork && (
+                <ArtworkViewer
+                    artworks={selectedArtwork.yearArtworks}
+                    initialIndex={selectedArtwork.index}
+                    onClose={() => setSelectedArtwork(null)}
+                    onDelete={handleArtworkDeleted}
+                    showPrice={settings.showPrice}
                     theme={settings.theme}
                 />
-            </PaymentGate>
+            )}
+
+            <VIPPaymentModal
+                isOpen={showPaymentModal}
+                onClose={() => setShowPaymentModal(false)}
+                onSuccess={() => window.location.reload()}
+            />
+
+            {/* 하단 플로팅 액션 버튼 (로그인 시에만 노출) */}
+            {
+                isMounted && isLoggedIn && (
+                    <div
+                        id="author-only-floating-v9"
+                        className="fixed z-50 flex flex-col gap-3"
+                        style={{
+                            bottom: "30px",
+                            right: "20px",
+                        }}
+                    >
+                        {/* 1. SNS 공유 (로얄 인디고) */}
+                        <button
+                            onClick={() => setShowShareModal(true)}
+                            className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
+                            style={{
+                                width: "46px",
+                                height: "46px",
+                                borderRadius: "50%",
+                                background: settings.theme === "black" ? "#4f46e5" : SIGNATURE_COLORS.royalIndigo,
+                                color: "#fff",
+                                textDecoration: "none",
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
+                                fontSize: "12px",
+                                fontWeight: 800,
+                                lineHeight: 1.1,
+                                border: "none",
+                                cursor: "pointer"
+                            }}
+                        >
+                            <span>공유</span>
+                        </button>
+
+                        {/* 2. 작품 등록 (앤틱 버건디) */}
+                        <Link
+                            href={`/add?vipId=${VIP_ID}`}
+                            className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
+                            style={{
+                                width: "46px",
+                                height: "46px",
+                                borderRadius: "50%",
+                                background: settings.theme === "black" ? "#1a1a1a" : SIGNATURE_COLORS.antiqueBurgundy,
+                                color: "#fff",
+                                textDecoration: "none",
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
+                                fontSize: "12px",
+                                fontWeight: 800,
+                                lineHeight: 1.1,
+                            }}
+                        >
+                            <span style={{ fontSize: "14px", marginBottom: "-2px" }}>+</span>
+                            <span>등록</span>
+                        </Link>
+                    </div>
+                )
+            }
+
+            <ShareModal
+                isOpen={showShareModal}
+                onClose={() => setShowShareModal(false)}
+                shareUrl={typeof window !== 'undefined' ? window.location.href : ''}
+                title={`[VIP] ${settings.artistName} 작가님의 온라인 화첩`}
+                description={`프리미엄 구독 전용 공간입니다.`}
+                theme={settings.theme}
+            />
         </div>
     );
 }
