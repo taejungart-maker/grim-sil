@@ -224,25 +224,24 @@ export default function Header({
                                 <button
                                     id="force-sub-btn-v2"
                                     onClick={onOpenPayment}
-                                    className="flex items-center gap-1"
+                                    className="flex items-center gap-1.5"
                                     style={{
-                                        padding: "7px 14px",
-                                        backgroundColor: "#6366f1",
-                                        backgroundImage: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
+                                        padding: "7px 16px",
+                                        background: theme === "black" ? "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)" : SIGNATURE_COLORS.antiqueBurgundy,
                                         color: "#ffffff",
-                                        borderRadius: "8px",
+                                        borderRadius: "6px",
                                         border: "none",
                                         cursor: "pointer",
                                         fontFamily: "'Noto Sans KR', sans-serif",
-                                        fontWeight: 700,
+                                        fontWeight: 600,
                                         fontSize: "13px",
                                         letterSpacing: "0.01em",
                                         whiteSpace: "nowrap",
-                                        boxShadow: "0 4px 10px rgba(99, 102, 241, 0.3)",
+                                        boxShadow: theme === "black" ? "0 4px 10px rgba(99, 102, 241, 0.3)" : "0 2px 6px rgba(128, 48, 48, 0.2)",
+                                        transition: "all 0.2s ease"
                                     }}
                                 >
-                                    <span className="hidden sm:inline">구독하기</span>
-                                    <span className="sm:hidden">구독</span>
+                                    <span>구독하기</span>
                                 </button>
                             )}
 
