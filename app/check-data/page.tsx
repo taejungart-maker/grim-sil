@@ -19,7 +19,7 @@ export default async function CheckDataPage() {
         artworkCounts[a.artist_id] = (artworkCounts[a.artist_id] || 0) + 1;
     });
 
-    const deployTime = "2025-12-30 04:45 (Hardened V4)"; // 수동 업데이트
+    const deployTime = "2025-12-30 05:25 (Hardened V5 - Final)"; // 수동 업데이트
 
     // 3. 격리 자가 테스트 (존재하지 않는 ID로 쿼리 시 0개가 나오는지 확인)
     const { data: testData } = await supabase
@@ -35,7 +35,7 @@ export default async function CheckDataPage() {
 
     return (
         <div style={{ padding: "40px", fontFamily: "monospace", fontSize: "13px", lineHeight: "1.6" }}>
-            <h1>🛡️ Absolute Isolation Audit (System Live)</h1>
+            <h1>🛡️ Absolute Isolation Audit V5 (System Live)</h1>
             <p style={{ color: "gray" }}><b>Last Hardened Deployment:</b> {deployTime}</p>
             <hr />
 
