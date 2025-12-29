@@ -70,7 +70,7 @@ export async function getAllArtworks(ownerId?: string): Promise<Artwork[]> {
             month: row.month ?? undefined,
             dimensions: row.dimensions,
             medium: row.medium,
-            imageUrl: row.image_url?.startsWith("http") ? row.image_url : "",
+            imageUrl: row.image_url || "",
             description: row.description ?? undefined,
             price: row.price ?? undefined,
             artistName: row.artist_name ?? undefined,
