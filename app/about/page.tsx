@@ -1,28 +1,31 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import ShareModal from "../components/ShareModal";
-import { loadSettings } from "../utils/settingsDb";
+import { loadSettings, loadSettingsById } from "../utils/settingsDb";
 import { defaultSiteConfig, SiteConfig } from "../config/site";
 
 export default function AboutPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const vipId = searchParams.get("vipId") || "";
     const [settings, setSettings] = useState<SiteConfig>(defaultSiteConfig);
     const [isLoading, setIsLoading] = useState(true);
     const [showShareModal, setShowShareModal] = useState(false);
     const [currentYear, setCurrentYear] = useState(2025); // 기본값
 
     useEffect(() => {
-        loadSettings().then((s) => {
+        const fetchSettings = vipId ? loadSettingsById(vipId) : loadSettings();
+        fetchSettings.then((s) => {
             setSettings(s);
             setIsLoading(false);
         });
         // 클라이언트에서만 현재 연도 설정
         setCurrentYear(new Date().getFullYear());
-    }, []);
+    }, [vipId]);
 
     const bgColor = settings.theme === "black" ? "#000000" : "#ffffff";
     const textColor = settings.theme === "black" ? "#ffffff" : "#000000";
@@ -55,7 +58,7 @@ export default function AboutPage() {
                 }}
             >
                 <div className="max-w-4xl mx-auto flex items-center justify-between px-6 py-4">
-                    <Link href="/" style={{ textDecoration: "none" }}>
+                    <Link href={vipId ? `/gallery-${vipId}` : "/"} style={{ textDecoration: "none" }}>
                         <span style={{
                             fontSize: "20px",
                             fontWeight: 700,
@@ -99,7 +102,7 @@ export default function AboutPage() {
                                 <line x1="12" y1="2" x2="12" y2="15" />
                             </svg>
                         </button>
-                        <Link href="/" style={{
+                        <Link href={vipId ? `/gallery-${vipId}` : "/"} style={{
                             fontSize: "15px",
                             fontWeight: 500,
                             color: mutedColor,

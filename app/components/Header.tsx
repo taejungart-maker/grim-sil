@@ -14,6 +14,7 @@ interface HeaderProps {
     onLogout: () => void;
     onOpenPayment: () => void;
     onKakaoShare: () => void;
+    vipId?: string;
 }
 
 export default function Header({
@@ -24,7 +25,8 @@ export default function Header({
     needsPayment,
     onLogout,
     onOpenPayment,
-    onKakaoShare
+    onKakaoShare,
+    vipId
 }: HeaderProps) {
     const [isMounted, setIsMounted] = useState(false);
 
@@ -119,7 +121,7 @@ export default function Header({
                     )}
 
                     <Link
-                        href="/admin"
+                        href={vipId ? `/admin?vipId=${vipId}` : "/admin"}
                         style={{
                             display: "flex",
                             alignItems: "center",
@@ -156,7 +158,7 @@ export default function Header({
                     <div className="flex items-center gap-3 sm:gap-4">
                         {/* 작가소개 */}
                         <Link
-                            href="/about"
+                            href={vipId ? `/about?vipId=${vipId}` : "/about"}
                             className="text-sm sm:text-base"
                             style={{
                                 textDecoration: "none",
@@ -172,7 +174,7 @@ export default function Header({
 
                         {/* 미술 소식 */}
                         <Link
-                            href="/newsroom"
+                            href={vipId ? `/newsroom?vipId=${vipId}` : "/newsroom"}
                             className="text-sm sm:text-base"
                             style={{
                                 textDecoration: "none",

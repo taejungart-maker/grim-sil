@@ -4,7 +4,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Artwork } from "../data/artworks";
 import { getAllArtworks } from "../utils/db";
-import { supabase } from "../utils/supabase";
+import { supabase, ARTIST_ID } from "../utils/supabase";
 
 interface UseSyncedArtworksResult {
     artworks: Artwork[];
@@ -13,7 +13,7 @@ interface UseSyncedArtworksResult {
     refresh: () => Promise<void>;
 }
 
-export function useSyncedArtworks(): UseSyncedArtworksResult {
+export function useSyncedArtworks(vipId?: string): UseSyncedArtworksResult {
     const [artworks, setArtworks] = useState<Artwork[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -21,7 +21,7 @@ export function useSyncedArtworks(): UseSyncedArtworksResult {
     // 작품 목록 로드
     const loadArtworks = useCallback(async () => {
         try {
-            const data = await getAllArtworks();
+            const data = await getAllArtworks(vipId);
             setArtworks(data);
             setError(null);
         } catch (err) {
@@ -30,7 +30,7 @@ export function useSyncedArtworks(): UseSyncedArtworksResult {
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [vipId]);
 
     // 초기 로드 및 Realtime 구독
     useEffect(() => {
@@ -38,13 +38,14 @@ export function useSyncedArtworks(): UseSyncedArtworksResult {
 
         // Supabase Realtime 구독
         const channel = supabase
-            .channel("artworks-changes")
+            .channel(`artworks-changes-${vipId || 'main'}`)
             .on(
                 "postgres_changes",
                 {
                     event: "*", // INSERT, UPDATE, DELETE 모두 수신
                     schema: "public",
                     table: "artworks",
+                    filter: `artist_id=eq.${vipId || ARTIST_ID}`
                 },
                 (payload) => {
                     console.log("Realtime update:", payload.eventType);

@@ -12,9 +12,11 @@ import ArtworkCard from "../components/ArtworkCard";
 import ArtworkViewer from "../components/ArtworkViewer";
 import { isPaymentRequired } from "../utils/deploymentMode";
 import { usePayment } from "../contexts/PaymentContext";
+import { SIGNATURE_COLORS } from "../utils/themeColors";
 import PaymentGate from "../components/PaymentGate";
 import VIPPaymentModal from "../components/VIPPaymentModal";
 import Header from "../components/Header";
+import ShareModal from "../components/ShareModal";
 import EncouragementSection from "../components/EncouragementSection";
 import ArtistPicksSection from "../components/ArtistPicksSection";
 
@@ -26,7 +28,7 @@ function VIPContent() {
     // 🔑 VIP 갤러리 고유 ID - 각 VIP 페이지마다 다른 ID 사용
     const VIP_ID = "vip-gallery-01";
 
-    const { artworks, isLoading: artworksLoading, refresh: refreshArtworks } = useSyncedArtworks();
+    const { artworks, isLoading: artworksLoading, refresh: refreshArtworks } = useSyncedArtworks(VIP_ID);
     const { settings, isLoading: settingsLoading } = useSyncedSettings(VIP_ID);
     const { isAuthenticated: isLoggedIn, logout } = useAuth();
 
@@ -37,7 +39,7 @@ function VIPContent() {
     };
 
     const { isPaid } = usePayment();
-    const needsPayment = true; // VIP 페이지는 무조건 결제 필요 (Commercial)
+    const needsPayment = isPaymentRequired(); // 동적 결제 필요 여부 (Always Free 모드 대응)
 
     const [selectedYearMonth, setSelectedYearMonth] = useState<YearMonthKey | null>(null);
     const [selectedArtwork, setSelectedArtwork] = useState<{
@@ -48,6 +50,8 @@ function VIPContent() {
     const [demoLoaded, setDemoLoaded] = useState(false);
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
+
+    const [showShareModal, setShowShareModal] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
@@ -134,79 +138,156 @@ function VIPContent() {
                 galleryNameKo={`${settings.galleryNameKo} VIP`}
                 theme={settings.theme}
                 isLoggedIn={isLoggedIn}
-                isPaid={true}
+                isPaid={isPaid}
                 needsPayment={needsPayment}
                 onLogout={handleLogout}
                 onOpenPayment={() => setShowPaymentModal(true)}
                 onKakaoShare={handleKakaoShare}
+                vipId={VIP_ID}
             />
+            <PaymentGate>
 
-            {yearMonths.length > 0 && selectedYearMonth && (
-                <div style={{ borderTop: `1px solid ${borderColor}`, background: bgColor }}>
-                    <div className="max-w-6xl mx-auto">
-                        <YearMonthTabs
-                            yearMonths={yearMonths}
-                            selectedYearMonth={selectedYearMonth}
-                            onYearMonthSelect={setSelectedYearMonth}
-                            theme={settings.theme}
-                        />
-                    </div>
-                </div>
-            )}
-
-            <main className="max-w-6xl mx-auto" style={{ padding: "32px 24px" }}>
-                {isLoading ? (
-                    <div className="text-center py-20" style={{ color: "#888" }}><p>불러오는 중...</p></div>
-                ) : artworks.length === 0 ? (
-                    <div className="text-center py-20" style={{ color: "#666" }}>
-                        <p style={{ fontSize: "48px", marginBottom: "16px", opacity: 0.3 }}>💎</p>
-                        <p style={{ fontSize: "15px", color: textColor, marginBottom: "8px" }}>VIP 갤러리 준비 중입니다</p>
-                    </div>
-                ) : (
-                    <div style={{
-                        display: "grid",
-                        gridTemplateColumns: settings.gridColumns === 1 ? "1fr" : settings.gridColumns === 3 ? "repeat(3, 1fr)" : "repeat(4, 1fr)",
-                        gridAutoRows: settings.gridColumns === 1 ? "auto" : "180px",
-                        gap: settings.gridColumns === 1 ? "24px" : "8px",
-                    }}>
-                        {currentYearMonthArtworks.map((artwork: Artwork, index: number) => (
-                            <div key={artwork.id}>
-                                <ArtworkCard
-                                    artwork={artwork}
-                                    onClick={() => handleArtworkClick(artwork, index)}
-                                    priority={index < 6}
-                                    minimal
-                                />
-                            </div>
-                        ))}
+                {yearMonths.length > 0 && selectedYearMonth && (
+                    <div style={{ borderTop: `1px solid ${borderColor}`, background: bgColor }}>
+                        <div className="max-w-6xl mx-auto">
+                            <YearMonthTabs
+                                yearMonths={yearMonths}
+                                selectedYearMonth={selectedYearMonth}
+                                onYearMonthSelect={setSelectedYearMonth}
+                                theme={settings.theme}
+                            />
+                        </div>
                     </div>
                 )}
-            </main>
 
-            {/* 응원 메시지 섹션 */}
-            <EncouragementSection theme={settings.theme} />
+                <main className="max-w-6xl mx-auto" style={{ padding: "32px 24px" }}>
+                    {isLoading ? (
+                        <div className="text-center py-20" style={{ color: "#888" }}><p>불러오는 중...</p></div>
+                    ) : artworks.length === 0 ? (
+                        <div className="text-center py-20" style={{ color: "#666" }}>
+                            <p style={{ fontSize: "48px", marginBottom: "16px", opacity: 0.3 }}>💎</p>
+                            <p style={{ fontSize: "15px", color: textColor, marginBottom: "8px" }}>VIP 갤러리 준비 중입니다</p>
+                        </div>
+                    ) : (
+                        <div style={{
+                            display: "grid",
+                            gridTemplateColumns: settings.gridColumns === 1 ? "1fr" : settings.gridColumns === 3 ? "repeat(3, 1fr)" : "repeat(4, 1fr)",
+                            gridAutoRows: settings.gridColumns === 1 ? "auto" : "180px",
+                            gap: settings.gridColumns === 1 ? "24px" : "8px",
+                        }}>
+                            {currentYearMonthArtworks.map((artwork: Artwork, index: number) => (
+                                <div key={artwork.id}>
+                                    <ArtworkCard
+                                        artwork={artwork}
+                                        onClick={() => handleArtworkClick(artwork, index)}
+                                        priority={index < 6}
+                                        minimal
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </main>
 
-            {/* 추천 작가 섹션 */}
-            {settings.artistPicks && settings.artistPicks.length > 0 && (
-                <ArtistPicksSection picks={settings.artistPicks} theme={settings.theme} />
-            )}
+                {/* 응원 메시지 섹션 */}
+                <EncouragementSection theme={settings.theme} />
 
-            {selectedArtwork && (
-                <ArtworkViewer
-                    artworks={selectedArtwork.yearArtworks}
-                    initialIndex={selectedArtwork.index}
-                    onClose={() => setSelectedArtwork(null)}
-                    onDelete={handleArtworkDeleted}
-                    showPrice={settings.showPrice}
+                {/* 추천 작가 섹션 */}
+                {settings.artistPicks && settings.artistPicks.length > 0 && (
+                    <ArtistPicksSection picks={settings.artistPicks} theme={settings.theme} />
+                )}
+
+                {selectedArtwork && (
+                    <ArtworkViewer
+                        artworks={selectedArtwork.yearArtworks}
+                        initialIndex={selectedArtwork.index}
+                        onClose={() => setSelectedArtwork(null)}
+                        onDelete={handleArtworkDeleted}
+                        showPrice={settings.showPrice}
+                        theme={settings.theme}
+                    />
+                )}
+
+                <VIPPaymentModal
+                    isOpen={showPaymentModal}
+                    onClose={() => setShowPaymentModal(false)}
+                    onSuccess={() => window.location.reload()}
+                />
+
+                {/* 하단 플로팅 액션 버튼 (로그인 시에만 노출) */}
+                {
+                    isMounted && isLoggedIn && (
+                        <div
+                            id="author-only-floating-v9"
+                            className="fixed z-50 flex flex-col gap-3"
+                            style={{
+                                bottom: "30px",
+                                right: "20px",
+                            }}
+                        >
+                            {/* 1. SNS 공유 (로얄 인디고) */}
+                            <button
+                                onClick={() => setShowShareModal(true)}
+                                className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
+                                style={{
+                                    width: "46px",
+                                    height: "46px",
+                                    borderRadius: "50%",
+                                    background: settings.theme === "black" ? "#4f46e5" : SIGNATURE_COLORS.royalIndigo,
+                                    color: "#fff",
+                                    textDecoration: "none",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
+                                    fontSize: "12px",
+                                    fontWeight: 800,
+                                    lineHeight: 1.1,
+                                    border: "none",
+                                    cursor: "pointer"
+                                }}
+                            >
+                                <span>공유</span>
+                            </button>
+
+                            {/* 2. 작품 등록 (앤틱 버건디) */}
+                            <Link
+                                href={`/add?vipId=${VIP_ID}`}
+                                className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
+                                style={{
+                                    width: "46px",
+                                    height: "46px",
+                                    borderRadius: "50%",
+                                    background: settings.theme === "black" ? "#1a1a1a" : SIGNATURE_COLORS.antiqueBurgundy,
+                                    color: "#fff",
+                                    textDecoration: "none",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
+                                    fontSize: "12px",
+                                    fontWeight: 800,
+                                    lineHeight: 1.1,
+                                }}
+                            >
+                                <span style={{ fontSize: "14px", marginBottom: "-2px" }}>+</span>
+                                <span>등록</span>
+                            </Link>
+                        </div>
+                    )
+                }
+
+                <ShareModal
+                    isOpen={showShareModal}
+                    onClose={() => setShowShareModal(false)}
+                    shareUrl={typeof window !== 'undefined' ? window.location.href : ''}
+                    title={`[VIP] ${settings.artistName} 작가님의 온라인 화첩`}
+                    description={`프리미엄 구독 전용 공간입니다.`}
                     theme={settings.theme}
                 />
-            )}
-
-            <VIPPaymentModal
-                isOpen={showPaymentModal}
-                onClose={() => setShowPaymentModal(false)}
-                onSuccess={() => window.location.reload()}
-            />
+            </PaymentGate>
         </div>
     );
 }

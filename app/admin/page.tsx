@@ -1,21 +1,26 @@
-"use client";
-
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { defaultSiteConfig, SiteConfig } from "../config/site";
-import { loadSettings, saveSettings, savePassword } from "../utils/settingsDb";
-import { exportAllData, importAllData, exportToClipboard, importFromClipboard, getAllArtworks, addArtwork, updateArtwork, uploadImageToStorage, getVisitorStats } from "../utils/db";
+import { loadSettings, loadSettingsById, saveSettings, savePassword, savePasswordById, loadPasswordById } from "../utils/settingsDb";
+import { exportAllData, importAllData, exportToClipboard, importFromClipboard, getAllArtworks, addArtwork, updateArtwork, deleteArtwork, uploadImageToStorage, getVisitorStats } from "../utils/db";
 import { migrateLocalDataToSupabase, hasLegacyData, MigrationResult } from "../utils/migration";
 import { migrateAllImagesToStorage, countBase64Images, MigrationProgress } from "../utils/imageMigration";
 import { useAuth } from "../contexts/AuthContext";
 import { resetPaymentStatus } from "../utils/paymentUtils";
 import { isAlwaysFreeMode } from "../utils/deploymentMode";
+import { ARTIST_ID as GLOBAL_ARTIST_ID } from "../utils/supabase";
 import QRCode from "qrcode";
 import { SIGNATURE_COLORS } from "../utils/themeColors";
 
+import Link from "next/link";
+
 export default function AdminPage() {
     const router = useRouter();
-    const { isAuthenticated, login } = useAuth();
+    const searchParams = useSearchParams();
+    const vipId = searchParams.get("vipId") || ""; // VIP 세일즈 갤러리 ID
+    const effectiveArtistId = vipId || GLOBAL_ARTIST_ID;
+
+    const { isAuthenticated, login, logout } = useAuth();
     const [password, setPassword] = useState("");
     const [passwordError, setPasswordError] = useState(false);
 
@@ -41,7 +46,8 @@ export default function AdminPage() {
             // QR 코드 생성
             const currentUrl = typeof window !== 'undefined' ? window.location.origin : '';
             if (currentUrl) {
-                QRCode.toDataURL(currentUrl, {
+                const galleryUrl = vipId ? `${currentUrl}/gallery-${vipId}` : currentUrl;
+                QRCode.toDataURL(galleryUrl, {
                     width: 400,
                     margin: 2,
                     color: {
@@ -82,10 +88,14 @@ export default function AdminPage() {
 
     // 설정 불러오기 + 레거시 데이터 확인
     useEffect(() => {
-        loadSettings().then(setSettings);
+        if (vipId) {
+            loadSettingsById(vipId).then(setSettings);
+        } else {
+            loadSettings().then(setSettings);
+        }
         hasLegacyData().then(setLegacyDataInfo);
         countBase64Images().then(setBase64ImageCount);
-    }, []);
+    }, [vipId]);
 
     // 비밀번호 확인 (전역 로그인 사용)
     const handleLogin = async () => {
@@ -102,14 +112,20 @@ export default function AdminPage() {
     // 설정 저장
     const handleSave = async () => {
         setIsSaving(true);
+        setSaveSuccess(false);
         try {
-            await saveSettings(settings);
-            // 저장 성공 후 홈으로 이동
-            router.push("/");
+            await saveSettings(settings, vipId || undefined);
+            setSaveSuccess(true);
+            setTimeout(() => setSaveSuccess(false), 3000);
+            // VIP 저장 시에는 홈으로 이동하지 않고 성공 메시지만 표시
+            if (!vipId) {
+                router.push("/");
+            }
         } catch (error) {
-            console.error("Failed to save settings:", error);
+            console.error("Save error:", error);
+            alert("설정 저장 중 오류가 발생했습니다.");
+        } finally {
             setIsSaving(false);
-            alert("설정 저장에 실패했습니다. Supabase 데이터베이스 컬럼이 부족할 수 있습니다. 제가 드리는 SQL 스크립트를 실행해 주세요.");
         }
     };
 
@@ -129,7 +145,11 @@ export default function AdminPage() {
         }
 
         try {
-            await savePassword(newPassword);
+            if (vipId) {
+                await savePasswordById(vipId, newPassword);
+            } else {
+                await savePassword(newPassword);
+            }
             setPasswordChangeSuccess(true);
             setNewPassword("");
             setConfirmPassword("");
@@ -295,29 +315,54 @@ export default function AdminPage() {
                     alignItems: "center",
                 }}
             >
-                <h1 style={{
-                    fontSize: "28px",
-                    fontWeight: 700,
-                    fontFamily: "'Noto Sans KR', sans-serif",
-                    color: settings.theme === "black" ? "#ffffff" : "#8b7355"
-                }}>
-                    갤러리 설정
-                </h1>
-                <button
-                    onClick={() => router.push("/")}
-                    style={{
-                        padding: "10px 20px",
-                        fontSize: "14px",
-                        background: settings.theme === "black" ? "#333" : "#f3f4f6",
-                        color: textColor,
-                        border: "none",
-                        borderRadius: "8px",
-                        cursor: "pointer",
-                    }}
-                >
-                    ← 갤러리로
-                </button>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <h1 style={{
+                        fontSize: "28px",
+                        fontWeight: 700,
+                        fontFamily: "'Noto Sans KR', sans-serif",
+                        color: settings.theme === "black" ? "#ffffff" : "#8b7355"
+                    }}>
+                        갤러리 설정
+                    </h1>
+                    {vipId && <span style={{ padding: "4px 8px", background: "#6366f1", color: "#fff", borderRadius: "6px", fontSize: "12px", fontWeight: 700 }}>{vipId}</span>}
+                </div>
+                <div style={{ display: "flex", gap: "12px" }}>
+                    <button
+                        onClick={handleSave}
+                        disabled={isSaving}
+                        style={{
+                            padding: "10px 20px",
+                            fontSize: "14px",
+                            background: "#6366f1",
+                            color: "#fff",
+                            border: "none",
+                            borderRadius: "8px",
+                            cursor: "pointer",
+                            fontWeight: 700,
+                            opacity: isSaving ? 0.7 : 1,
+                        }}
+                    >
+                        {isSaving ? "저장 중..." : "설정 저장"}
+                    </button>
+                    <button
+                        onClick={() => router.push("/")}
+                        style={{
+                            padding: "10px 20px",
+                            fontSize: "14px",
+                            background: settings.theme === "black" ? "#333" : "#f3f4f6",
+                            color: textColor,
+                            border: "none",
+                            borderRadius: "8px",
+                            cursor: "pointer",
+                        }}
+                    >
+                        ← 나가기
+                    </button>
+                </div>
             </header>
+
+            {/* 제목 상단 여백 */}
+            <div style={{ height: "20px" }} />
 
             {/* 설정 폼 */}
             <main
@@ -951,169 +996,7 @@ export default function AdminPage() {
                         </div>
                     </div>
 
-                    {/* 로컬 데이터 마이그레이션 - 비활성화 (클라우드 전환 완료) */}
-                    {/* legacyDataInfo 관련 UI 제거됨 */}
 
-                    {/* 프로덕션 모드: Base64 이미지 마이그레이션 섹션 비활성화 */}
-                    {/* base64ImageCount > 0 && (
-                        <div
-                            style={{
-                                marginTop: "24px",
-                                padding: "24px",
-                                background: settings.theme === "black" ? "#1a2a3a" : "#f0f7ff",
-                                borderRadius: "16px",
-                                border: settings.theme === "black" ? "2px solid #2255aa" : "2px solid #4488ff",
-                            }}
-                        >
-                            <h3 style={{
-                                fontSize: "20px",
-                                fontWeight: 700,
-                                marginBottom: "16px",
-                                color: settings.theme === "black" ? "#6bb3ff" : "#2255aa",
-                            }}>
-                                이미지 최적화 (Base64 → Storage)
-                            </h3>
-                            <p style={{
-                                fontSize: "14px",
-                                color: settings.theme === "black" ? "#aaa" : "#666",
-                                marginBottom: "16px",
-                                lineHeight: 1.6,
-                            }}>
-                                {base64ImageCount}개의 Base64 이미지를 Supabase Storage로 이전합니다.
-                                <br />
-                                이 작업 후 이미지 로딩 속도가 크게 향상됩니다.
-                            </p>
-
-                            {imageMigrationProgress && (
-                                <div style={{
-                                    padding: "12px",
-                                    marginBottom: "16px",
-                                    borderRadius: "8px",
-                                    background: settings.theme === "black" ? "#333" : "#e8f4ff",
-                                }}>
-                                    <div style={{ marginBottom: "8px" }}>
-                                        진행: {imageMigrationProgress.completed + imageMigrationProgress.failed} / {imageMigrationProgress.total}
-                                    </div>
-                                    <div style={{
-                                        width: "100%",
-                                        height: "8px",
-                                        background: settings.theme === "black" ? "#444" : "#ddd",
-                                        borderRadius: "4px",
-                                        overflow: "hidden",
-                                    }}>
-                                        <div style={{
-                                            width: `${((imageMigrationProgress.completed + imageMigrationProgress.failed) / imageMigrationProgress.total) * 100}%`,
-                                            height: "100%",
-                                            background: "#4488ff",
-                                            transition: "width 0.3s ease",
-                                        }} />
-                                    </div>
-                                    {imageMigrationProgress.currentArtwork && (
-                                        <div style={{ marginTop: "8px", fontSize: "13px", color: "#888" }}>
-                                            현재: {imageMigrationProgress.currentArtwork}
-                                        </div>
-                                    )}
-                                    {imageMigrationProgress.completed === imageMigrationProgress.total && imageMigrationProgress.total > 0 && (
-                                        <div style={{ marginTop: "8px", color: "#22c55e", fontWeight: 600 }}>
-                                            완료! {imageMigrationProgress.completed}개 성공, {imageMigrationProgress.failed}개 실패
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
-                            <button
-                                onClick={async () => {
-                                    setIsImageMigrating(true);
-                                    setImageMigrationProgress(null);
-                                    try {
-                                        const result = await migrateAllImagesToStorage((progress) => {
-                                            setImageMigrationProgress({ ...progress });
-                                        });
-                                        setImageMigrationProgress(result);
-                                        // 완료 후 Base64 개수 갱신
-                                        countBase64Images().then(setBase64ImageCount);
-                                    } catch (error) {
-                                        console.error("Image migration failed:", error);
-                                    }
-                                    setIsImageMigrating(false);
-                                }}
-                                disabled={isImageMigrating}
-                                style={{
-                                    width: "100%",
-                                    padding: "16px",
-                                    fontSize: "16px",
-                                    fontWeight: 600,
-                                    background: settings.theme === "black" ? "#2255aa" : "#4488ff",
-                                    color: "#fff",
-                                    border: "none",
-                                    borderRadius: "12px",
-                                    cursor: isImageMigrating ? "wait" : "pointer",
-                                    fontFamily: "'Noto Sans KR', sans-serif",
-                                    opacity: isImageMigrating ? 0.7 : 1,
-                                }}
-                            >
-                                {isImageMigrating ? "마이그레이션 중..." : "이미지 최적화 시작"}
-                            </button>
-                        </div>
-                    ) */}
-
-                    {/* 프로덕션 모드: 나의 화첩 보고서 섹션 비활성화 */}
-                    {/* 나의 화첩 보고서 (방문자 통계) */}
-                    {/*
-                    <div
-                        style={{
-                            marginTop: "48px",
-                            padding: "32px",
-                            background: settings.theme === "black" ? "#111" : "#f8fafc",
-                            borderRadius: "24px",
-                            border: `1px solid ${borderColor}`,
-                        }}
-                    >
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px" }}>
-                            <h2 style={{ fontSize: "22px", fontWeight: 800 }}>나의 화첩 보고서</h2>
-                            <div style={{ textAlign: "right" }}>
-                                <p style={{ fontSize: "13px", color: mutedColor, margin: 0 }}>최근 7일 누적</p>
-                                <p style={{ fontSize: "24px", fontWeight: 900, color: "#6366f1", margin: 0 }}>{totalViews}명</p>
-                            </div>
-                        </div>
-
-                        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                            {visitorStats.length > 0 ? (
-                                visitorStats.map((stat, idx) => (
-                                    <div
-                                        key={idx}
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            padding: "16px 20px",
-                                            background: settings.theme === "black" ? "#1a1a1a" : "#fff",
-                                            borderRadius: "14px",
-                                            border: `1px solid ${borderColor}`
-                                        }}
-                                    >
-                                        <span style={{ fontSize: "14px", fontWeight: 600, width: "100px" }}>
-                                            {new Date(stat.date).toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' })}
-                                        </span>
-                                        <div style={{ flex: 1, height: "8px", background: settings.theme === "black" ? "#333" : "#f1f5f9", borderRadius: "4px", margin: "0 16px", position: "relative" }}>
-                                            <div style={{
-                                                position: "absolute",
-                                                left: 0,
-                                                top: 0,
-                                                height: "100%",
-                                                width: `${Math.min(100, (stat.count / (Math.max(...visitorStats.map(s => s.count)) || 1)) * 100)}%`,
-                                                background: "#6366f1",
-                                                borderRadius: "4px"
-                                            }} />
-                                        </div>
-                                        <span style={{ fontSize: "14px", fontWeight: 800, width: "40px", textAlign: "right" }}>{stat.count}</span>
-                                    </div>
-                                ))
-                            ) : (
-                                <p style={{ textAlign: "center", padding: "40px 0", color: mutedColor }}>데이터가 수집되는 중입니다.</p>
-                            )}
-                        </div>
-                    </div>
-                    */}
 
                     {/* 📣 실시간 뉴스 설정 (News Ticker) */}
                     <div style={{

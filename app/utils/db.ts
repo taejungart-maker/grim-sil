@@ -25,7 +25,7 @@ function rowToArtwork(row: ArtworkRow): Artwork & { createdAt?: number } {
 }
 
 // Artwork를 Row 형태로 변환
-function artworkToRow(artwork: Artwork & { createdAt?: number }): Partial<ArtworkRow> {
+function artworkToRow(artwork: Artwork & { createdAt?: number }, ownerId?: string): Partial<ArtworkRow> {
     return {
         id: artwork.id,
         title: artwork.title,
@@ -37,20 +37,21 @@ function artworkToRow(artwork: Artwork & { createdAt?: number }): Partial<Artwor
         description: artwork.description ?? null,
         price: artwork.price ?? null,
         artist_name: artwork.artistName ?? null,
-        artist_id: ARTIST_ID, // 멀티 테넌트 지원
+        artist_id: ownerId || ARTIST_ID, // 멀티 테넌트 지원 (ID가 있으면 해당 ID 사용, 없으면 기본값)
     };
 }
 
 // 모든 작품 가져오기 (Storage URL만 포함, Base64는 제외)
-export async function getAllArtworks(): Promise<Artwork[]> {
+export async function getAllArtworks(ownerId?: string): Promise<Artwork[]> {
     try {
-        console.log("=== 작품 로드 시작 ===");
+        const targetArtistId = ownerId || ARTIST_ID;
+        console.log(`=== 작품 로드 시작 (${targetArtistId}) ===`);
 
         // 메타데이터 로드 (image_url 포함하되, Base64는 처리 시 건너뜀)
         const { data, error, status } = await supabase
             .from("artworks")
             .select("id, title, year, month, dimensions, medium, description, price, created_at, image_url, artist_name")
-            .eq("artist_id", ARTIST_ID) // 현재 작가의 데이터만 가져오기
+            .eq("artist_id", targetArtistId) // 현재 작가의 데이터만 가져오기
             .order("created_at", { ascending: false });
 
         console.log("Supabase response status:", status);
@@ -81,13 +82,13 @@ export async function getAllArtworks(): Promise<Artwork[]> {
 }
 
 // 작품 추가
-export async function addArtwork(artwork: Omit<Artwork, "id"> & { id?: string }): Promise<Artwork> {
+export async function addArtwork(artwork: Omit<Artwork, "id"> & { id?: string }, ownerId?: string): Promise<Artwork> {
     const newArtwork = {
         ...artwork,
         id: artwork.id || generateId(),
     };
 
-    const row = artworkToRow(newArtwork as Artwork);
+    const row = artworkToRow(newArtwork as Artwork, ownerId);
 
     const { data, error } = await supabase
         .from("artworks")
@@ -104,14 +105,15 @@ export async function addArtwork(artwork: Omit<Artwork, "id"> & { id?: string })
 }
 
 // 작품 수정
-export async function updateArtwork(artwork: Artwork): Promise<Artwork> {
-    const row = artworkToRow(artwork);
+export async function updateArtwork(artwork: Artwork, ownerId?: string): Promise<Artwork> {
+    const row = artworkToRow(artwork, ownerId);
+    const targetArtistId = ownerId || ARTIST_ID;
 
     const { data, error } = await supabase
         .from("artworks")
         .update(row)
         .eq("id", artwork.id)
-        .eq("artist_id", ARTIST_ID) // 현재 작가의 데이터만 수정
+        .eq("artist_id", targetArtistId) // 현재 작가의 데이터만 수정
         .select()
         .single();
 
@@ -124,12 +126,13 @@ export async function updateArtwork(artwork: Artwork): Promise<Artwork> {
 }
 
 // 작품 삭제
-export async function deleteArtwork(id: string): Promise<void> {
+export async function deleteArtwork(id: string, ownerId?: string): Promise<void> {
+    const targetArtistId = ownerId || ARTIST_ID;
     const { error } = await supabase
         .from("artworks")
         .delete()
         .eq("id", id)
-        .eq("artist_id", ARTIST_ID); // 현재 작가의 데이터만 삭제
+        .eq("artist_id", targetArtistId); // 현재 작가의 데이터만 삭제
 
     if (error) {
         console.error("Failed to delete artwork:", error);
@@ -138,12 +141,13 @@ export async function deleteArtwork(id: string): Promise<void> {
 }
 
 // 단일 작품 가져오기
-export async function getArtwork(id: string): Promise<Artwork | undefined> {
+export async function getArtwork(id: string, ownerId?: string): Promise<Artwork | undefined> {
+    const targetArtistId = ownerId || ARTIST_ID;
     const { data, error } = await supabase
         .from("artworks")
         .select("*")
         .eq("id", id)
-        .eq("artist_id", ARTIST_ID) // 현재 작가의 데이터만 가져오기
+        .eq("artist_id", targetArtistId) // 현재 작가의 데이터만 가져오기
         .single();
 
     if (error) {

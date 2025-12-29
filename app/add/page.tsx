@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useRef, FormEvent, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { addArtwork, uploadImageToStorage } from "../utils/db";
-import { loadSettings } from "../utils/settingsDb";
+import { loadSettings, loadSettingsById } from "../utils/settingsDb";
 import ProtectedRoute from "../components/ProtectedRoute";
 import { isPaymentRequired, isAlwaysFreeMode } from "../utils/deploymentMode";
 import { usePayment } from "../contexts/PaymentContext";
@@ -12,6 +12,8 @@ import PaymentGate from "../components/PaymentGate";
 
 export default function AddArtworkPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const vipId = searchParams.get("vipId") || "";
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -32,7 +34,8 @@ export default function AddArtworkPage() {
     // 초기 데이터 확인
     useEffect(() => {
         setIsMounted(true);
-        loadSettings().then((settings) => {
+        const fetchSettings = vipId ? loadSettingsById(vipId) : loadSettings();
+        fetchSettings.then((settings) => {
             if (settings.defaultArtistNote && !description) {
                 setDescription(settings.defaultArtistNote);
             }
@@ -40,7 +43,7 @@ export default function AddArtworkPage() {
                 setArtistName(settings.artistName);
             }
         });
-    }, []);
+    }, [vipId]);
 
     // 이미지 선택 핸들러
     const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -94,7 +97,7 @@ export default function AddArtworkPage() {
                 description: description.trim() || undefined,
                 price: price.trim() || undefined,
                 artistName: artistName,
-            });
+            }, vipId || undefined);
 
             // 미리보기 URL 정리
             if (imagePreview && imagePreview.startsWith("blob:")) {
@@ -103,7 +106,10 @@ export default function AddArtworkPage() {
 
             // 성공 시 해당 연도-월 탭으로 이동
             const yearMonthKey = month ? `${year}-${month}` : `${year}`;
-            router.push(`/?yearMonth=${yearMonthKey}`);
+            const targetUrl = vipId
+                ? `/gallery-${vipId}?yearMonth=${yearMonthKey}`
+                : `/?yearMonth=${yearMonthKey}`;
+            router.push(targetUrl);
         } catch (err) {
             console.error("Failed to add artwork:", err);
             setError("작품 저장에 실패했습니다. 다시 시도해주세요.");

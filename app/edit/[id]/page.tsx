@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, FormEvent, use } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { getArtwork, updateArtwork, uploadImageToStorage } from "../../utils/db";
 import { Artwork } from "../../data/artworks";
@@ -17,6 +17,8 @@ interface EditArtworkPageProps {
 export default function EditArtworkPage({ params }: EditArtworkPageProps) {
     const { id } = use(params);
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const vipId = searchParams.get("vipId") || "";
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [artwork, setArtwork] = useState<Artwork | null>(null);
@@ -40,7 +42,7 @@ export default function EditArtworkPage({ params }: EditArtworkPageProps) {
         setIsMounted(true);
         async function loadArtwork() {
             try {
-                const data = await getArtwork(id);
+                const data = await getArtwork(id, vipId || undefined);
                 if (data) {
                     setArtwork(data);
                     setImagePreview(data.imageUrl);
@@ -119,14 +121,15 @@ export default function EditArtworkPage({ params }: EditArtworkPageProps) {
                 description: description.trim() || undefined,
                 price: price.trim() || undefined,
                 artistName: artwork.artistName, // 기존 정보 유지
-            });
+            }, vipId || undefined);
 
             // 미리보기 URL 정리
             if (imagePreview && imagePreview.startsWith("blob:")) {
                 URL.revokeObjectURL(imagePreview);
             }
 
-            router.push("/");
+            const targetUrl = vipId ? `/gallery-${vipId}` : "/";
+            router.push(targetUrl);
         } catch (err) {
             console.error("Failed to update artwork:", err);
             setError("작품 저장에 실패했습니다. 다시 시도해주세요.");
@@ -175,7 +178,7 @@ export default function EditArtworkPage({ params }: EditArtworkPageProps) {
                         {error || "작품을 찾을 수 없습니다"}
                     </p>
                     <button
-                        onClick={() => router.push("/")}
+                        onClick={() => router.push(vipId ? `/gallery-${vipId}` : "/")}
                         className="btn btn-primary mt-6"
                     >
                         홈으로 돌아가기

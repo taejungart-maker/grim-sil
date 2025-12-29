@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import ShareModal from "../components/ShareModal";
-import { loadSettings } from "../utils/settingsDb";
+import { loadSettings, loadSettingsById } from "../utils/settingsDb";
 import { defaultSiteConfig, SiteConfig } from "../config/site";
 import { SIGNATURE_COLORS } from "../utils/themeColors";
 
@@ -36,6 +37,8 @@ const CURATED_LINKS = [
 ];
 
 export default function NewsroomPage() {
+    const searchParams = useSearchParams();
+    const vipId = searchParams.get("vipId") || "";
     const [allNews, setAllNews] = useState<NewsItem[]>([]);
     const [displayedNews, setDisplayedNews] = useState<NewsItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -47,7 +50,7 @@ export default function NewsroomPage() {
         async function fetchNews() {
             try {
                 // 사이트 설정 로드
-                const siteData = await loadSettings();
+                const siteData = await (vipId ? loadSettingsById(vipId) : loadSettings());
                 setSettings(siteData);
 
                 // 최적화된 내부 API 호출 (ISR 적용됨)
@@ -67,7 +70,8 @@ export default function NewsroomPage() {
             }
         }
         fetchNews();
-    }, []);
+        fetchNews();
+    }, [vipId]);
 
     const borderColor = settings.theme === "black" ? "#333" : "#eee";
     const textColor = settings.theme === "black" ? "#fff" : "#000";
@@ -88,7 +92,7 @@ export default function NewsroomPage() {
                 backgroundColor: bgColor,
                 zIndex: 100
             }}>
-                <Link href="/" style={{ textDecoration: "none", color: textColor, display: "flex", alignItems: "center", width: "40px" }}>
+                <Link href={vipId ? `/gallery-${vipId}` : "/"} style={{ textDecoration: "none", color: textColor, display: "flex", alignItems: "center", width: "40px" }}>
                     <span style={{ fontSize: "20px" }}>🏠</span>
                 </Link>
                 <h1 style={{ fontSize: "18px", fontWeight: 700, margin: 0, letterSpacing: "-0.02em" }}>미술계 소식통</h1>
