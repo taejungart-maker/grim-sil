@@ -24,12 +24,19 @@ function rowToArtwork(row: ArtworkRow): Artwork & { createdAt?: number } {
     };
 }
 
-// Artist ID 유효성 검사
+// Artist ID 유효성 검사 (절대 격리용)
 export function validateArtistId(id?: string): string {
-    if (!id || id === "undefined" || id === "null") {
-        console.warn("⚠️ Warning: Empty artist_id detected. Falling back to default.");
-        return ARTIST_ID;
+    // vip-gallery 로 시작하는 ID이거나 default 인 경우만 유효
+    if (id && (id.startsWith("vip-gallery-") || id === "default")) {
+        return id;
     }
+
+    // 이외의 경우(undefined, null, 빈 문자열 등)는 
+    // 전역 ARTIST_ID로 가되, 이것이 default인지 확인 루틴 거침
+    if (!id || id === "undefined" || id === "null") {
+        return ARTIST_ID || "default";
+    }
+
     return id;
 }
 
@@ -93,12 +100,18 @@ export async function getAllArtworks(ownerId?: string): Promise<Artwork[]> {
 
 // 작품 추가
 export async function addArtwork(artwork: Omit<Artwork, "id"> & { id?: string }, ownerId?: string): Promise<Artwork> {
+    // ownerId가 명시되지 않은 경우, 현재 시스템의 ARTIST_ID를 사용하되 
+    // 명시적으로 지정된 경우(VIP 룸) 그 ID를 최우선으로 함
+    const targetArtistId = validateArtistId(ownerId);
+
+    console.log(`=== [ISOLATION AUDIT] Adding/Updating artwork for ID: ${targetArtistId} ===`);
+
     const newArtwork = {
         ...artwork,
         id: artwork.id || generateId(),
     };
 
-    const row = artworkToRow(newArtwork as Artwork, ownerId);
+    const row = artworkToRow(newArtwork as Artwork, targetArtistId);
 
     const { data, error } = await supabase
         .from("artworks")
