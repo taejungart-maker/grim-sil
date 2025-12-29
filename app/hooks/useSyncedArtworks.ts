@@ -48,13 +48,15 @@ export function useSyncedArtworks(vipId?: string): UseSyncedArtworksResult {
                     filter: `artist_id=eq.${vipId || ARTIST_ID}`
                 },
                 (payload) => {
-                    console.log("Realtime update:", payload.eventType);
+                    console.log(`[ISOLATION] Realtime for ${vipId || 'main'}:`, payload.eventType);
                     // 변경사항 발생 시 전체 목록 새로고침
                     loadArtworks();
                 }
             )
             .subscribe((status) => {
-                console.log("Realtime subscription status:", status);
+                if (status === 'SUBSCRIBED') {
+                    console.log(`[ISOLATION] Realtime Subscribed for: ${vipId || ARTIST_ID}`);
+                }
             });
 
         // 정리 함수

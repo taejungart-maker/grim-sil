@@ -24,8 +24,18 @@ function rowToArtwork(row: ArtworkRow): Artwork & { createdAt?: number } {
     };
 }
 
+// Artist ID 유효성 검사
+export function validateArtistId(id?: string): string {
+    if (!id || id === "undefined" || id === "null") {
+        console.warn("⚠️ Warning: Empty artist_id detected. Falling back to default.");
+        return ARTIST_ID;
+    }
+    return id;
+}
+
 // Artwork를 Row 형태로 변환
 function artworkToRow(artwork: Artwork & { createdAt?: number }, ownerId?: string): Partial<ArtworkRow> {
+    const targetId = validateArtistId(ownerId);
     return {
         id: artwork.id,
         title: artwork.title,
@@ -37,15 +47,15 @@ function artworkToRow(artwork: Artwork & { createdAt?: number }, ownerId?: strin
         description: artwork.description ?? null,
         price: artwork.price ?? null,
         artist_name: artwork.artistName ?? null,
-        artist_id: ownerId || ARTIST_ID, // 멀티 테넌트 지원 (ID가 있으면 해당 ID 사용, 없으면 기본값)
+        artist_id: targetId, // 절대 격리: 강제 할당
     };
 }
 
 // 모든 작품 가져오기 (Storage URL만 포함, Base64는 제외)
 export async function getAllArtworks(ownerId?: string): Promise<Artwork[]> {
     try {
-        const targetArtistId = ownerId || ARTIST_ID;
-        console.log(`=== 작품 로드 시작 (${targetArtistId}) ===`);
+        const targetArtistId = validateArtistId(ownerId);
+        console.log(`=== [ISOLATION AUDIT] Fetching artworks for ID: ${targetArtistId} ===`);
 
         // 메타데이터 로드 (image_url 포함하되, Base64는 처리 시 건너뜀)
         const { data, error, status } = await supabase
