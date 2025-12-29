@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { loadSettings } from "./utils/settingsDb";
 
+export const revalidate = 0;
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata() {
   try {
     const settings = await loadSettings();
