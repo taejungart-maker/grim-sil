@@ -46,11 +46,11 @@ export default async function CheckDataPage() {
                     </thead>
                     <tbody>
                         {allSettings?.map(s => (
-                            <tr key={s.artist_id}>
-                                <td><b>{s.artist_id}</b></td>
-                                <td>{s.artist_name_ko} ({s.artist_name})</td>
-                                <td style={{ textAlign: "center", color: artworkCounts[s.artist_id] ? "green" : "red", fontWeight: "bold" }}>
-                                    {artworkCounts[s.artist_id] || 0}
+                            <tr key={s.id}>
+                                <td><b>{s.id}</b></td>
+                                <td>{s.artist_name} ({s.gallery_name_ko})</td>
+                                <td style={{ textAlign: "center", color: artworkCounts[s.id] ? "green" : "red", fontWeight: "bold" }}>
+                                    {artworkCounts[s.id] || 0}
                                 </td>
                                 <td>{s.site_title}</td>
                             </tr>
