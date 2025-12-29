@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { loadSettings } from "./utils/settingsDb";
+import { unstable_noStore as noStore } from "next/cache";
 
 export const revalidate = 0;
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata() {
+  noStore(); // 🔥 절대 캐시하지 않음 (상용 제품 수준의 실시간성 확보)
   try {
     const settings = await loadSettings();
+    const runtimeId = process.env.NEXT_PUBLIC_ARTIST_ID || "default";
     const title = settings.siteTitle || `${settings.artistName} 작가님의 온라인 화첩`;
     const description = settings.siteDescription || `${settings.artistName} 작가의 작품세계를 담은 공간입니다.`;
 
@@ -64,6 +67,8 @@ export async function generateMetadata() {
         'og:image:secure_url': finalImageUrl,
         'og:image:type': 'image/jpeg',
         'og:site_name': `${settings.artistName} 작가님의 온라인 화첩`,
+        'debug-artist-id': runtimeId,
+        'debug-crawled-at': new Date().toISOString(),
       },
     };
   } catch (error) {
