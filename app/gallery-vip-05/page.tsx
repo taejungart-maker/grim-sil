@@ -60,7 +60,7 @@ export async function generateMetadata() {
 export default function VIPPage() {
     return (
         <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><p>불러오는 중...</p></div>}>
-            <VIPPageClient VIP_ID={VIP_ID} />
+            <VIPPageClient VIP_ID={VIP_ID} isAlwaysFree={false} />
         </Suspense>
     );
 }

@@ -15,6 +15,7 @@ interface HeaderProps {
     onOpenPayment: () => void;
     onKakaoShare: () => void;
     vipId?: string;
+    isAlwaysFree?: boolean;
 }
 
 export default function Header({
@@ -26,7 +27,8 @@ export default function Header({
     onLogout,
     onOpenPayment,
     onKakaoShare,
-    vipId
+    vipId,
+    isAlwaysFree = false
 }: HeaderProps) {
     const [isMounted, setIsMounted] = useState(false);
 
@@ -103,7 +105,7 @@ export default function Header({
                     )}
 
                     {/* PRO 뱃지 - 구독 시 톱니바퀴 옆에 표시 */}
-                    {isMounted && isPaid && needsPayment && !isAlwaysFreeMode() && !isFreeArtistHost && (
+                    {isMounted && isPaid && needsPayment && !isAlwaysFree && !isAlwaysFreeMode() && !isFreeArtistHost && (
                         <span
                             style={{
                                 padding: "3px 6px",
@@ -210,7 +212,7 @@ export default function Header({
                     {/* [ZERO_CACHE_FORCE] 구조 변경으로 캐시 무력화 */}
                     <div id="nav-actions-container-v2" className="flex items-center gap-2 sm:gap-3 sm:ml-auto">
                         {/* 구독하기 버튼 - 호스트네임 하드 가드 (V2) */}
-                        {isMounted && !isPaid && !isAlwaysFreeMode() && !isFreeArtistHost && (
+                        {isMounted && !isPaid && !isAlwaysFree && !isAlwaysFreeMode() && !isFreeArtistHost && (
                             <button
                                 id="force-sub-btn-v2"
                                 onClick={onOpenPayment}

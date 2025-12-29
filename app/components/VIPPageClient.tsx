@@ -155,6 +155,7 @@ export default function VIPPageClient({ VIP_ID, isAlwaysFree = false }: VIPPageC
                 onOpenPayment={() => setShowPaymentModal(true)}
                 onKakaoShare={handleKakaoShare}
                 vipId={VIP_ID}
+                isAlwaysFree={isAlwaysFree}
             />
             <PaymentGate forcedMode={isAlwaysFree ? "always_free" : "commercial"}>
 
