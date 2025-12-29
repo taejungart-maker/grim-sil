@@ -19,21 +19,19 @@ export async function generateMetadata() {
       (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://grim-sil.vercel.app");
 
     // OG 이미지: 작가 프로필 사진 우선 사용 (카카오톡 공유용)
-    // Supabase Storage URL은 절대 경로이므로 그대로 사용
+    // 💡 작가님 요청에 따라 파일명을 'parkyail_og.jpg'로 고정 인식되도록 강화합니다.
     let image = settings.aboutmeImage;
 
-    if (!image) {
-      // Fallback: 기본 OG 이미지 (절대 URL)
-      image = `${baseUrl}/og-default.png`;
+    if (!image || runtimeId === "-vqsk" || runtimeId === "default") {
+      // 🚀 박야일 작가님 또는 기본 상태일 경우, 플랫폼 캐시 강제 갱신을 위해 전용 파일명 사용
+      image = `${baseUrl}/parkyail_og.jpg`;
     } else if (!image.startsWith('http')) {
       // 상대 경로인 경우 절대 URL로 변환
       image = `${baseUrl}${image}`;
     }
-    // 이미 http로 시작하면 Supabase Storage URL이므로 그대로 사용
 
-    // 🔥 카카오톡 캐시 방지: 동적 타임스탬프 추가
-    const cacheBustingParam = `?v=${Date.now()}`;
-    const finalImageUrl = image + cacheBustingParam;
+    // 🔥 플랫폼 캐시 완벽 방지: 파일명을 바꿔도 혹시 모를 기억을 지우기 위해 숫자를 붙입니다.
+    const finalImageUrl = `${image}${image.includes('?') ? '&' : '?'}v=${Date.now()}`;
 
     return {
       title,
