@@ -113,7 +113,7 @@ export default function ArtistPicksSection({ theme, picks = [] }: ArtistPicksSec
                                     border: `2px solid ${borderColor}`
                                 }}>
                                     <img
-                                        src={pick.imageUrl || DEFAULT_IMAGE}
+                                        src={pick.imageUrl ? `${pick.imageUrl}?t=${Date.now()}` : DEFAULT_IMAGE}
                                         alt={pick.name}
                                         style={{
                                             width: "100%",
