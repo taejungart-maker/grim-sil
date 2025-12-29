@@ -32,22 +32,9 @@ const demoArtworks = [
     },
 ];
 
-// 이미지를 Base64로 변환
-async function imageUrlToBase64(url: string): Promise<string> {
-    const response = await fetch(url);
-    const blob = await response.blob();
-
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-    });
-}
-
 // 데모 데이터 로드 (작품이 없을 때만)
-export async function loadDemoDataIfEmpty(): Promise<boolean> {
-    const existingArtworks = await getAllArtworks();
+export async function loadDemoDataIfEmpty(artistId: string = "default"): Promise<boolean> {
+    const existingArtworks = await getAllArtworks(artistId);
 
     // 이미 작품이 있으면 로드하지 않음
     if (existingArtworks.length > 0) {
@@ -57,11 +44,11 @@ export async function loadDemoDataIfEmpty(): Promise<boolean> {
     // 데모 작품 추가
     for (const artwork of demoArtworks) {
         try {
-            const base64Image = await imageUrlToBase64(artwork.imageUrl);
+            // 데모용 이미지는 이미 `/demo1.png` 등 public 폴더에 있으므로 
+            // 굳이 Base64 변환 없이 파일 경로 그대로 사용 (DB-Storage 연동 부담 완화)
             await addArtwork({
                 ...artwork,
-                imageUrl: base64Image,
-            });
+            }, artistId);
         } catch (error) {
             console.error("Failed to load demo artwork:", error);
         }

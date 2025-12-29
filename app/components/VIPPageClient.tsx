@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { getYearMonths, getArtworksByYearMonth, Artwork, YearMonthKey } from "../data/artworks";
+import { getYearMonths, getArtworksByYearMonth, Artwork, YearMonthKey, createYearMonthKey } from "../data/artworks";
 import { loadDemoDataIfEmpty } from "../utils/demoData";
 import { useSyncedArtworks, useSyncedSettings } from "../hooks/useSyncedArtworks";
 import { useAuth } from "../contexts/AuthContext";
@@ -84,7 +84,7 @@ export default function VIPPageClient({ VIP_ID, isAlwaysFree = false }: VIPPageC
     }, [artworks, yearMonthParam, selectedYearMonth]);
 
     const handleArtworkClick = (artwork: Artwork, index: number) => {
-        const yearArtworks = artworks.filter(a => a.yearMonth === selectedYearMonth);
+        const yearArtworks = artworks.filter(a => createYearMonthKey(a.year, a.month) === selectedYearMonth);
         setSelectedArtwork({ artwork, index, yearArtworks });
     };
 
@@ -120,7 +120,10 @@ export default function VIPPageClient({ VIP_ID, isAlwaysFree = false }: VIPPageC
 
     const isLoading = artworksLoading || settingsLoading;
     const yearMonths = getYearMonths(artworks);
-    const currentYearMonthArtworks = selectedYearMonth ? getArtworksByYearMonth(artworks, selectedYearMonth) : [];
+
+    // Group artworks by year/month
+    const groupedArtworks = useMemo(() => getArtworksByYearMonth(artworks), [artworks]);
+    const currentYearMonthArtworks = selectedYearMonth ? (groupedArtworks.get(selectedYearMonth) || []) : [];
 
     const colors = {
         bg: settings.theme === "black" ? "#000000" : "#ffffff",
@@ -183,8 +186,6 @@ export default function VIPPageClient({ VIP_ID, isAlwaysFree = false }: VIPPageC
                                     key={artwork.id}
                                     artwork={artwork}
                                     onClick={() => handleArtworkClick(artwork, index)}
-                                    showPrice={settings.showPrice}
-                                    theme={settings.theme}
                                 />
                             ))}
                         </div>
@@ -207,8 +208,7 @@ export default function VIPPageClient({ VIP_ID, isAlwaysFree = false }: VIPPageC
                     initialIndex={selectedArtwork.index}
                     onClose={() => setSelectedArtwork(null)}
                     onDelete={handleArtworkDeleted}
-                    showPrice={settings.showPrice}
-                    theme={settings.theme}
+                    theme={settings.theme as "white" | "black"}
                 />
             )}
 
