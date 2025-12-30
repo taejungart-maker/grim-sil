@@ -15,6 +15,14 @@ export default function PolicyModal({ isOpen, onClose, policyId, theme = "white"
     const [content, setContent] = useState("");
     const [loading, setLoading] = useState(true);
 
+    const colors = {
+        bg: theme === "black" ? "#111" : "#ffffff",
+        text: theme === "black" ? "#eee" : "#222",
+        headerBg: theme === "black" ? "#1a1a1a" : "#f8f9fa",
+        border: theme === "black" ? "#333" : "#e9ecef",
+        accent: "#4f46e5"
+    };
+
     useEffect(() => {
         if (isOpen) {
             fetchPolicy();
@@ -50,99 +58,104 @@ export default function PolicyModal({ isOpen, onClose, policyId, theme = "white"
 
     if (!isOpen) return null;
 
-    const colors = {
-        bg: theme === "black" ? "#1a1a1a" : "#ffffff",
-        text: theme === "black" ? "#ffffff" : "#1a1a1a",
-        subText: theme === "black" ? "#999" : "#666",
-        border: theme === "black" ? "#333" : "#eee",
-        accent: "#6366f1"
-    };
-
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-4">
             {/* Backdrop */}
             <div
-                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                className="absolute inset-0 bg-black/80 backdrop-blur-md"
                 onClick={onClose}
             />
 
             {/* Modal */}
             <div
-                className="relative w-full max-w-2xl max-h-[80vh] overflow-hidden rounded-2xl shadow-2xl animate-in fade-in zoom-in duration-200"
+                className="relative w-full max-w-2xl h-full md:h-auto md:max-h-[85vh] overflow-hidden rounded-none md:rounded-2xl shadow-2xl animate-in fade-in zoom-in duration-200 flex flex-col"
                 style={{ background: colors.bg, color: colors.text }}
             >
                 {/* Header */}
-                <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: colors.border, background: colors.bg }}>
-                    <h2 className="text-xl font-bold">{title}</h2>
+                <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: colors.border, background: colors.headerBg }}>
+                    <h2 className="text-lg font-bold tracking-tight">{title}</h2>
                     <button
                         onClick={onClose}
-                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+                        className="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-full transition-colors"
+                        aria-label="Close"
                     >
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                             <path d="M18 6L6 18M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
 
-                {/* Content */}
+                {/* Content Area - FIXED HEIGHT & SCROLL */}
                 <div
-                    className="overflow-y-auto p-6 md:p-8 custom-scrollbar"
+                    className="flex-1 overflow-y-auto p-6 md:p-10 custom-scrollbar bg-white dark:bg-[#111]"
                     style={{
-                        maxHeight: "calc(80vh - 140px)",
                         scrollBehavior: "smooth"
                     }}
                 >
                     {loading ? (
-                        <div className="flex justify-center py-12">
-                            <div className="animate-spin h-6 w-6 border-2 border-indigo-500 border-t-transparent rounded-full" />
+                        <div className="flex flex-col items-center justify-center py-20 gap-4">
+                            <div className="animate-spin h-8 w-8 border-3 border-indigo-500 border-t-transparent rounded-full" />
+                            <p className="text-sm text-gray-500">약관 전문을 불러오는 중입니다...</p>
                         </div>
                     ) : (
                         <div
+                            className="prose prose-sm max-w-none"
                             style={{
                                 color: colors.text,
                                 fontSize: "15px",
-                                lineHeight: "1.8",
-                                fontFamily: "'Noto Sans KR', sans-serif"
+                                lineHeight: "1.9",
+                                fontFamily: "'Noto Sans KR', 'Pretendard', sans-serif",
+                                wordBreak: "keep-all"
                             }}
                         >
                             {/* 정책 내용 렌더링: 제목 강조 및 문단 간격 처리 */}
                             {content.split('\n').map((line, i) => {
                                 const trimLine = line.trim();
 
-                                // 1. 환불 불가 특별 강조 ([중요] 또는 ⚠️ 포함 시)
-                                const isImportant = trimLine.includes('[중요]') || trimLine.includes('⚠️') || trimLine.includes('🚨');
+                                // 1. 중요 강조 ([중요], 🚨, ** 포함 시)
+                                const isImportant = trimLine.includes('[중요]') || trimLine.includes('⚠️') || trimLine.includes('🚨') || trimLine.startsWith('**');
 
                                 // 2. 조항 제목 감지 (제n조, n., 가. 등)
                                 const isHeader = /^제\s*\d+\s*조/.test(trimLine) || /^\d+\./.test(trimLine) || /^[가-힣]\./.test(trimLine);
 
-                                // 3. 강조 텍스트 (**텍스트**)
-                                const processedLine = trimLine.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                                // 3. 볼드 텍스트 수동 처리
+                                const processedLine = trimLine
+                                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                                    .replace(/\[중요\]/g, '<span style="color: #ef4444;">[중요]</span>');
 
-                                if (!trimLine && i !== 0) return <div key={i} className="h-4" />;
+                                if (!trimLine && i !== 0) return <div key={i} className="h-6" />;
 
                                 return (
-                                    <p
+                                    <div
                                         key={i}
                                         className={`
-                                            mb-4 
-                                            ${isImportant ? 'text-red-500 font-bold text-lg border-l-4 border-red-500 pl-4 py-2 bg-red-50 dark:bg-red-900/10 my-6' : ''}
-                                            ${isHeader ? 'font-bold text-lg mt-8 mb-4 text-indigo-600 dark:text-indigo-400' : ''}
+                                            mb-2 
+                                            ${isImportant ? 'text-blue-600 dark:text-blue-400 font-semibold' : ''}
+                                            ${line.includes('환불') ? 'font-bold' : ''}
+                                            ${isHeader ? 'font-extrabold text-[17px] mt-10 mb-5 text-gray-900 dark:text-gray-100 border-b pb-2' : ''}
                                         `}
-                                        dangerouslySetInnerHTML={{ __html: processedLine }}
-                                    />
+                                        style={isHeader ? { borderColor: colors.border } : {}}
+                                    >
+                                        <p dangerouslySetInnerHTML={{ __html: processedLine }} />
+                                    </div>
                                 );
                             })}
+
+                            {/* 법적 공신력 푸터 */}
+                            <div className="mt-16 pt-8 border-t text-xs text-gray-400 text-center" style={{ borderColor: colors.border }}>
+                                본 약관은 2024년 12월 31일부터 시행됩니다.
+                                <br />© 오용택(그림실). All rights reserved.
+                            </div>
                         </div>
                     )}
                 </div>
 
                 <style jsx>{`
                     .custom-scrollbar::-webkit-scrollbar {
-                        width: 8px;
+                        width: 10px;
                     }
                     .custom-scrollbar::-webkit-scrollbar-track {
-                        background: ${theme === "black" ? "#000" : "#f1f1f1"};
-                        border-radius: 10px;
+                        background: ${theme === "black" ? "#000" : "#f8f9fa"};
                     }
                     .custom-scrollbar::-webkit-scrollbar-thumb {
                         background: ${theme === "black" ? "#333" : "#ccc"};
