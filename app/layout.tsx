@@ -93,8 +93,10 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;900&display=swap"
           rel="stylesheet"
         />
-        {/* 포트원 SDK - 결제 기능을 위해 필요 */}
+        {/* 포트원 SDK V1 - 기존 구독 결제 */}
         <Script src="https://cdn.iamport.kr/v1/iamport.js" strategy="beforeInteractive" />
+        {/* 포트원 SDK V2 - 나도 갤러리 만들기 결제 */}
+        <Script src="https://cdn.portone.io/v2/browser-sdk.js" strategy="beforeInteractive" />
       </head>
       <body suppressHydrationWarning>
         <PaymentProvider>

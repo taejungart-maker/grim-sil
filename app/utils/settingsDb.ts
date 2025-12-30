@@ -80,9 +80,8 @@ function configToRow(config: SiteConfig): Partial<SettingsRow> {
 
 // 설정 불러오기
 export async function loadSettings(): Promise<SiteConfig> {
-    // 서버측에서 실행될 때 최신 환경 변수를 반영하도록 직접 체크
-    const runtimeArtistId = process.env.NEXT_PUBLIC_ARTIST_ID || "default";
-    return loadSettingsById(runtimeArtistId);
+    // 클라이언트/서버 모두 지원 (도메인 기반)
+    return loadSettingsById(ARTIST_ID);
 }
 
 // 특정 작가 ID의 설정 불러오기

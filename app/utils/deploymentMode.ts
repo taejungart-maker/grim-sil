@@ -73,3 +73,18 @@ export function isTestPaymentMode(): boolean {
 export function isAlwaysFreeMode(): boolean {
     return getDeploymentMode() === 'always_free';
 }
+
+/**
+ * VIP 링크가 무료인지 확인합니다.
+ * @param linkId link_id (예: gallery-vip-01)
+ * @returns VIP-01은 항상 무료, 나머지는 DB 확인 필요
+ */
+export function isVipFreeMode(linkId?: string): boolean {
+    // VIP-01은 항상 무료 (하현주 테스트용)
+    if (linkId === 'gallery-vip-01') {
+        return true;
+    }
+
+    // 기본 배포 모드 확인
+    return isAlwaysFreeMode();
+}

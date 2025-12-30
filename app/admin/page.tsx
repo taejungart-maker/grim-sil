@@ -11,10 +11,12 @@ import { useAuth } from "../contexts/AuthContext";
 import { resetPaymentStatus } from "../utils/paymentUtils";
 import { isAlwaysFreeMode } from "../utils/deploymentMode";
 import { ARTIST_ID as GLOBAL_ARTIST_ID } from "../utils/supabase";
+import { createVipArtist, getAllVipArtists, deleteVipArtist, generateVipLinkUrl, VipArtist } from "../utils/vipArtistDb";
 import QRCode from "qrcode";
 import { SIGNATURE_COLORS } from "../utils/themeColors";
 
 import Link from "next/link";
+import VipManagement from "../components/VipManagement";
 
 export default function AdminPage() {
     const router = useRouter();
@@ -1030,6 +1032,16 @@ export default function AdminPage() {
                                 lineHeight: "1.6",
                                 resize: "none"
                             }}
+                        />
+                    </div>
+
+                    {/* 🎯 VIP 링크 자동 생성 시스템 (숨김 처리) */}
+                    <div style={{ display: "none" }}>
+                        <VipManagement
+                            bgColor={bgColor}
+                            textColor={textColor}
+                            borderColor={borderColor}
+                            mutedColor={mutedColor}
                         />
                     </div>
 
