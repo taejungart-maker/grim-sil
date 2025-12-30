@@ -393,9 +393,9 @@ export default function VIPPageClient({ VIP_ID, isAlwaysFree = false }: VIPPageC
                 onSuccess={() => window.location.reload()}
             />
 
-            {/* 하단 플로팅 액션 버튼 (로그인 시에만 노출) */}
+            {/* 하단 플로팅 액션 버튼 (로그인 시에만 노출 & 약관 모달이 닫혀있을 때만) */}
             {
-                isMounted && isLoggedIn && (
+                isMounted && isLoggedIn && !policyModal.isOpen && (
                     <div
                         id="author-only-floating-v9"
                         className="fixed z-50 flex flex-col gap-3"
