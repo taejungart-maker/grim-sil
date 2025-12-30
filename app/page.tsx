@@ -54,7 +54,7 @@ function HomeContent() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [policyModal, setPolicyModal] = useState<{
     isOpen: boolean;
-    policyId: "terms" | "privacy" | "refund";
+    policyId: "terms" | "privacy" | "refund" | "exchange";
   }>({
     isOpen: false,
     policyId: "terms"
@@ -410,6 +410,22 @@ function HomeContent() {
               이용약관
             </button>
             <button
+              onClick={() => setPolicyModal({ isOpen: true, policyId: "terms" })}
+              style={{
+                color: settings.theme === "black" ? "#999" : "#666",
+                textDecoration: "underline",
+                fontSize: "12px",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+                fontFamily: "inherit"
+              }}
+            >
+              이용약관
+            </button>
+            <span style={{ margin: "0 8px", color: settings.theme === "black" ? "#444" : "#ddd" }}>|</span>
+            <button
               onClick={() => setPolicyModal({ isOpen: true, policyId: "privacy" })}
               style={{
                 color: settings.theme === "black" ? "#999" : "#666",
@@ -424,6 +440,7 @@ function HomeContent() {
             >
               개인정보처리방침
             </button>
+            <span style={{ margin: "0 8px", color: settings.theme === "black" ? "#444" : "#ddd" }}>|</span>
             <button
               onClick={() => setPolicyModal({ isOpen: true, policyId: "refund" })}
               style={{
@@ -437,7 +454,23 @@ function HomeContent() {
                 fontFamily: "inherit"
               }}
             >
-              환불/교환 정책
+              환불 정책
+            </button>
+            <span style={{ margin: "0 8px", color: settings.theme === "black" ? "#444" : "#ddd" }}>|</span>
+            <button
+              onClick={() => setPolicyModal({ isOpen: true, policyId: "exchange" })}
+              style={{
+                color: settings.theme === "black" ? "#999" : "#666",
+                textDecoration: "underline",
+                fontSize: "12px",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+                fontFamily: "inherit"
+              }}
+            >
+              교환 정책
             </button>
           </div>
         </div>
@@ -450,7 +483,7 @@ function HomeContent() {
           <div style={{ fontSize: "12px", color: settings.theme === "black" ? "#777" : "#999" }}>
             본 서비스는 월 20,000원의 구독 서비스입니다. 결제는 Port One을 통해 안전하게 처리됩니다.
             <br />
-            결제 시 <button onClick={() => setPolicyModal({ isOpen: true, policyId: "terms" })} style={{ textDecoration: 'underline', color: 'inherit', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>이용약관</button> 및 <button onClick={() => setPolicyModal({ isOpen: true, policyId: "refund" })} style={{ textDecoration: 'underline', color: 'inherit', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>환불정책</button>에 동의한 것으로 간주됩니다.
+            결제 시 <button onClick={() => setPolicyModal({ isOpen: true, policyId: "terms" })} style={{ textDecoration: 'underline', color: 'inherit', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>이용약관</button>, <button onClick={() => setPolicyModal({ isOpen: true, policyId: "privacy" })} style={{ textDecoration: 'underline', color: 'inherit', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>개인정보처리방침</button>, <button onClick={() => setPolicyModal({ isOpen: true, policyId: "refund" })} style={{ textDecoration: 'underline', color: 'inherit', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>환불 정책</button> 및 <button onClick={() => setPolicyModal({ isOpen: true, policyId: "exchange" })} style={{ textDecoration: 'underline', color: 'inherit', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>교환 정책</button>에 동의한 것으로 간주됩니다.
             <br />
             구독 취소 시 위약금 없이 즉시 해지 가능하며, 남은 기간에 대한 부분 환불은 이용약관에 따릅니다.
           </div>
