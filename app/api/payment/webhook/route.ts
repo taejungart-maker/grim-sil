@@ -7,6 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createVipArtist } from '@/app/utils/vipArtistDb';
+import { sendLoginInfoSms, sendLoginInfoEmail } from '@/app/utils/notificationService';
 
 // 중장년 작가를 위한 고정 임시 비밀번호
 function generateTempPassword(): string {
@@ -59,16 +60,20 @@ export async function POST(request: NextRequest) {
         // 7. 링크 URL 생성
         const galleryUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://grim-sil.vercel.app'}/${newArtist.link_id}`;
 
-        // 8. SMS/이메일 발송 (TODO: 실제 발송 로직)
-        console.log('📧 발송 대기:');
-        console.log('   이메일:', customerEmail);
-        console.log('   전화번호:', customerPhone);
-        console.log('   링크:', galleryUrl);
-        console.log('   임시 비밀번호:', tempPassword);
+        // 8. SMS/이메일 발송 (시뮬레이션 호출)
+        await sendLoginInfoSms({
+            to: customerPhone || '',
+            artistName: customerName,
+            galleryUrl: galleryUrl,
+            tempPassword: tempPassword
+        });
 
-        // TODO: 실제 SMS/이메일 발송 API 호출
-        // await sendSMS(customerPhone, `갤러리 링크: ${galleryUrl}\n임시 비밀번호: ${tempPassword}`);
-        // await sendEmail(customerEmail, 'VIP 갤러리 생성 완료', ...);
+        await sendLoginInfoEmail({
+            to: customerEmail || '',
+            artistName: customerName,
+            galleryUrl: galleryUrl,
+            tempPassword: tempPassword
+        });
 
         // 9. 응답
         return NextResponse.json({

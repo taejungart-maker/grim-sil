@@ -1,12 +1,6 @@
-/**
- * VIP 갤러리 Dynamic Route
- * - /gallery-vip-01, /gallery-vip-02, ... 동적 처리
- * - VIP별 독립 데이터 조회
- * - 무료/결제 모드 자동 적용
- */
-
 import { notFound } from "next/navigation";
 import { getVipArtistByLinkId } from "../../utils/vipArtistDb";
+import VIPPageClient from "../../components/VIPPageClient";
 
 interface PageProps {
     params: {
@@ -16,22 +10,27 @@ interface PageProps {
 
 export default async function VipGalleryPage({ params }: PageProps) {
     const { vipId } = params;
-    const linkId = `gallery-vip-${vipId}`;
 
-    // VIP 아티스트 존재 확인
+    // 🔗 링크 형식 보정 (gallery-vip-01 등)
+    // 사용자가 /gallery-vip/01 또는 /gallery-vip/gallery-vip-01로 접속할 수 있음
+    const linkId = vipId.startsWith("gallery-vip-") ? vipId : `gallery-vip-${vipId}`;
+
+    // VIP 아티스트 존재 확인 (Server-side)
     const artist = await getVipArtistByLinkId(linkId);
 
     if (!artist) {
-        notFound(); // 404 페이지로 리다이렉트
+        notFound(); // 아티스트가 없으면 404
     }
 
-    // 메인 갤러리 페이지로 리다이렉트 (VIP ID를 환경변수로 전달)
-    // 실제로는 메인 갤러리 컴포넌트를 사용하지만, artist_id를 전달
+    // 🎨 실제 클라이언트 컴포넌트 렌더링
+    // artist.LinkID에서 ID 부분(01, 02 등)만 추출하거나 전체 LinkID 사용
+    // VIPPageClient는 내부적으로 VIP_ID를 사용하여 데이터를 조회함
+    const vipNumber = linkId.replace("gallery-vip-", "");
+
     return (
-        <div>
-            <h1>VIP Gallery: {artist.name}</h1>
-            <p>Link ID: {artist.link_id}</p>
-            <p>Type: {artist.is_free ? "무료" : "결제형"}</p>
-        </div>
+        <VIPPageClient
+            VIP_ID={vipNumber}
+            isAlwaysFree={artist.is_free}
+        />
     );
 }
