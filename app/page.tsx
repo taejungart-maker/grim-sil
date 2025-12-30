@@ -188,8 +188,8 @@ function HomeContent() {
         />
       )}
 
-      {/* 🚀 동료 갤러리에서 방문한 작가에게 추천 버튼 표시 */}
-      {showQuickAdd && (visitorId || (isLoggedIn && ownerId && ownerId !== ARTIST_ID)) && (
+      {/* 🚀 동료 갤러리에서 방문한 작가에게 추천 버튼 표시 (약관 모달이 닫혀있을 때만) */}
+      {showQuickAdd && !policyModal.isOpen && (visitorId || (isLoggedIn && ownerId && ownerId !== ARTIST_ID)) && (
         <div style={{
           position: "fixed",
           bottom: "100px",

@@ -121,7 +121,7 @@ export default function PolicyModal({ isOpen, onClose, policyId, theme = "white"
                                 // 3. 볼드 텍스트 수동 처리
                                 const processedLine = trimLine
                                     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                                    .replace(/\[중요\]/g, '<span style="color: #ef4444;">[중요]</span>');
+                                    .replace(/\[중요\]/g, '<span style="color: #ef4444; font-weight: 800;">[중요]</span>');
 
                                 if (!trimLine && i !== 0) return <div key={i} className="h-6" />;
 
@@ -129,22 +129,26 @@ export default function PolicyModal({ isOpen, onClose, policyId, theme = "white"
                                     <div
                                         key={i}
                                         className={`
-                                            mb-2 
-                                            ${isImportant ? 'text-blue-600 dark:text-blue-400 font-semibold' : ''}
-                                            ${line.includes('환불') ? 'font-bold' : ''}
-                                            ${isHeader ? 'font-extrabold text-[17px] mt-10 mb-5 text-gray-900 dark:text-gray-100 border-b pb-2' : ''}
+                                            mb-3
+                                            ${isImportant ? 'text-blue-700 dark:text-blue-400 font-bold bg-blue-50/50 dark:bg-blue-900/10 p-2 rounded' : ''}
+                                            ${line.includes('환불') || line.includes('결제') || line.includes('이용료') ? 'font-bold' : ''}
+                                            ${isHeader ? 'font-black text-[18px] mt-12 mb-6 text-gray-950 dark:text-gray-50 border-b-2 pb-2' : ''}
                                         `}
                                         style={isHeader ? { borderColor: colors.border } : {}}
                                     >
-                                        <p dangerouslySetInnerHTML={{ __html: processedLine }} />
+                                        <p
+                                            style={{ wordBreak: "keep-all" }}
+                                            dangerouslySetInnerHTML={{ __html: processedLine }}
+                                        />
                                     </div>
                                 );
                             })}
 
-                            {/* 법적 공신력 푸터 */}
-                            <div className="mt-16 pt-8 border-t text-xs text-gray-400 text-center" style={{ borderColor: colors.border }}>
-                                본 약관은 2024년 12월 31일부터 시행됩니다.
-                                <br />© 오용택(그림실). All rights reserved.
+                            {/* 법적 공신력 푸터 - 부칙 명시 */}
+                            <div className="mt-20 pt-10 border-t-2 text-sm text-gray-500 text-center font-medium" style={{ borderColor: colors.border }}>
+                                <p className="mb-2">부칙</p>
+                                <p className="text-xs text-gray-400">본 약관은 2024년 12월 31일부터 시행됩니다.</p>
+                                <p className="mt-6 text-xs tracking-widest">© 오용택(그림실). All rights reserved.</p>
                             </div>
                         </div>
                     )}
@@ -152,17 +156,18 @@ export default function PolicyModal({ isOpen, onClose, policyId, theme = "white"
 
                 <style jsx>{`
                     .custom-scrollbar::-webkit-scrollbar {
-                        width: 10px;
+                        width: 12px;
                     }
                     .custom-scrollbar::-webkit-scrollbar-track {
-                        background: ${theme === "black" ? "#000" : "#f8f9fa"};
+                        background: ${theme === "black" ? "#0a0a0a" : "#f1f3f5"};
                     }
                     .custom-scrollbar::-webkit-scrollbar-thumb {
-                        background: ${theme === "black" ? "#333" : "#ccc"};
-                        border-radius: 10px;
+                        background: ${theme === "black" ? "#444" : "#adb5bd"};
+                        border-radius: 6px;
+                        border: 3px solid ${theme === "black" ? "#0a0a0a" : "#f1f3f5"};
                     }
                     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                        background: ${theme === "black" ? "#444" : "#bbb"};
+                        background: ${theme === "black" ? "#666" : "#868e96"};
                     }
                 `}</style>
 
