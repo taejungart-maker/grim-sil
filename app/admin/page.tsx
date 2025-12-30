@@ -391,39 +391,6 @@ export default function AdminPage() {
                     </div>
                 )}
 
-                {/* 🔍 방 ID 확인 패널 (디버깅/검증용) */}
-                <div
-                    style={{
-                        padding: "16px 20px",
-                        marginBottom: "32px",
-                        background: settings.theme === "black" ? "#2a2a2a" : "#f0f9ff",
-                        border: `2px solid ${settings.theme === "black" ? "#444" : "#3b82f6"}`,
-                        borderRadius: "12px",
-                    }}
-                >
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                        <div>
-                            <div style={{ fontSize: "14px", fontWeight: 600, color: settings.theme === "black" ? "#60a5fa" : "#1d4ed8", marginBottom: "4px" }}>
-                                현재 방 ID (Room ID)
-                            </div>
-                            <div style={{ fontSize: "20px", fontWeight: 800, fontFamily: "monospace", color: settings.theme === "black" ? "#fbbf24" : "#d97706" }}>
-                                {effectiveArtistId}
-                            </div>
-                        </div>
-                        <div style={{ textAlign: "right" }}>
-                            <div style={{ fontSize: "12px", color: mutedColor, marginBottom: "2px" }}>
-                                현재 도메인
-                            </div>
-                            <div style={{ fontSize: "14px", fontWeight: 600 }}>
-                                {typeof window !== 'undefined' ? window.location.host : 'server'}
-                            </div>
-                        </div>
-                    </div>
-                    <p style={{ fontSize: "12px", color: mutedColor, marginTop: "12px", lineHeight: 1.5 }}>
-                        이 ID가 다른 갤러리와 다르면 데이터가 완전히 분리됩니다. 동일하면 같은 데이터가 표시됩니다.
-                    </p>
-                </div>
-
                 <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
                     {/* 갤러리 이름 (영문) */}
                     <div>
