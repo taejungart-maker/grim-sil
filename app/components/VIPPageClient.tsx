@@ -19,6 +19,7 @@ import Header from "../components/Header";
 import ShareModal from "../components/ShareModal";
 import EncouragementSection from "../components/EncouragementSection";
 import ArtistPicksSection from "../components/ArtistPicksSection";
+import PolicyModal from "../components/PolicyModal";
 
 interface VIPPageClientProps {
     VIP_ID: string;
@@ -52,6 +53,13 @@ export default function VIPPageClient({ VIP_ID, isAlwaysFree = false }: VIPPageC
     const [demoLoaded, setDemoLoaded] = useState(false);
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [showShareModal, setShowShareModal] = useState(false);
+    const [policyModal, setPolicyModal] = useState<{
+        isOpen: boolean;
+        policyId: "terms" | "privacy" | "refund";
+    }>({
+        isOpen: false,
+        policyId: "terms"
+    });
 
     const [isMounted, setIsMounted] = useState(false);
 
@@ -299,36 +307,45 @@ export default function VIPPageClient({ VIP_ID, isAlwaysFree = false }: VIPPageC
                             서비스 이용 안내
                         </div>
                         <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center" }}>
-                            <a
-                                href="/terms"
+                            <button
+                                onClick={() => setPolicyModal({ isOpen: true, policyId: "terms" })}
                                 style={{
                                     color: settings.theme === "black" ? "#999" : "#666",
                                     textDecoration: "underline",
                                     fontSize: "12px",
+                                    background: "none",
+                                    border: "none",
+                                    cursor: "pointer",
                                 }}
                             >
                                 이용약관
-                            </a>
-                            <a
-                                href="/privacy"
+                            </button>
+                            <button
+                                onClick={() => setPolicyModal({ isOpen: true, policyId: "privacy" })}
                                 style={{
                                     color: settings.theme === "black" ? "#999" : "#666",
                                     textDecoration: "underline",
                                     fontSize: "12px",
+                                    background: "none",
+                                    border: "none",
+                                    cursor: "pointer",
                                 }}
                             >
                                 개인정보처리방침
-                            </a>
-                            <a
-                                href="/refund"
+                            </button>
+                            <button
+                                onClick={() => setPolicyModal({ isOpen: true, policyId: "refund" })}
                                 style={{
                                     color: settings.theme === "black" ? "#999" : "#666",
                                     textDecoration: "underline",
                                     fontSize: "12px",
+                                    background: "none",
+                                    border: "none",
+                                    cursor: "pointer",
                                 }}
                             >
                                 환불/교환 정책
-                            </a>
+                            </button>
                         </div>
                     </div>
 
@@ -339,6 +356,8 @@ export default function VIPPageClient({ VIP_ID, isAlwaysFree = false }: VIPPageC
                         </div>
                         <div style={{ fontSize: "12px", color: settings.theme === "black" ? "#777" : "#999" }}>
                             본 서비스는 월 20,000원의 구독 서비스입니다. 결제는 Port One을 통해 안전하게 처리됩니다.
+                            <br />
+                            결제 시 <button onClick={() => setPolicyModal({ isOpen: true, policyId: "terms" })} style={{ textDecoration: 'underline', color: 'inherit' }}>이용약관</button> 및 <button onClick={() => setPolicyModal({ isOpen: true, policyId: "refund" })} style={{ textDecoration: 'underline', color: 'inherit' }}>환불정책</button>에 동의한 것으로 간주됩니다.
                             <br />
                             구독 취소 시 위약금 없이 즉시 해지 가능하며, 남은 기간에 대한 부분 환불은 이용약관에 따릅니다.
                         </div>
@@ -446,6 +465,13 @@ export default function VIPPageClient({ VIP_ID, isAlwaysFree = false }: VIPPageC
                 title={`[VIP] ${settings.artistName} 작가님의 온라인 화첩`}
                 description={`프리미엄 구독 전용 공간입니다.`}
                 theme={settings.theme}
+            />
+
+            <PolicyModal
+                isOpen={policyModal.isOpen}
+                onClose={() => setPolicyModal(prev => ({ ...prev, isOpen: false }))}
+                policyId={policyModal.policyId}
+                theme={settings.theme as "white" | "black"}
             />
         </div>
     );

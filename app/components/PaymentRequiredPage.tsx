@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { usePayment } from "../contexts/PaymentContext";
 import { isTestPaymentMode } from "../utils/deploymentMode";
+import PolicyModal from "./PolicyModal";
 
 // 샘플 아트워크 색상 (실제 이미지 대신 그라데이션 박스 사용)
 const sampleArtworks = [
@@ -26,6 +27,13 @@ export default function PaymentRequiredPage() {
     const { processPayment } = usePayment();
     const [isProcessing, setIsProcessing] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
+    const [policyModal, setPolicyModal] = useState<{
+        isOpen: boolean;
+        policyId: "terms" | "privacy" | "refund";
+    }>({
+        isOpen: false,
+        policyId: "terms"
+    });
     const isTestMode = isTestPaymentMode();
 
     useEffect(() => {
@@ -209,6 +217,26 @@ export default function PaymentRequiredPage() {
                         )}
                     </div>
 
+                    {/* 결제 안내 및 이용약관 동의 (PG 심사 필수) */}
+                    <div style={{
+                        fontSize: '12px',
+                        color: '#888',
+                        marginBottom: '20px',
+                        lineHeight: 1.6,
+                        fontFamily: "'Noto Sans KR', sans-serif",
+                        textAlign: 'center'
+                    }}>
+                        결제 시 <button
+                            onClick={() => setPolicyModal({ isOpen: true, policyId: "terms" })}
+                            style={{ textDecoration: 'underline', color: 'inherit', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                        >이용약관</button> 및 <button
+                            onClick={() => setPolicyModal({ isOpen: true, policyId: "refund" })}
+                            style={{ textDecoration: 'underline', color: 'inherit', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                        >환불정책</button>에 동의한 것으로 간주됩니다.
+                        <br />
+                        <span style={{ color: '#ff4d4f', fontWeight: 600 }}>디지털 콘텐츠 특성상 결제 후 작품 열람 시 환불이 불가합니다.</span>
+                    </div>
+
                     {/* 버튼 그룹 */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         <button
@@ -261,6 +289,12 @@ export default function PaymentRequiredPage() {
                     </div>
                 </div>
             </div>
+
+            <PolicyModal
+                isOpen={policyModal.isOpen}
+                onClose={() => setPolicyModal(prev => ({ ...prev, isOpen: false }))}
+                policyId={policyModal.policyId}
+            />
         </div>
     );
 }
