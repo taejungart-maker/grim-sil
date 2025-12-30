@@ -11,16 +11,16 @@
 ## 🎁 무료 고객 갤러리 (3개)
 
 ### 하현주 작가
-- 갤러리: [https://hahyunju.vercel.app](https://hahyunju.vercel.app)
-- 관리자: [https://hahyunju.vercel.app/admin](https://hahyunju.vercel.app/admin)
+- 갤러리: [https://hahyunju-gallery.vercel.app](https://hahyunju-gallery.vercel.app)
+- 관리자: [https://hahyunju-gallery.vercel.app/admin](https://hahyunju-gallery.vercel.app/admin)
 
 ### 문혜경 작가
-- 갤러리: [https://moonhyekyung.vercel.app](https://moonhyekyung.vercel.app)
-- 관리자: [https://moonhyekyung.vercel.app/admin](https://moonhyekyung.vercel.app/admin)
+- 갤러리: [https://moonhyekyung-gallery.vercel.app](https://moonhyekyung-gallery.vercel.app)
+- 관리자: [https://moonhyekyung-gallery.vercel.app/admin](https://moonhyekyung-gallery.vercel.app/admin)
 
 ### 황미경 작가
-- 갤러리: [https://hwangmikyung.vercel.app](https://hwangmikyung.vercel.app)
-- 관리자: [https://hwangmikyung.vercel.app/admin](https://hwangmikyung.vercel.app/admin)
+- 갤러리: [https://hwangmikyung-gallery.vercel.app](https://hwangmikyung-gallery.vercel.app)
+- 관리자: [https://hwangmikyung-gallery.vercel.app/admin](https://hwangmikyung-gallery.vercel.app/admin)
 
 ---
 
