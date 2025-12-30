@@ -9,7 +9,7 @@ const DOMAIN_ARTIST_MAPPING: Record<string, string> = {
     'grim-sil.vercel.app': '-vqsk',
 
     // ========== 무료 개인 브랜드 갤러리 ==========
-    'hahyunju-gallery.vercel.app': '-vqsk',           // 하현주
+    'hahyunju-gallery.vercel.app': 'vip-gallery-01',  // 하현주 (고유 ID)
     'moonhyekyung-gallery.vercel.app': '-3ibp',       // 문혜경
     'hwangmikyung-gallery.vercel.app': '-5e4p',       // 황미경
 
@@ -49,8 +49,8 @@ export function getClientArtistId(): string {
             return '-vqsk';
         }
         if (host.includes('hahyunju') && host.endsWith('.vercel.app')) {
-            console.log(`[ARTIST_ID] Vercel preview detected: -vqsk (하현주)`);
-            return '-vqsk';
+            console.log(`[ARTIST_ID] Vercel preview detected: vip-gallery-01 (하현주)`);
+            return 'vip-gallery-01';
         }
         if (host.includes('moonhyekyung') && host.endsWith('.vercel.app')) {
             console.log(`[ARTIST_ID] Vercel preview detected: -3ibp (문혜경)`);
@@ -71,7 +71,7 @@ export function getClientArtistId(): string {
 
         // Preview URL 패턴 매칭
         if (cleanHost.includes('grim-sil')) return '-vqsk';
-        if (cleanHost.includes('hahyunju')) return '-vqsk';
+        if (cleanHost.includes('hahyunju')) return 'vip-gallery-01';
         if (cleanHost.includes('moonhyekyung')) return '-3ibp';
         if (cleanHost.includes('hwangmikyung')) return '-5e4p';
     }
