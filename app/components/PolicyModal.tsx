@@ -85,29 +85,73 @@ export default function PolicyModal({ isOpen, onClose, policyId, theme = "white"
                 </div>
 
                 {/* Content */}
-                <div className="overflow-y-auto p-6 text-sm leading-relaxed whitespace-pre-wrap">
+                <div
+                    className="overflow-y-auto p-6 md:p-8 custom-scrollbar"
+                    style={{
+                        maxHeight: "calc(80vh - 140px)",
+                        scrollBehavior: "smooth"
+                    }}
+                >
                     {loading ? (
                         <div className="flex justify-center py-12">
                             <div className="animate-spin h-6 w-6 border-2 border-indigo-500 border-t-transparent rounded-full" />
                         </div>
                     ) : (
                         <div
-                            className={`${policyId === 'refund' ? 'font-medium' : ''}`}
                             style={{
                                 color: colors.text,
                                 fontSize: "15px",
-                                lineHeight: "1.8"
+                                lineHeight: "1.8",
+                                fontFamily: "'Noto Sans KR', sans-serif"
                             }}
                         >
-                            {/* 환불 불가 강조 처리 */}
-                            {content.split('\n').map((line, i) => (
-                                <p key={i} className={`mb-3 ${line.includes('[중요]') ? 'text-red-500 font-bold text-lg border-l-4 border-red-500 pl-4 py-1 bg-red-50 dark:bg-red-900/10' : ''}`}>
-                                    {line}
-                                </p>
-                            ))}
+                            {/* 정책 내용 렌더링: 제목 강조 및 문단 간격 처리 */}
+                            {content.split('\n').map((line, i) => {
+                                const trimLine = line.trim();
+
+                                // 1. 환불 불가 특별 강조 ([중요] 또는 ⚠️ 포함 시)
+                                const isImportant = trimLine.includes('[중요]') || trimLine.includes('⚠️') || trimLine.includes('🚨');
+
+                                // 2. 조항 제목 감지 (제n조, n., 가. 등)
+                                const isHeader = /^제\s*\d+\s*조/.test(trimLine) || /^\d+\./.test(trimLine) || /^[가-힣]\./.test(trimLine);
+
+                                // 3. 강조 텍스트 (**텍스트**)
+                                const processedLine = trimLine.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+                                if (!trimLine && i !== 0) return <div key={i} className="h-4" />;
+
+                                return (
+                                    <p
+                                        key={i}
+                                        className={`
+                                            mb-4 
+                                            ${isImportant ? 'text-red-500 font-bold text-lg border-l-4 border-red-500 pl-4 py-2 bg-red-50 dark:bg-red-900/10 my-6' : ''}
+                                            ${isHeader ? 'font-bold text-lg mt-8 mb-4 text-indigo-600 dark:text-indigo-400' : ''}
+                                        `}
+                                        dangerouslySetInnerHTML={{ __html: processedLine }}
+                                    />
+                                );
+                            })}
                         </div>
                     )}
                 </div>
+
+                <style jsx>{`
+                    .custom-scrollbar::-webkit-scrollbar {
+                        width: 8px;
+                    }
+                    .custom-scrollbar::-webkit-scrollbar-track {
+                        background: ${theme === "black" ? "#000" : "#f1f1f1"};
+                        border-radius: 10px;
+                    }
+                    .custom-scrollbar::-webkit-scrollbar-thumb {
+                        background: ${theme === "black" ? "#333" : "#ccc"};
+                        border-radius: 10px;
+                    }
+                    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                        background: ${theme === "black" ? "#444" : "#bbb"};
+                    }
+                `}</style>
 
                 {/* Footer */}
                 <div className="p-4 border-t text-center" style={{ borderColor: colors.border }}>
