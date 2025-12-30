@@ -178,7 +178,7 @@ function HomeContent() {
         onKakaoShare={handleKakaoShare}
       />
 
-      {showNewsTicker && <NewsTicker theme={settings.theme} newsText={settings.newsText} />}
+      {showNewsTicker && !policyModal.isOpen && <NewsTicker theme={settings.theme} newsText={settings.newsText} />}
 
       {/* 구독 만료 시 흐린 유리 오버레이 */}
       {needsPayment && !isPaid && (
