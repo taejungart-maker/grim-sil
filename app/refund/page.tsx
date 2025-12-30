@@ -210,7 +210,7 @@ export default function RefundPage() {
             <section style={{ marginBottom: "32px" }}>
                 <h2 style={{ fontSize: "20px", fontWeight: 600, marginBottom: "16px" }}>부칙</h2>
                 <p style={{ color: "#4b5563" }}>
-                    본 환불 및 교환 정책은 2025년 1월 1일부터 시행됩니다.
+                    본 환불 및 교환 정책은 2024년 12월 31일부터 시행됩니다.
                 </p>
             </section>
 
@@ -223,8 +223,8 @@ export default function RefundPage() {
                 color: "#9ca3af",
                 fontSize: "14px",
             }}>
-                <p>상호: 태정 | 대표자: 오용택</p>
-                <p>문의: artflow010@gmail.com</p>
+                <p>상호: 그림실 | 대표자: 오용택</p>
+                <p>문의: artflow010@gmail.com | 연락처: 010-8618-3323</p>
             </div>
         </div>
     );

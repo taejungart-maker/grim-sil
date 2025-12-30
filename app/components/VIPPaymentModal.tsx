@@ -168,9 +168,22 @@ export default function VIPPaymentModal({ isOpen, onClose, onSuccess }: VIPPayme
                         </div>
                         <h2 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '24px', color: '#1a1a1a' }}>안전한 결제</h2>
 
-                        <p style={{ fontSize: '14px', color: '#666', marginBottom: '24px', lineHeight: 1.6 }}>
+                        <p style={{ fontSize: "14px", color: '#666', marginBottom: "20px", lineHeight: 1.6 }}>
                             결제 버튼을 클릭하면 포트원 결제창이 열립니다.
                         </p>
+
+                        <div style={{
+                            fontSize: '12px',
+                            color: '#94a3b8',
+                            lineHeight: 1.6,
+                            marginBottom: '24px',
+                            background: '#f8fafc',
+                            padding: '12px',
+                            borderRadius: '12px',
+                            textAlign: 'left'
+                        }}>
+                            결제 시 그림실 <a href="/terms" target="_blank" style={{ color: '#6366f1', textDecoration: 'underline' }}>이용약관</a> 및 <a href="/refund" target="_blank" style={{ color: '#6366f1', textDecoration: 'underline' }}>환불정책</a>에 동의한 것으로 간주되며, <a href="/privacy" target="_blank" style={{ color: '#6366f1', textDecoration: 'underline' }}>개인정보처리방침</a>에 따라 결제 정보가 처리됩니다.
+                        </div>
 
                         <button
                             onClick={handleConfirmPayment}
