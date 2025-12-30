@@ -116,46 +116,13 @@ const POLICY_DATA = {
 };
 
 export default function PolicyModal({ isOpen, onClose, policyId, theme = "white" }: PolicyModalProps) {
-    const [title, setTitle] = useState("");
-    const [content, setContent] = useState("");
-    const [loading, setLoading] = useState(true);
-
+    const data = POLICY_DATA[policyId];
     const colors = {
         bg: theme === "black" ? "#111" : "#ffffff",
         text: theme === "black" ? "#eee" : "#222",
         headerBg: theme === "black" ? "#1a1a1a" : "#f8f9fa",
         border: theme === "black" ? "#333" : "#e9ecef",
         accent: "#4f46e5"
-    };
-
-    useEffect(() => {
-        if (isOpen) {
-            // 하드코딩된 데이터를 즉시 우선 사용 (DB 지연 및 중략 문제 해결)
-            const data = POLICY_DATA[policyId];
-            setTitle(data.title);
-            setContent(data.content);
-            setLoading(false);
-
-            // 백그라운드에서만 DB 동기화 시도 (선택 사항, 여기서는 신뢰도를 위해 하드코딩 우선)
-            fetchPolicyFromDB();
-        }
-    }, [isOpen, policyId]);
-
-    const fetchPolicyFromDB = async () => {
-        try {
-            const { data, error } = await supabase
-                .from("policies")
-                .select("title, content")
-                .eq("id", policyId)
-                .single();
-
-            if (!error && data && !data.content.includes("중략")) {
-                setTitle(data.title);
-                setContent(data.content);
-            }
-        } catch (error) {
-            console.error("DB Sync failed, using hardcoded data.");
-        }
     };
 
     if (!isOpen) return null;
@@ -175,7 +142,7 @@ export default function PolicyModal({ isOpen, onClose, policyId, theme = "white"
             >
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: colors.border, background: colors.headerBg }}>
-                    <h2 className="text-lg font-bold tracking-tight">{title}</h2>
+                    <h2 className="text-lg font-bold tracking-tight">{data.title}</h2>
                     <button
                         onClick={onClose}
                         className="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-full transition-colors"
@@ -194,59 +161,52 @@ export default function PolicyModal({ isOpen, onClose, policyId, theme = "white"
                         scrollBehavior: "smooth"
                     }}
                 >
-                    {loading ? (
-                        <div className="flex flex-col items-center justify-center py-20 gap-4">
-                            <div className="animate-spin h-8 w-8 border-3 border-indigo-500 border-t-transparent rounded-full" />
-                            <p className="text-sm text-gray-500">약관 전문을 불러오는 중입니다...</p>
-                        </div>
-                    ) : (
-                        <div
-                            className="prose prose-sm max-w-none"
-                            style={{
-                                color: colors.text,
-                                fontSize: "15px",
-                                lineHeight: "1.9",
-                                fontFamily: "'Noto Sans KR', 'Pretendard', sans-serif",
-                                wordBreak: "keep-all"
-                            }}
-                        >
-                            {/* 정책 내용 렌더링: 제목 강조 및 문단 간격 처리 */}
-                            {content.split('\n').map((line, i) => {
-                                const trimLine = line.trim();
+                    <div
+                        className="prose prose-sm max-w-none"
+                        style={{
+                            color: colors.text,
+                            fontSize: "15px",
+                            lineHeight: "1.9",
+                            fontFamily: "'Noto Sans KR', 'Pretendard', sans-serif",
+                            wordBreak: "keep-all"
+                        }}
+                    >
+                        {/* 정책 내용 렌더링: 제목 강조 및 문단 간격 처리 */}
+                        {data.content.split('\n').map((line, i) => {
+                            const trimLine = line.trim();
 
-                                // 1. 중요 강조 ([중요], 🚨, ** 포함 시)
-                                const isImportant = trimLine.includes('[중요]') || trimLine.includes('⚠️') || trimLine.includes('🚨') || trimLine.startsWith('**');
+                            // 1. 중요 강조 ([중요], 🚨, ** 포함 시)
+                            const isImportant = trimLine.includes('[중요]') || trimLine.includes('⚠️') || trimLine.includes('🚨') || trimLine.startsWith('**');
 
-                                // 2. 조항 제목 감지 (제n조, n., 가. 등)
-                                const isHeader = /^제\s*\d+\s*조/.test(trimLine) || /^\d+\./.test(trimLine) || /^[가-힣]\./.test(trimLine) || trimLine.startsWith("부칙");
+                            // 2. 조항 제목 감지 (제n조, n., 가. 등)
+                            const isHeader = /^제\s*\d+\s*조/.test(trimLine) || /^\d+\./.test(trimLine) || /^[가-힣]\./.test(trimLine) || trimLine.startsWith("부칙");
 
-                                // 3. 볼드 텍스트 수동 처리
-                                const processedLine = trimLine
-                                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                                    .replace(/\[중요\]/g, '<span style="color: #ef4444; font-weight: 800;">[중요]</span>');
+                            // 3. 볼드 텍스트 수동 처리
+                            const processedLine = trimLine
+                                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                                .replace(/\[중요\]/g, '<span style="color: #ef4444; font-weight: 800;">[중요]</span>');
 
-                                if (!trimLine && i !== 0) return <div key={i} className="h-6" />;
+                            if (!trimLine && i !== 0) return <div key={i} className="h-6" />;
 
-                                return (
-                                    <div
-                                        key={i}
-                                        className={`
-                                            mb-3
-                                            ${isImportant ? 'text-blue-700 dark:text-blue-400 font-bold bg-blue-50/50 dark:bg-blue-900/10 p-2 rounded' : ''}
-                                            ${line.includes('환불') || line.includes('결제') || line.includes('이용료') || line.includes('청약철회') ? 'font-bold' : ''}
-                                            ${isHeader ? 'font-black text-[18px] mt-12 mb-6 text-gray-950 dark:text-gray-50 border-b-2 pb-2' : ''}
-                                        `}
-                                        style={isHeader ? { borderColor: colors.border } : {}}
-                                    >
-                                        <p
-                                            style={{ wordBreak: "keep-all" }}
-                                            dangerouslySetInnerHTML={{ __html: processedLine }}
-                                        />
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    )}
+                            return (
+                                <div
+                                    key={i}
+                                    className={`
+                                        mb-3
+                                        ${isImportant ? 'text-blue-700 dark:text-blue-400 font-bold bg-blue-50/50 dark:bg-blue-900/10 p-2 rounded' : ''}
+                                        ${line.includes('환불') || line.includes('결제') || line.includes('이용료') || line.includes('청약철회') ? 'font-bold' : ''}
+                                        ${isHeader ? 'font-black text-[18px] mt-12 mb-6 text-gray-950 dark:text-gray-50 border-b-2 pb-2' : ''}
+                                    `}
+                                    style={isHeader ? { borderColor: colors.border } : {}}
+                                >
+                                    <p
+                                        style={{ wordBreak: "keep-all" }}
+                                        dangerouslySetInnerHTML={{ __html: processedLine }}
+                                    />
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
 
                 <style jsx>{`
@@ -270,12 +230,13 @@ export default function PolicyModal({ isOpen, onClose, policyId, theme = "white"
                 <div className="p-4 border-t text-center bg-gray-50 dark:bg-gray-900" style={{ borderColor: colors.border }}>
                     <button
                         onClick={onClose}
-                        className="px-12 py-3 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 transition-all shadow-lg active:scale-95"
+                        className="px-16 py-3.5 bg-[#4f46e5] text-white rounded-lg font-bold hover:bg-[#4338ca] transition-all shadow-lg active:scale-95"
                     >
-                        위 내용을 모두 확인했습니다
+                        확인
                     </button>
                 </div>
             </div>
         </div>
     );
 }
+

@@ -469,9 +469,9 @@ function HomeContent() {
         </div>
       </footer>
 
-      {/* [FINAL_VISIBILITY_FIX] 작가(로그인) 전용 부유식 버튼 (원형 디자인 복원: 텍스트 직관성 강화) */}
+      {/* [FINAL_VISIBILITY_FIX] 작가(로그인) 전용 부유식 버튼 (약관 모달 오픈 시에는 숨김) */}
       {
-        isMounted && isLoggedIn && (
+        isMounted && isLoggedIn && !policyModal.isOpen && (
           <div
             id="author-only-floating-v9"
             className="fixed z-50 flex flex-col gap-3"
