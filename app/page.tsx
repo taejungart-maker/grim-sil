@@ -26,6 +26,7 @@ import NewsTicker from "./components/NewsTicker";
 import EncouragementSection from "./components/EncouragementSection";
 import ArtistPicksSection from "./components/ArtistPicksSection";
 import ExpiredOverlay from "./components/ExpiredOverlay";
+import PolicyModal from "./components/PolicyModal";
 
 
 function HomeContent() {
@@ -51,6 +52,13 @@ function HomeContent() {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [policyModal, setPolicyModal] = useState<{
+    isOpen: boolean;
+    policyId: "terms" | "privacy" | "refund";
+  }>({
+    isOpen: false,
+    policyId: "terms"
+  });
   const [showNewsTicker, setShowNewsTicker] = useState(true);
   const [showEncouragement, setShowEncouragement] = useState(true);
   const [showArtistPicks, setShowArtistPicks] = useState(true);
@@ -385,67 +393,79 @@ function HomeContent() {
           </div>
 
           {/* 이용약관 및 정책 */}
-          <div style={{ marginBottom: "20px", paddingTop: "16px", borderTop: `1px solid ${borderColor}` }}>
-            <div style={{ marginBottom: "10px", fontSize: "14px", fontWeight: 600 }}>
-              서비스 이용 안내
-            </div>
-            <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-              <a
-                href="/terms"
-                style={{
-                  color: settings.theme === "black" ? "#999" : "#666",
-                  textDecoration: "underline",
-                  fontSize: "12px",
-                }}
-              >
-                이용약관
-              </a>
-              <a
-                href="/privacy"
-                style={{
-                  color: settings.theme === "black" ? "#999" : "#666",
-                  textDecoration: "underline",
-                  fontSize: "12px",
-                }}
-              >
-                개인정보처리방침
-              </a>
-              <a
-                href="/refund"
-                style={{
-                  color: settings.theme === "black" ? "#999" : "#666",
-                  textDecoration: "underline",
-                  fontSize: "12px",
-                }}
-              >
-                환불/교환 정책
-              </a>
-            </div>
+          <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+            <button
+              onClick={() => setPolicyModal({ isOpen: true, policyId: "terms" })}
+              style={{
+                color: settings.theme === "black" ? "#999" : "#666",
+                textDecoration: "underline",
+                fontSize: "12px",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+                fontFamily: "inherit"
+              }}
+            >
+              이용약관
+            </button>
+            <button
+              onClick={() => setPolicyModal({ isOpen: true, policyId: "privacy" })}
+              style={{
+                color: settings.theme === "black" ? "#999" : "#666",
+                textDecoration: "underline",
+                fontSize: "12px",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+                fontFamily: "inherit"
+              }}
+            >
+              개인정보처리방침
+            </button>
+            <button
+              onClick={() => setPolicyModal({ isOpen: true, policyId: "refund" })}
+              style={{
+                color: settings.theme === "black" ? "#999" : "#666",
+                textDecoration: "underline",
+                fontSize: "12px",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+                fontFamily: "inherit"
+              }}
+            >
+              환불/교환 정책
+            </button>
           </div>
+        </div>
 
-          {/* 결제 및 구매 안내 */}
-          <div style={{ marginBottom: "16px", paddingTop: "16px", borderTop: `1px solid ${borderColor}` }}>
-            <div style={{ marginBottom: "8px", fontSize: "14px", fontWeight: 600 }}>
-              결제 안내
-            </div>
-            <div style={{ fontSize: "12px", color: settings.theme === "black" ? "#777" : "#999" }}>
-              본 서비스는 월 20,000원의 구독 서비스입니다. 결제는 Port One을 통해 안전하게 처리됩니다.
-              <br />
-              구독 취소 시 위약금 없이 즉시 해지 가능하며, 남은 기간에 대한 부분 환불은 이용약관에 따릅니다.
-            </div>
+        {/* 결제 및 구매 안내 */}
+        <div style={{ marginBottom: "16px", paddingTop: "16px", borderTop: `1px solid ${borderColor}` }}>
+          <div style={{ marginBottom: "8px", fontSize: "14px", fontWeight: 600 }}>
+            결제 안내
           </div>
+          <div style={{ fontSize: "12px", color: settings.theme === "black" ? "#777" : "#999" }}>
+            본 서비스는 월 20,000원의 구독 서비스입니다. 결제는 Port One을 통해 안전하게 처리됩니다.
+            <br />
+            결제 시 <button onClick={() => setPolicyModal({ isOpen: true, policyId: "terms" })} style={{ textDecoration: 'underline', color: 'inherit', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>이용약관</button> 및 <button onClick={() => setPolicyModal({ isOpen: true, policyId: "refund" })} style={{ textDecoration: 'underline', color: 'inherit', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>환불정책</button>에 동의한 것으로 간주됩니다.
+            <br />
+            구독 취소 시 위약금 없이 즉시 해지 가능하며, 남은 기간에 대한 부분 환불은 이용약관에 따릅니다.
+          </div>
+        </div>
 
-          {/* 저작권 */}
-          <div style={{
-            marginTop: "24px",
-            paddingTop: "24px",
-            borderTop: `1px solid ${borderColor}`,
-            textAlign: "center",
-            fontSize: "12px",
-            color: settings.theme === "black" ? "#555" : "#aaa",
-          }}>
-            © 2024-2025 그림실 (Grim-Sil). All rights reserved.
-          </div>
+        {/* 저작권 */}
+        <div style={{
+          marginTop: "24px",
+          paddingTop: "24px",
+          borderTop: `1px solid ${borderColor}`,
+          textAlign: "center",
+          fontSize: "12px",
+          color: settings.theme === "black" ? "#555" : "#aaa",
+        }}>
+          © 2024-2025 그림실 (Grim-Sil). All rights reserved.
         </div>
       </footer>
 
@@ -534,6 +554,12 @@ function HomeContent() {
         title={`${settings.artistName} 작가님의 온라인 화첩`}
         description={`${settings.artistName} 작가의 작품세계를 담은 공간입니다.`}
         theme={settings.theme}
+      />
+      <PolicyModal
+        isOpen={policyModal.isOpen}
+        onClose={() => setPolicyModal(prev => ({ ...prev, isOpen: false }))}
+        policyId={policyModal.policyId}
+        theme={settings.theme as "white" | "black"}
       />
     </div >
   );
