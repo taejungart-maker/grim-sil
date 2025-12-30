@@ -298,9 +298,9 @@ function HomeContent() {
         )}
       </main>
 
-      {showArtistPicks && <ArtistPicksSection theme={settings.theme} picks={settings.artistPicks} />}
+      {showArtistPicks && !policyModal.isOpen && <ArtistPicksSection theme={settings.theme} picks={settings.artistPicks} />}
 
-      {showEncouragement && <EncouragementSection theme={settings.theme} />}
+      {showEncouragement && !policyModal.isOpen && <EncouragementSection theme={settings.theme} />}
 
       {/* 나도 만들기 CTA 푸터 */}
       <footer
@@ -393,38 +393,7 @@ function HomeContent() {
           </div>
 
           {/* 이용약관 및 정책 */}
-          <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-            <button
-              onClick={() => setPolicyModal({ isOpen: true, policyId: "terms" })}
-              style={{
-                color: settings.theme === "black" ? "#999" : "#666",
-                textDecoration: "underline",
-                fontSize: "12px",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                padding: 0,
-                fontFamily: "inherit"
-              }}
-            >
-              이용약관
-            </button>
-            <button
-              onClick={() => setPolicyModal({ isOpen: true, policyId: "terms" })}
-              style={{
-                color: settings.theme === "black" ? "#999" : "#666",
-                textDecoration: "underline",
-                fontSize: "12px",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                padding: 0,
-                fontFamily: "inherit"
-              }}
-            >
-              이용약관
-            </button>
-            <span style={{ margin: "0 8px", color: settings.theme === "black" ? "#444" : "#ddd" }}>|</span>
+          <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center", marginBottom: "20px" }}>
             <button
               onClick={() => setPolicyModal({ isOpen: true, policyId: "privacy" })}
               style={{
