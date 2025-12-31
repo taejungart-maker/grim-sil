@@ -55,7 +55,7 @@ export default function VIPPageClient({ VIP_ID, isAlwaysFree = false }: VIPPageC
     const [showShareModal, setShowShareModal] = useState(false);
     const [policyModal, setPolicyModal] = useState<{
         isOpen: boolean;
-        policyId: "terms" | "privacy" | "refund";
+        policyId: "terms" | "privacy" | "refund" | "exchange";
     }>({
         isOpen: false,
         policyId: "terms"
@@ -202,10 +202,10 @@ export default function VIPPageClient({ VIP_ID, isAlwaysFree = false }: VIPPageC
                 </main>
 
                 {/* 응원 메시지 섹션 */}
-                <EncouragementSection theme={settings.theme} />
+                {!policyModal.isOpen && <EncouragementSection theme={settings.theme} />}
 
                 {/* 추천 작가 섹션 */}
-                {settings.artistPicks && settings.artistPicks.length > 0 && (
+                {!policyModal.isOpen && settings.artistPicks && settings.artistPicks.length > 0 && (
                     <ArtistPicksSection picks={settings.artistPicks} theme={settings.theme} />
                 )}
 
@@ -264,7 +264,7 @@ export default function VIPPageClient({ VIP_ID, isAlwaysFree = false }: VIPPageC
                     작가님만의 온라인 화첩을 만들어보세요
                 </p>
 
-                {/* 사업자 정보 (PG 심사 필수) */}
+                {/* 사업자 정보 및 정책 (PG 심사 필수) */}
                 <div
                     style={{
                         marginTop: "48px",
@@ -301,78 +301,30 @@ export default function VIPPageClient({ VIP_ID, isAlwaysFree = false }: VIPPageC
                         </div>
                     </div>
 
-                    {/* 이용약관 및 정책 */}
-                    <div style={{ marginBottom: "20px", paddingTop: "16px", borderTop: `1px solid ${borderColor}` }}>
-                        <div style={{ marginBottom: "10px", fontSize: "14px", fontWeight: 600 }}>
-                            서비스 이용 안내
-                        </div>
-                        <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center" }}>
-                            <button
-                                onClick={() => setPolicyModal({ isOpen: true, policyId: "terms" })}
-                                style={{
-                                    color: settings.theme === "black" ? "#999" : "#666",
-                                    textDecoration: "underline",
-                                    fontSize: "12px",
-                                    background: "none",
-                                    border: "none",
-                                    cursor: "pointer",
-                                }}
-                            >
-                                이용약관
-                            </button>
-                            <button
-                                onClick={() => setPolicyModal({ isOpen: true, policyId: "privacy" })}
-                                style={{
-                                    color: settings.theme === "black" ? "#999" : "#666",
-                                    textDecoration: "underline",
-                                    fontSize: "12px",
-                                    background: "none",
-                                    border: "none",
-                                    cursor: "pointer",
-                                }}
-                            >
-                                개인정보처리방침
-                            </button>
-                            <button
-                                onClick={() => setPolicyModal({ isOpen: true, policyId: "refund" })}
-                                style={{
-                                    color: settings.theme === "black" ? "#999" : "#666",
-                                    textDecoration: "underline",
-                                    fontSize: "12px",
-                                    background: "none",
-                                    border: "none",
-                                    cursor: "pointer",
-                                }}
-                            >
-                                환불/교환 정책
-                            </button>
-                        </div>
+                    {/* 정책 링크 (중앙 집중화 데이터 사용) */}
+                    <div style={{ marginBottom: "24px", display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "12px" }}>
+                        <button onClick={() => setPolicyModal({ isOpen: true, policyId: "terms" })} style={{ color: "inherit", textDecoration: "underline", background: "none", border: "none", cursor: "pointer", padding: "4px 0", fontSize: "12px" }}>이용약관</button>
+                        <button onClick={() => setPolicyModal({ isOpen: true, policyId: "privacy" })} style={{ color: "inherit", textDecoration: "underline", background: "none", border: "none", cursor: "pointer", padding: "4px 0", fontSize: "12px" }}>개인정보방침</button>
+                        <button onClick={() => setPolicyModal({ isOpen: true, policyId: "refund" })} style={{ color: "inherit", textDecoration: "underline", background: "none", border: "none", cursor: "pointer", padding: "4px 0", fontSize: "12px" }}>환불 정책</button>
+                        <button onClick={() => setPolicyModal({ isOpen: true, policyId: "exchange" })} style={{ color: "inherit", textDecoration: "underline", background: "none", border: "none", cursor: "pointer", padding: "4px 0", fontSize: "12px" }}>교환 정책</button>
                     </div>
 
-                    {/* 결제 및 구매 안내 */}
-                    <div style={{ marginBottom: "16px", paddingTop: "16px", borderTop: `1px solid ${borderColor}` }}>
-                        <div style={{ marginBottom: "8px", fontSize: "14px", fontWeight: 600 }}>
-                            결제 안내
-                        </div>
-                        <div style={{ fontSize: "12px", color: settings.theme === "black" ? "#777" : "#999" }}>
-                            본 서비스는 월 20,000원의 구독 서비스입니다. 결제는 Port One을 통해 안전하게 처리됩니다.
-                            <br />
-                            결제 시 <button onClick={() => setPolicyModal({ isOpen: true, policyId: "terms" })} style={{ textDecoration: 'underline', color: 'inherit' }}>이용약관</button> 및 <button onClick={() => setPolicyModal({ isOpen: true, policyId: "refund" })} style={{ textDecoration: 'underline', color: 'inherit' }}>환불정책</button>에 동의한 것으로 간주됩니다.
-                            <br />
-                            구독 취소 시 위약금 없이 즉시 해지 가능하며, 남은 기간에 대한 부분 환불은 이용약관에 따릅니다.
-                        </div>
+                    <div style={{ fontSize: "12px", opacity: 0.5 }}>
+                        &copy; {new Date().getFullYear()} {settings.galleryNameKo}. All rights reserved.
                     </div>
+                </div>
 
-                    {/* 저작권 */}
-                    <div style={{
-                        marginTop: "24px",
-                        paddingTop: "24px",
-                        borderTop: `1px solid ${borderColor}`,
-                        textAlign: "center",
-                        fontSize: "12px",
-                        color: settings.theme === "black" ? "#555" : "#aaa",
-                    }}>
-                        © 2024-2025 태정. All rights reserved.
+                {/* 결제 및 구매 안내 */}
+                <div style={{ marginTop: "24px", paddingTop: "24px", borderTop: `1px solid ${borderColor}`, textAlign: "center" }}>
+                    <div style={{ marginBottom: "8px", fontSize: "14px", fontWeight: 600 }}>
+                        결제 안내
+                    </div>
+                    <div style={{ fontSize: "12px", color: settings.theme === "black" ? "#777" : "#999", lineHeight: 1.6 }}>
+                        본 서비스는 월 20,000원의 구독 서비스입니다. 결제는 Port One을 통해 안전하게 처리됩니다.
+                        <br />
+                        결제 시 <button onClick={() => setPolicyModal({ isOpen: true, policyId: "terms" })} style={{ textDecoration: 'underline', color: 'inherit', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>이용약관</button>, <button onClick={() => setPolicyModal({ isOpen: true, policyId: "privacy" })} style={{ textDecoration: 'underline', color: 'inherit' }}>개인정보방침</button>, <button onClick={() => setPolicyModal({ isOpen: true, policyId: "refund" })} style={{ textDecoration: 'underline', color: 'inherit' }}>환불 정책</button> 및 <button onClick={() => setPolicyModal({ isOpen: true, policyId: "exchange" })} style={{ textDecoration: 'underline', color: 'inherit' }}>교환 정책</button>에 동의한 것으로 간주됩니다.
+                        <br />
+                        구독 취소 시 위약금 없이 즉시 해지 가능하며, 남은 기간에 대한 부분 환불은 이용약관에 따릅니다.
                     </div>
                 </div>
             </footer>
@@ -394,69 +346,66 @@ export default function VIPPageClient({ VIP_ID, isAlwaysFree = false }: VIPPageC
             />
 
             {/* 하단 플로팅 액션 버튼 (로그인 시에만 노출 & 약관 모달이 닫혀있을 때만) */}
-            {
-                isMounted && isLoggedIn && !policyModal.isOpen && (
-                    <div
-                        id="author-only-floating-v9"
-                        className="fixed z-50 flex flex-col gap-3"
+            {isMounted && isLoggedIn && !policyModal.isOpen && (
+                <div
+                    id="author-only-floating-v9"
+                    className="fixed z-50 flex flex-col gap-3"
+                    style={{
+                        bottom: "30px",
+                        right: "20px",
+                    }}
+                >
+                    {/* 1. SNS 공유 */}
+                    <button
+                        onClick={() => setShowShareModal(true)}
+                        className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
                         style={{
-                            bottom: "30px",
-                            right: "20px",
+                            width: "46px",
+                            height: "46px",
+                            borderRadius: "50%",
+                            background: settings.theme === "black" ? "#4f46e5" : SIGNATURE_COLORS.royalIndigo,
+                            color: "#fff",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
+                            fontSize: "12px",
+                            fontWeight: 800,
+                            lineHeight: 1.1,
+                            border: "none",
+                            cursor: "pointer"
                         }}
                     >
-                        {/* 1. SNS 공유 (로얄 인디고) */}
-                        <button
-                            onClick={() => setShowShareModal(true)}
-                            className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
-                            style={{
-                                width: "46px",
-                                height: "46px",
-                                borderRadius: "50%",
-                                background: settings.theme === "black" ? "#4f46e5" : SIGNATURE_COLORS.royalIndigo,
-                                color: "#fff",
-                                textDecoration: "none",
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
-                                fontSize: "12px",
-                                fontWeight: 800,
-                                lineHeight: 1.1,
-                                border: "none",
-                                cursor: "pointer"
-                            }}
-                        >
-                            <span>공유</span>
-                        </button>
+                        <span>공유</span>
+                    </button>
 
-                        {/* 2. 작품 등록 (앤틱 버건디) */}
-                        <Link
-                            href={`/add?vipId=${VIP_ID}`}
-                            className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
-                            style={{
-                                width: "46px",
-                                height: "46px",
-                                borderRadius: "50%",
-                                background: settings.theme === "black" ? "#1a1a1a" : SIGNATURE_COLORS.antiqueBurgundy,
-                                color: "#fff",
-                                textDecoration: "none",
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
-                                fontSize: "12px",
-                                fontWeight: 800,
-                                lineHeight: 1.1,
-                            }}
-                        >
-                            <span style={{ fontSize: "14px", marginBottom: "-2px" }}>+</span>
-                            <span>등록</span>
-                        </Link>
-                    </div>
-                )
-            }
+                    {/* 2. 작품 등록 */}
+                    <Link
+                        href={`/add?vipId=${VIP_ID}`}
+                        className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
+                        style={{
+                            width: "46px",
+                            height: "46px",
+                            borderRadius: "50%",
+                            background: settings.theme === "black" ? "#1a1a1a" : SIGNATURE_COLORS.antiqueBurgundy,
+                            color: "#fff",
+                            textDecoration: "none",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
+                            fontSize: "12px",
+                            fontWeight: 800,
+                            lineHeight: 1.1,
+                        }}
+                    >
+                        <span style={{ fontSize: "14px", marginBottom: "-2px" }}>+</span>
+                        <span>등록</span>
+                    </Link>
+                </div>
+            )}
 
             <ShareModal
                 isOpen={showShareModal}

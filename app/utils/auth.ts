@@ -1,7 +1,21 @@
 // 세션 기반 인증 유틸리티
 
-const AUTH_KEY = 'admin_auth_session';
-const OWNER_ID_KEY = 'admin_owner_id';
+const AUTH_KEY_BASE = 'admin_auth_session';
+const OWNER_ID_KEY_BASE = 'admin_owner_id';
+
+/**
+ * Artist ID 기반 고유 localStorage 키 생성
+ * 각 갤러리의 세션을 완전히 독립적으로 관리
+ */
+function getStorageKey(baseKey: string): string {
+    if (typeof window === 'undefined') return baseKey;
+
+    // 동적으로 Artist ID 가져오기 (순환 참조 방지)
+    const { getClientArtistId } = require('./getArtistId');
+    const artistId = getClientArtistId();
+
+    return `${baseKey}__${artistId}`;
+}
 
 /**
  * 관리자 인증 세션 저장
@@ -10,9 +24,12 @@ const OWNER_ID_KEY = 'admin_owner_id';
  */
 export function setAuthSession(password: string, artistId?: string): void {
     if (typeof window !== 'undefined') {
-        localStorage.setItem(AUTH_KEY, password);
+        const authKey = getStorageKey(AUTH_KEY_BASE);
+        const ownerKey = getStorageKey(OWNER_ID_KEY_BASE);
+
+        localStorage.setItem(authKey, password);
         if (artistId) {
-            localStorage.setItem(OWNER_ID_KEY, artistId);
+            localStorage.setItem(ownerKey, artistId);
         }
     }
 }
@@ -22,7 +39,8 @@ export function setAuthSession(password: string, artistId?: string): void {
  */
 export function getAuthSession(): string | null {
     if (typeof window !== 'undefined') {
-        return localStorage.getItem(AUTH_KEY);
+        const authKey = getStorageKey(AUTH_KEY_BASE);
+        return localStorage.getItem(authKey);
     }
     return null;
 }
@@ -32,7 +50,8 @@ export function getAuthSession(): string | null {
  */
 export function getOwnerId(): string | null {
     if (typeof window !== 'undefined') {
-        return localStorage.getItem(OWNER_ID_KEY);
+        const ownerKey = getStorageKey(OWNER_ID_KEY_BASE);
+        return localStorage.getItem(ownerKey);
     }
     return null;
 }
@@ -42,8 +61,11 @@ export function getOwnerId(): string | null {
  */
 export function clearAuthSession(): void {
     if (typeof window !== 'undefined') {
-        localStorage.removeItem(AUTH_KEY);
-        localStorage.removeItem(OWNER_ID_KEY);
+        const authKey = getStorageKey(AUTH_KEY_BASE);
+        const ownerKey = getStorageKey(OWNER_ID_KEY_BASE);
+
+        localStorage.removeItem(authKey);
+        localStorage.removeItem(ownerKey);
     }
 }
 

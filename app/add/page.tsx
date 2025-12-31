@@ -84,7 +84,7 @@ export default function AddArtworkPage() {
             // Supabase Storage에 이미지 업로드
             let imageUrl = imagePreview;
             if (imageFile) {
-                imageUrl = await uploadImageToStorage(imageFile);
+                imageUrl = await uploadImageToStorage(imageFile, vipId || undefined);
             }
 
             await addArtwork({

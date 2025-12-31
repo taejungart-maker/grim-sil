@@ -295,14 +295,17 @@ function resizeImageToBlob(file: File): Promise<Blob> {
 }
 
 // Supabase Storage에 이미지 업로드
-export async function uploadImageToStorage(file: File): Promise<string> {
+export async function uploadImageToStorage(file: File, artistId?: string): Promise<string> {
     // 이미지 리사이징
     const resizedBlob = await resizeImageToBlob(file);
 
-    // 고유 파일명 생성
+    // Artist ID 기반 경로 생성 (완전 격리)
+    const effectiveArtistId = artistId || ARTIST_ID;
     const fileExt = "jpg";
     const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
-    const filePath = `images/${fileName}`;
+    const filePath = `${effectiveArtistId}/images/${fileName}`; // Artist ID별 폴더 분리
+
+    console.log(`[IMAGE_UPLOAD] Uploading to: ${filePath} for Artist ID: ${effectiveArtistId}`);
 
     // Supabase Storage에 업로드
     const { error: uploadError } = await supabase.storage

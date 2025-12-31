@@ -72,25 +72,34 @@ export default function PolicyPageBase({ policyId }: PolicyPageBaseProps) {
             }}>
                 {data.content.split('\n').map((line, i) => {
                     const isTitle = line.startsWith('제') && line.includes('조');
-                    const isBold = line.includes('**');
                     const isAlert = line.startsWith('🚨');
+                    const hasBold = line.includes('**');
 
-                    let styledLine = line;
-                    if (isBold) {
-                        styledLine = line.replace(/\*\*(.*?)\*\*/g, '$1');
-                    }
+                    // 텍스트 내의 **볼드** 처리
+                    const renderLine = (text: string) => {
+                        if (!text.includes('**')) return text;
+                        const parts = text.split(/(\*\*.*?\*\*)/g);
+                        return parts.map((part, index) => {
+                            if (part.startsWith('**') && part.endsWith('**')) {
+                                return <strong key={index} style={{ fontWeight: 800, color: "#0f172a" }}>{part.slice(2, -2)}</strong>;
+                            }
+                            return part;
+                        });
+                    };
 
                     return (
                         <p key={i} style={{
                             marginBottom: line.trim() === '' ? '16px' : '10px',
-                            fontWeight: (isTitle || isBold || isAlert) ? 700 : 400,
-                            fontSize: isTitle ? '19px' : '16px',
+                            fontWeight: isTitle ? 800 : 400,
+                            fontSize: isTitle ? '20px' : '16px',
                             color: isTitle ? "#6366f1" : isAlert ? "#ef4444" : "#334155",
-                            marginTop: isTitle ? "32px" : "0",
-                            paddingBottom: isTitle ? "8px" : "0",
-                            borderBottom: isTitle ? "1px solid #eef2ff" : "none"
+                            marginTop: isTitle ? "40px" : "0",
+                            paddingBottom: isTitle ? "12px" : "0",
+                            borderBottom: isTitle ? "2px solid #eef2ff" : "none",
+                            lineHeight: 1.8,
+                            letterSpacing: "-0.01em"
                         }}>
-                            {styledLine}
+                            {renderLine(line)}
                         </p>
                     );
                 })}
@@ -110,7 +119,7 @@ export default function PolicyPageBase({ policyId }: PolicyPageBaseProps) {
                     <Link href="/exchange" style={{ color: "#94a3b8", textDecoration: "none", fontSize: "13px" }}>교환 정책</Link>
                 </div>
                 <div style={{ color: "#64748b", fontSize: "14px", fontWeight: 500 }}>
-                    상호: 그림실 | 대표자: 오용택
+                    상호: 태정 | 대표자: 오용택
                 </div>
                 <div style={{ color: "#94a3b8", fontSize: "13px", marginTop: "8px" }}>
                     Copyright © 2024-2025 Grim-Sil. All rights reserved.

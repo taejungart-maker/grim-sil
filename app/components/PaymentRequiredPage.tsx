@@ -29,7 +29,7 @@ export default function PaymentRequiredPage() {
     const [isMounted, setIsMounted] = useState(false);
     const [policyModal, setPolicyModal] = useState<{
         isOpen: boolean;
-        policyId: "terms" | "privacy" | "refund";
+        policyId: "terms" | "privacy" | "refund" | "exchange";
     }>({
         isOpen: false,
         policyId: "terms"
@@ -67,6 +67,14 @@ export default function PaymentRequiredPage() {
             bottom: 0,
             overflow: 'hidden'
         }}>
+            {/* 정책 모달 */}
+            <PolicyModal
+                isOpen={policyModal.isOpen}
+                onClose={() => setPolicyModal(prev => ({ ...prev, isOpen: false }))}
+                policyId={policyModal.policyId}
+                theme="white"
+            />
+
             {/* 배경: 블러 처리된 갤러리 미리보기 */}
             <div style={{
                 position: 'absolute',
@@ -105,7 +113,8 @@ export default function PaymentRequiredPage() {
                 bottom: 0,
                 background: 'rgba(255, 255, 255, 0.75)',
                 backdropFilter: 'blur(8px)',
-                WebkitBackdropFilter: 'blur(8px)'
+                WebkitBackdropFilter: 'blur(8px)',
+                zIndex: 5
             }} />
 
             {/* 콘텐츠 카드 */}
@@ -128,7 +137,8 @@ export default function PaymentRequiredPage() {
                     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06)',
                     border: '1px solid rgba(255, 255, 255, 0.5)',
                     backdropFilter: 'blur(16px)',
-                    WebkitBackdropFilter: 'blur(16px)'
+                    WebkitBackdropFilter: 'blur(16px)',
+                    animation: 'slideUp 0.4s ease'
                 }}>
                     {/* 잠금 아이콘 */}
                     <div style={{
@@ -157,84 +167,27 @@ export default function PaymentRequiredPage() {
                         </svg>
                     </div>
 
-                    {/* 제목 */}
-                    <h1 style={{
-                        fontSize: '26px',
-                        fontWeight: 700,
-                        marginBottom: '12px',
-                        color: '#1a1a1a',
-                        fontFamily: "'Noto Sans KR', sans-serif"
-                    }}>
-                        {isTestMode ? '갤러리 체험하기' : '프리미엄 갤러리'}
+                    {/* 제목 및 설명 */}
+                    <h1 style={{ fontSize: '26px', fontWeight: 800, marginBottom: '12px', color: '#1a1a1a', letterSpacing: '-0.02em' }}>
+                        {isTestMode ? '프리미엄 체험하기' : '프리미엄 갤러리'}
                     </h1>
-
-                    {/* 설명 */}
-                    <p style={{
-                        fontSize: '15px',
-                        color: '#666',
-                        marginBottom: '28px',
-                        lineHeight: 1.7,
-                        fontFamily: "'Noto Sans KR', sans-serif"
-                    }}>
+                    <p style={{ fontSize: '15px', color: '#666', marginBottom: '28px', lineHeight: 1.7 }}>
                         {isTestMode
-                            ? '구독하시면 작가의 모든 작품을\n감상하실 수 있습니다.'
-                            : '작가의 아름다운 작품들을\n프리미엄 구독으로 만나보세요.'}
+                            ? '구독하시면 작가의 모든 작품을\n무제한으로 감상하실 수 있습니다.'
+                            : '그림실 작가님의 소중한 작품들을\n프리미엄 전용 공간에서 만나보세요.'}
                     </p>
 
                     {/* 가격 정보 */}
-                    <div style={{
-                        background: 'linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%)',
-                        borderRadius: '16px',
-                        padding: '20px',
-                        marginBottom: '28px',
-                        border: '1px solid rgba(102, 126, 234, 0.1)'
-                    }}>
-                        <div style={{
-                            fontSize: '13px',
-                            color: '#888',
-                            marginBottom: '4px',
-                            fontFamily: "'Noto Sans KR', sans-serif"
-                        }}>
-                            {isTestMode ? '테스트 결제' : '월 구독료'}
-                        </div>
-                        <div style={{
-                            fontSize: '32px',
-                            fontWeight: 700,
-                            color: '#1a1a1a',
-                            fontFamily: "'Noto Sans KR', sans-serif"
-                        }}>
+                    <div style={{ background: 'linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%)', borderRadius: '20px', padding: '24px', marginBottom: '28px', border: '1px solid #eef2ff' }}>
+                        <div style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '4px', fontWeight: 500 }}>{isTestMode ? '시연용 테스트 결제' : '인디고 멤버십 (월간)'}</div>
+                        <div style={{ fontSize: '32px', fontWeight: 900, color: '#1e293b' }}>
                             {isTestMode ? '₩100' : '₩20,000'}
                         </div>
-                        {isTestMode && (
-                            <div style={{
-                                fontSize: '12px',
-                                color: '#667eea',
-                                marginTop: '4px',
-                                fontFamily: "'Noto Sans KR', sans-serif"
-                            }}>
-                                실제 결제되지 않습니다
-                            </div>
-                        )}
                     </div>
 
-                    {/* 결제 안내 및 이용약관 동의 (PG 심사 필수) */}
-                    <div style={{
-                        fontSize: '12px',
-                        color: '#888',
-                        marginBottom: '20px',
-                        lineHeight: 1.6,
-                        fontFamily: "'Noto Sans KR', sans-serif",
-                        textAlign: 'center'
-                    }}>
-                        결제 시 <button
-                            onClick={() => setPolicyModal({ isOpen: true, policyId: "terms" })}
-                            style={{ textDecoration: 'underline', color: 'inherit', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
-                        >이용약관</button> 및 <button
-                            onClick={() => setPolicyModal({ isOpen: true, policyId: "refund" })}
-                            style={{ textDecoration: 'underline', color: 'inherit', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
-                        >환불정책</button>에 동의한 것으로 간주됩니다.
-                        <br />
-                        <span style={{ color: '#ff4d4f', fontWeight: 600 }}>디지털 콘텐츠 특성상 결제 후 작품 열람 시 환불이 불가합니다.</span>
+                    {/* 결제 안내 및 이용약관 동의 (중앙 데이터 연동) */}
+                    <div style={{ fontSize: '12.5px', color: '#64748b', marginBottom: '24px', lineHeight: 1.6, textAlign: 'center', background: '#f8fafc', padding: '12px', borderRadius: '12px' }}>
+                        결제 시 <button onClick={() => setPolicyModal({ isOpen: true, policyId: "terms" })} style={{ color: '#6366f1', textDecoration: 'underline', background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontWeight: 600 }}>이용약관</button>, <button onClick={() => setPolicyModal({ isOpen: true, policyId: "privacy" })} style={{ color: '#6366f1', textDecoration: 'underline', background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontWeight: 600 }}>개인정보방침</button>, <button onClick={() => setPolicyModal({ isOpen: true, policyId: "refund" })} style={{ color: '#6366f1', textDecoration: 'underline', background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontWeight: 600 }}>환불 정책</button> 및 <button onClick={() => setPolicyModal({ isOpen: true, policyId: "exchange" })} style={{ color: '#6366f1', textDecoration: 'underline', background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontWeight: 600 }}>교환 정책</button>에 동의한 것으로 간주됩니다.
                     </div>
 
                     {/* 버튼 그룹 */}
@@ -244,57 +197,48 @@ export default function PaymentRequiredPage() {
                             disabled={isProcessing}
                             style={{
                                 width: '100%',
-                                padding: '16px',
-                                fontSize: '16px',
-                                fontWeight: 600,
+                                padding: '18px',
+                                fontSize: '17px',
+                                fontWeight: 700,
                                 color: '#ffffff',
-                                background: isProcessing
-                                    ? '#999'
-                                    : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                background: isProcessing ? '#cbd5e1' : 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
                                 border: 'none',
-                                borderRadius: '12px',
+                                borderRadius: '14px',
                                 cursor: isProcessing ? 'not-allowed' : 'pointer',
-                                fontFamily: "'Noto Sans KR', sans-serif",
-                                boxShadow: isProcessing
-                                    ? 'none'
-                                    : '0 4px 16px rgba(102, 126, 234, 0.4)',
+                                boxShadow: isProcessing ? 'none' : '0 10px 20px rgba(99, 102, 241, 0.25)',
                                 transition: 'all 0.2s ease'
                             }}
                         >
-                            {isProcessing
-                                ? '처리 중...'
-                                : isTestMode
-                                    ? '체험하기'
-                                    : '구독하기'}
+                            {isProcessing ? '결제 요청 중...' : isTestMode ? '100원 결제 체험하기' : '20,000원 정기 구독 시작'}
                         </button>
 
                         <button
                             onClick={() => router.back()}
                             style={{
                                 width: '100%',
-                                padding: '14px',
+                                padding: '16px',
                                 fontSize: '15px',
-                                fontWeight: 500,
-                                color: '#666',
+                                fontWeight: 600,
+                                color: '#64748b',
                                 background: 'transparent',
-                                border: '2px solid #e8e8e8',
-                                borderRadius: '12px',
+                                border: '1px solid #e2e8f0',
+                                borderRadius: '14px',
                                 cursor: 'pointer',
-                                fontFamily: "'Noto Sans KR', sans-serif",
                                 transition: 'all 0.2s ease'
                             }}
                         >
-                            돌아가기
+                            뒤로 돌아가기
                         </button>
                     </div>
                 </div>
             </div>
 
-            <PolicyModal
-                isOpen={policyModal.isOpen}
-                onClose={() => setPolicyModal(prev => ({ ...prev, isOpen: false }))}
-                policyId={policyModal.policyId}
-            />
+            <style>{`
+                @keyframes slideUp {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+            `}</style>
         </div>
     );
 }

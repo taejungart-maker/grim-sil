@@ -12,6 +12,7 @@ import type { SiteConfig } from "./config/site";
 import { loadDemoDataIfEmpty } from "./utils/demoData";
 import { useSyncedArtworks, useSyncedSettings } from "./hooks/useSyncedArtworks";
 import { useAuth } from "./contexts/AuthContext";
+import { getOwnerId } from "./utils/auth";
 import YearMonthTabs from "./components/YearMonthTabs";
 import ArtworkCard from "./components/ArtworkCard";
 import ArtworkViewer from "./components/ArtworkViewer";
@@ -118,7 +119,7 @@ function HomeContent() {
 
     // 🛠 강력 보정: context에 없으면 직접 storage에서 꺼내옴
     if (!currentOwnerId && typeof window !== 'undefined') {
-      currentOwnerId = localStorage.getItem('admin_owner_id');
+      currentOwnerId = getOwnerId(); // Now uses Artist ID-based key
     }
 
     // 방문자 ID 결정: URL 파라미터 우선, 그다음 ownerId

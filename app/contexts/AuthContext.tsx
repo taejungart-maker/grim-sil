@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { isAuthenticated as checkAuth, setAuthSession, clearAuthSession } from "../utils/auth";
+import { isAuthenticated as checkAuth, setAuthSession, clearAuthSession, getOwnerId } from "../utils/auth";
 import { verifyPassword } from "../utils/settingsDb";
 
 interface AuthContextType {
@@ -24,7 +24,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         setIsAuthenticated(checkAuth());
-        const storedOwnerId = localStorage.getItem('admin_owner_id');
+        const storedOwnerId = getOwnerId(); // Already uses Artist ID-based key
         setOwnerId(storedOwnerId);
         setIsLoading(false);
     }, []);

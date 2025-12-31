@@ -107,7 +107,7 @@ export default function EditArtworkPage({ params }: EditArtworkPageProps) {
             // 새 이미지가 있으면 Storage에 업로드
             let finalImageUrl = imagePreview || artwork.imageUrl;
             if (imageFile) {
-                finalImageUrl = await uploadImageToStorage(imageFile);
+                finalImageUrl = await uploadImageToStorage(imageFile, vipId || undefined);
             }
 
             await updateArtwork({

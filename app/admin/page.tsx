@@ -775,7 +775,7 @@ export default function AdminPage() {
                                             const file = e.target.files?.[0];
                                             if (file) {
                                                 try {
-                                                    const url = await uploadImageToStorage(file);
+                                                    const url = await uploadImageToStorage(file, effectiveArtistId);
                                                     setSettings({ ...settings, aboutmeImage: url });
                                                 } catch (err) {
                                                     alert("사진 업로드에 실패했습니다.");

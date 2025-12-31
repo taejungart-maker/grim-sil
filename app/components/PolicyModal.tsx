@@ -100,27 +100,32 @@ export default function PolicyModal({ isOpen, onClose, policyId, theme = "white"
                     fontFamily: "'Inter', 'Noto Sans KR', sans-serif"
                 }}>
                     {data.content.split('\n').map((line, i) => {
-                        // 제목 및 중요 문구 스타일링
                         const isTitle = line.startsWith('제') && line.includes('조');
-                        const isBold = line.includes('**');
                         const isAlert = line.startsWith('🚨');
 
-                        let styledLine = line;
-                        if (isBold) {
-                            styledLine = line.replace(/\*\*(.*?)\*\*/g, '$1');
-                        }
+                        // 텍스트 내의 **볼드** 처리
+                        const renderLine = (text: string) => {
+                            if (!text.includes('**')) return text;
+                            const parts = text.split(/(\*\*.*?\*\*)/g);
+                            return parts.map((part, index) => {
+                                if (part.startsWith('**') && part.endsWith('**')) {
+                                    return <strong key={index} style={{ fontWeight: 800, color: theme === 'black' ? '#fff' : '#000' }}>{part.slice(2, -2)}</strong>;
+                                }
+                                return part;
+                            });
+                        };
 
                         return (
                             <p key={i} style={{
                                 marginBottom: line.trim() === '' ? '12px' : '8px',
-                                fontWeight: (isTitle || isBold || isAlert) ? 700 : 400,
+                                fontWeight: isTitle ? 700 : 400,
                                 fontSize: isTitle ? '17px' : '15px',
                                 color: isTitle ? colors.accent : isAlert ? "#ef4444" : colors.text,
                                 borderLeft: isTitle ? `4px solid ${colors.accent}` : 'none',
                                 paddingLeft: isTitle ? '12px' : '0',
                                 marginTop: isTitle ? '24px' : '0'
                             }}>
-                                {styledLine}
+                                {renderLine(line)}
                             </p>
                         );
                     })}

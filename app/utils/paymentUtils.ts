@@ -9,6 +9,19 @@ declare global {
     }
 }
 
+/**
+ * Artist ID 기반 고유 localStorage 키 생성
+ */
+function getPaymentStorageKey(): string {
+    if (typeof window === 'undefined') return 'payment_status';
+
+    // 동적으로 Artist ID 가져오기
+    const { getClientArtistId } = require('./getArtistId');
+    const artistId = getClientArtistId();
+
+    return `payment_status__${artistId}`;
+}
+
 // PortOne V1 스크립트 로드
 function loadPortOneScript(): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -69,7 +82,8 @@ export async function startSubscription(): Promise<boolean> {
 
                 if (response.success) {
                     console.log('Payment successful!', response);
-                    localStorage.setItem('payment_status', 'paid');
+                    const paymentKey = getPaymentStorageKey();
+                    localStorage.setItem(paymentKey, 'paid');
                     resolve(true);
                 } else {
                     console.error('Payment failed:', response.error_msg);
@@ -94,11 +108,14 @@ export const processPayment = startSubscription;
 // 결제 상태 확인
 export function checkPaymentStatus(): boolean {
     if (typeof window === 'undefined') return false;
-    return localStorage.getItem('payment_status') === 'paid';
+    const paymentKey = getPaymentStorageKey();
+    return localStorage.getItem(paymentKey) === 'paid';
 }
 
 // 결제 상태 초기화
 export function resetPaymentStatus(): void {
     if (typeof window === 'undefined') return;
-    localStorage.removeItem('payment_status');
+    const paymentKey = getPaymentStorageKey();
+    localStorage.removeItem(paymentKey);
 }
+

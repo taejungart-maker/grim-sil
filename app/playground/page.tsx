@@ -8,6 +8,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { usePayment } from "../contexts/PaymentContext";
 import { isPaymentRequired } from "../utils/deploymentMode";
 import { useSyncedSettings } from "../hooks/useSyncedArtworks";
+import { resetPaymentStatus } from "../utils/paymentUtils";
 
 function PlaygroundContent() {
     const { settings } = useSyncedSettings();
@@ -29,7 +30,7 @@ function PlaygroundContent() {
         setTimeout(() => {
             const success = Math.random() > 0.3; // 70% 성공률 시뮬레이션
             if (success) {
-                localStorage.removeItem('payment_status');
+                resetPaymentStatus(); // Now uses Artist ID-based key
                 setRefundStatus("✅ 환불 성공! 구독이 취소되었습니다.");
                 setTimeout(() => window.location.reload(), 1500);
             } else {

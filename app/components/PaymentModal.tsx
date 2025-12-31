@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { usePayment } from "../contexts/PaymentContext";
 import { isTestPaymentMode } from "../utils/deploymentMode";
+import { checkPaymentStatus } from "../utils/paymentUtils";
+import PolicyModal from "./PolicyModal";
 
 interface PaymentModalProps {
     isOpen: boolean;
@@ -22,6 +24,14 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }: PaymentModa
     const isTestMode = isTestPaymentMode();
     const { processPayment } = usePayment();
 
+    const [policyModal, setPolicyModal] = useState<{
+        isOpen: boolean;
+        policyId: "terms" | "privacy" | "refund" | "exchange";
+    }>({
+        isOpen: false,
+        policyId: "terms"
+    });
+
     useEffect(() => {
         if (isOpen) {
             setStep('CHOICE');
@@ -36,47 +46,44 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }: PaymentModa
     const handleStartPayment = () => {
         setStep('PAYMENT');
         setIsProcessing(true);
-        // 가상 결제 대기 시간 시뮬레이션
         setTimeout(() => {
             setIsProcessing(false);
-        }, 1500);
+        }, 800);
     };
 
     const handleConfirmPayment = async () => {
         setIsProcessing(true);
         setError(null);
         try {
-            // "4242" 입력 시 가상 성공 처리 (시연용)
             if (cardNumber.includes("4242")) {
-                await new Promise(resolve => setTimeout(resolve, 800)); // 짧은 대기 시간
-                localStorage.setItem('payment_status', 'paid');
-                setStep('SUCCESS');
-                if (onSuccess) onSuccess();
+                await new Promise(resolve => setTimeout(resolve, 800));
+                // Payment will be handled by processPayment which uses Artist ID-based key
+                const success = await processPayment();
+                if (success) {
+                    setStep('SUCCESS');
+                    if (onSuccess) onSuccess();
+                }
                 return;
             }
 
-            // 실제 결제 프로세스 시작
             const success = await processPayment();
             if (success) {
                 setStep('SUCCESS');
                 if (onSuccess) onSuccess();
             } else {
-                // 결제 실패 시 (PG 설정 오류 포함)
-                setError('결제 정보를 불러올 수 없거나 취소되었습니다.');
-                setIsProcessing(false);
+                setError('결제 정보가 유효하지 않거나 취소되었습니다.');
             }
         } catch (err: any) {
             console.error('Payment error:', err);
-            // PG 설정 오류 등이 발생해도 시연이 가능하도록 에러 상태 저장
-            setError(err.message || '등록된 PG 설정 정보가 없습니다.');
+            setError(err.message || '결제 처리 중 오류가 발생했습니다.');
         } finally {
             setIsProcessing(false);
         }
     };
 
-    // 강제 가상 성공 처리 (시연용 비상 버튼)
-    const handleForceSuccess = () => {
-        localStorage.setItem('payment_status', 'paid');
+    const handleForceSuccess = async () => {
+        // Use processPayment to ensure Artist ID-based key is used
+        await processPayment();
         setStep('SUCCESS');
         if (onSuccess) onSuccess();
     };
@@ -88,6 +95,14 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }: PaymentModa
 
     return (
         <>
+            {/* 정책 모달 */}
+            <PolicyModal
+                isOpen={policyModal.isOpen}
+                onClose={() => setPolicyModal(prev => ({ ...prev, isOpen: false }))}
+                policyId={policyModal.policyId}
+                theme="white"
+            />
+
             {/* 배경 오버레이 */}
             <div
                 onClick={step === 'SUCCESS' ? handleFinalClose : onClose}
@@ -97,8 +112,8 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }: PaymentModa
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    background: 'rgba(0, 0, 0, 0.6)',
-                    backdropFilter: 'blur(4px)',
+                    background: 'rgba(0, 0, 0, 0.65)',
+                    backdropFilter: 'blur(10px)',
                     zIndex: 9998,
                     animation: 'fadeIn 0.2s ease'
                 }}
@@ -112,13 +127,13 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }: PaymentModa
                 transform: 'translate(-50%, -50%)',
                 zIndex: 9999,
                 maxWidth: '440px',
-                width: '90%',
+                width: '94%',
                 background: '#ffffff',
-                borderRadius: '28px',
-                padding: '40px 24px',
+                borderRadius: '32px',
+                padding: '44px 24px',
                 textAlign: 'center',
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-                animation: 'slideUp 0.3s ease',
+                boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.45)',
+                animation: 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
                 overflow: 'hidden'
             }}>
                 {/* 닫기 버튼 */}
@@ -128,13 +143,17 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }: PaymentModa
                         position: 'absolute',
                         top: '20px',
                         right: '20px',
-                        background: 'transparent',
+                        background: '#f8fafc',
                         border: 'none',
-                        fontSize: '24px',
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '50%',
+                        fontSize: '20px',
                         cursor: 'pointer',
-                        color: '#bbb',
-                        padding: '8px',
-                        display: step === 'SUCCESS' ? 'none' : 'block'
+                        color: '#94a3b8',
+                        display: step === 'SUCCESS' ? 'none' : 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
                     }}
                 >
                     ×
@@ -142,19 +161,19 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }: PaymentModa
 
                 {step === 'CHOICE' && (
                     <div className="animate-in fade-in duration-300">
-                        <div style={{ padding: '8px 0', marginBottom: '12px' }}>
-                            <span style={{ fontSize: '12px', color: '#6366f1', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Member Special</span>
+                        <div style={{ padding: '8px 0', marginBottom: '16px' }}>
+                            <span style={{ fontSize: '11px', color: '#6366f1', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em', background: '#eef2ff', padding: '4px 12px', borderRadius: '20px' }}>Premium Membership</span>
                         </div>
-                        <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '12px', color: '#1a1a1a' }}>프리미엄 구독</h2>
-                        <p style={{ fontSize: '15px', color: '#666', marginBottom: '30px', lineHeight: 1.6 }}>
-                            작품 무제한 등록 및 편집,<br />고급 통계 기능을 즉시 시작하세요.
+                        <h2 style={{ fontSize: '26px', fontWeight: 800, marginBottom: '12px', color: '#1e293b', letterSpacing: '-0.02em' }}>프리미엄 구독</h2>
+                        <p style={{ color: '#64748b', fontSize: '15px', lineHeight: 1.6, marginBottom: '28px' }}>
+                            작가의 소중한 작품들을<br />무제한으로 감상하고 간직하세요.
                         </p>
 
-                        <div style={{ background: '#f8fafc', borderRadius: '20px', padding: '24px', marginBottom: '32px', border: '1px solid #e2e8f0' }}>
-                            <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '4px' }}>그림실 프리미엄 (월간)</div>
+                        <div style={{ background: 'linear-gradient(to bottom, #f8fafc, #ffffff)', borderRadius: '24px', padding: '24px', marginBottom: '32px', border: '1px solid #f1f5f9' }}>
+                            <div style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '6px', fontWeight: 500 }}>그림실 프리미엄 (월간)</div>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                                <span style={{ fontSize: '32px', fontWeight: 800, color: '#1e293b' }}>₩20,000</span>
-                                <span style={{ fontSize: '14px', color: '#94a3b8' }}>/ 월</span>
+                                <span style={{ fontSize: '32px', fontWeight: 900, color: '#1e293b' }}>₩20,000</span>
+                                <span style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '-8px' }}>/ 월</span>
                             </div>
                         </div>
 
@@ -162,19 +181,19 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }: PaymentModa
                             onClick={handleStartPayment}
                             style={{
                                 width: '100%',
-                                padding: '18px',
-                                fontSize: '16px',
-                                fontWeight: 600,
+                                padding: '20px',
+                                fontSize: '17px',
+                                fontWeight: 700,
                                 color: '#ffffff',
                                 background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
                                 border: 'none',
-                                borderRadius: '14px',
+                                borderRadius: '18px',
                                 cursor: 'pointer',
-                                boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)',
-                                transition: 'transform 0.2s'
+                                boxShadow: '0 8px 20px rgba(99, 102, 241, 0.3)',
+                                transition: 'all 0.2s'
                             }}
                         >
-                            구독하기
+                            구독 결제하기
                         </button>
                     </div>
                 )}
@@ -184,10 +203,10 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }: PaymentModa
                         <div style={{ padding: '4px 0', marginBottom: '20px' }}>
                             <span style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 600 }}>Secure Checkout</span>
                         </div>
-                        <h2 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '24px', color: '#1a1a1a' }}>가상 결제창</h2>
+                        <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '24px', color: '#1e293b' }}>가상 결제창</h2>
 
-                        <div style={{ textAlign: 'left', marginBottom: '32px', border: '1px solid #eee', borderRadius: '16px', padding: '20px' }}>
-                            <div style={{ fontSize: '12px', color: '#999', marginBottom: '12px' }}>카드 번호 (시연: 4242 포함)</div>
+                        <div style={{ textAlign: 'left', marginBottom: '24px', border: '1px solid #f1f5f9', borderRadius: '20px', padding: '24px', background: '#f8fafc' }}>
+                            <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '12px', fontWeight: 600 }}>카드 번호 (시연용: 4242 포함)</div>
                             <input
                                 type="text"
                                 value={cardNumber}
@@ -195,21 +214,26 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }: PaymentModa
                                 placeholder="**** **** **** 4242"
                                 style={{
                                     width: '100%',
-                                    height: '45px',
-                                    background: '#f3f4f6',
-                                    borderRadius: '8px',
+                                    height: '50px',
+                                    background: '#ffffff',
+                                    borderRadius: '12px',
                                     marginBottom: '12px',
-                                    border: '1px solid #ddd',
-                                    padding: '0 12px',
-                                    color: '#444',
-                                    fontSize: '16px',
-                                    outline: 'none'
+                                    border: '1px solid #e2e8f0',
+                                    padding: '0 16px',
+                                    color: '#1e293b',
+                                    fontSize: '18px',
+                                    outline: 'none',
+                                    letterSpacing: '0.1em'
                                 }}
                             />
                             <div style={{ display: 'flex', gap: '12px' }}>
-                                <div style={{ flex: 1, height: '45px', background: '#f3f4f6', borderRadius: '8px', padding: '12px', color: '#444' }}>12/27</div>
-                                <div style={{ flex: 1, height: '45px', background: '#f3f4f6', borderRadius: '8px', padding: '12px', color: '#444' }}>***</div>
+                                <div style={{ flex: 1, height: '50px', background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', padding: '0 16px', color: '#94a3b8', fontSize: '15px' }}>유효기간 (MM/YY)</div>
+                                <div style={{ flex: 1, height: '50px', background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', padding: '0 16px', color: '#94a3b8', fontSize: '15px' }}>CVC (***)</div>
                             </div>
+                        </div>
+
+                        <div style={{ fontSize: '12.5px', color: '#64748b', marginBottom: '24px', lineHeight: 1.6, textAlign: 'left', padding: '16px', borderRadius: '16px', border: '1px solid #f1f5f9' }}>
+                            결제 시 그림실 <button onClick={() => setPolicyModal({ isOpen: true, policyId: "terms" })} style={{ color: '#6366f1', textDecoration: 'underline', background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontWeight: 'bold', fontSize: 'inherit' }}>이용약관</button>, <button onClick={() => setPolicyModal({ isOpen: true, policyId: "privacy" })} style={{ color: '#6366f1', textDecoration: 'underline', background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontWeight: 'bold', fontSize: 'inherit' }}>개인정보방침</button>, <button onClick={() => setPolicyModal({ isOpen: true, policyId: "refund" })} style={{ color: '#6366f1', textDecoration: 'underline', background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontWeight: 'bold', fontSize: 'inherit' }}>환불 정책</button> 및 <button onClick={() => setPolicyModal({ isOpen: true, policyId: "exchange" })} style={{ color: '#6366f1', textDecoration: 'underline', background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontWeight: 'bold', fontSize: 'inherit' }}>교환 정책</button>에 동의한 것으로 간주됩니다.
                         </div>
 
                         <button
@@ -217,38 +241,38 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }: PaymentModa
                             disabled={isProcessing}
                             style={{
                                 width: '100%',
-                                padding: '18px',
-                                fontSize: '16px',
-                                fontWeight: 600,
+                                padding: '20px',
+                                fontSize: '17px',
+                                fontWeight: 700,
                                 color: '#ffffff',
                                 background: isProcessing ? '#94a3b8' : '#1e293b',
                                 border: 'none',
-                                borderRadius: '14px',
+                                borderRadius: '18px',
                                 cursor: isProcessing ? 'not-allowed' : 'pointer',
-                                marginBottom: error ? '16px' : '0'
+                                transition: 'all 0.2s'
                             }}
                         >
-                            {isProcessing ? '승인 요청 중...' : '20,000원 결제 승인'}
+                            {isProcessing ? '승인 처리 중...' : '20,000원 결제 요청'}
                         </button>
 
-                        {/* PG 오류 발생 시 나타나는 시연용 비상 버튼 */}
                         {error && (
                             <div className="animate-in fade-in slide-in-from-top-2">
-                                <p style={{ fontSize: '12px', color: '#ef4444', marginBottom: '12px', fontWeight: 500 }}>
-                                    {error} (시연용 가맹점 설정 필요)
+                                <p style={{ fontSize: '13px', color: '#ef4444', marginTop: '16px', fontWeight: 600 }}>
+                                    {error}
                                 </p>
                                 <button
                                     onClick={handleForceSuccess}
                                     style={{
                                         width: '100%',
-                                        padding: '14px',
-                                        fontSize: '14px',
+                                        padding: '12px',
+                                        fontSize: '13px',
                                         fontWeight: 600,
-                                        color: '#374151',
-                                        background: '#f3f4f6',
-                                        border: '1px solid #d1d5db',
+                                        color: '#64748b',
+                                        background: '#f8fafc',
+                                        border: '1px solid #e2e8f0',
                                         borderRadius: '12px',
                                         cursor: 'pointer',
+                                        marginTop: '12px'
                                     }}
                                 >
                                     시연용 강제 승인 처리 (Bypass)
@@ -260,29 +284,30 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }: PaymentModa
 
                 {step === 'SUCCESS' && (
                     <div className="animate-in zoom-in-95 duration-500">
-                        <div style={{ width: '48px', height: '48px', background: '#ecfdf5', borderRadius: '50%', display: 'flex', alignItems: 'center', justifySelf: 'center', justifyContent: 'center', margin: '0 auto 20px', color: '#10b981', fontWeight: 900, fontSize: '20px' }}>
-                            OK
+                        <div style={{ width: '64px', height: '64px', background: '#ecfdf5', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', color: '#10b981', fontSize: '28px' }}>
+                            ✓
                         </div>
-                        <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '12px', color: '#065f46' }}>결제 완료!</h2>
-                        <p style={{ fontSize: '15px', color: '#666', marginBottom: '32px', lineHeight: 1.6 }}>
-                            프리미엄 구독이 활성화되었습니다.<br />이제 모든 기능을 자유롭게 사용하세요.
+                        <h2 style={{ fontSize: '28px', fontWeight: 800, marginBottom: '12px', color: '#065f46' }}>구독이 시작되었습니다!</h2>
+                        <p style={{ fontSize: '16px', color: '#64748b', marginBottom: '32px', lineHeight: 1.6 }}>
+                            이제부터 화첩의 모든 작품을<br />제한 없이 감상하실 수 있습니다.
                         </p>
                         <button
                             onClick={handleFinalClose}
                             style={{
                                 width: '100%',
-                                padding: '18px',
-                                fontSize: '16px',
-                                fontWeight: 700,
+                                padding: '20px',
+                                fontSize: '17px',
+                                fontWeight: 800,
                                 color: '#ffffff',
                                 background: '#10b981',
                                 border: 'none',
-                                borderRadius: '14px',
+                                borderRadius: '18px',
                                 cursor: 'pointer',
-                                boxShadow: '0 4px 12px rgba(16, 185, 129, 0.2)',
+                                boxShadow: '0 8px 20px rgba(16, 185, 129, 0.25)',
+                                transition: 'all 0.2s'
                             }}
                         >
-                            시작하기
+                            갤러리 입장하기
                         </button>
                     </div>
                 )}
@@ -296,11 +321,11 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }: PaymentModa
                 @keyframes slideUp {
                     from {
                         opacity: 0;
-                        transform: translate(-50%, -40%);
+                        transform: translate(-50%, -40%) scale(0.95);
                     }
                     to {
                         opacity: 1;
-                        transform: translate(-50%, -50%);
+                        transform: translate(-50%, -50%) scale(1);
                     }
                 }
             `}</style>
