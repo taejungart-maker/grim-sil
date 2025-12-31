@@ -144,7 +144,8 @@ export default function AddArtworkPage() {
                             <button
                                 onClick={() => {
                                     // VIP 갤러리에서 온 경우 해당 갤러리로, 아니면 메인으로
-                                    const backUrl = vipId ? `/gallery-${vipId}` : "/";
+                                    // vipId 형식: "vip-gallery-01" → 경로: "/gallery-vip-01"
+                                    const backUrl = vipId ? `/${vipId.replace('vip-', '')}` : "/";
                                     router.push(backUrl);
                                 }}
                                 className="touch-target flex items-center justify-center"
