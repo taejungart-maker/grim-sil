@@ -142,7 +142,11 @@ export default function AddArtworkPage() {
                     >
                         <div className="flex items-center gap-3">
                             <button
-                                onClick={() => router.push("/")}
+                                onClick={() => {
+                                    // VIP 갤러리에서 온 경우 해당 갤러리로, 아니면 메인으로
+                                    const backUrl = vipId ? `/gallery-${vipId}` : "/";
+                                    router.push(backUrl);
+                                }}
                                 className="touch-target flex items-center justify-center"
                                 style={{
                                     width: "48px",
