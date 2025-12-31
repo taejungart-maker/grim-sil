@@ -216,10 +216,11 @@ export default function Header({
 
                     {/* [ZERO_CACHE_FORCE] 구조 변경으로 캐시 무력화 */}
                     <div id="nav-actions-container-v2" className="flex items-center gap-2 sm:gap-3 sm:ml-auto">
-                        {/* 구독하기 버튼 - 호스트네임 하드 가드 (V2) */}
-                        {isMounted && !isPaid && (
+                        {/* 구독하기 버튼 - 호스트네임 하드 가드 (V2) + 심사 모드(?screening=true) 대응 */}
+                        {isMounted && (!isPaid || (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('screening') === 'true')) && (
                             (vipId && !isAlwaysFree) ||
-                            (!vipId && !isAlwaysFreeMode() && !isFreeArtistHost)
+                            (!vipId && !isAlwaysFreeMode() && !isFreeArtistHost) ||
+                            (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('screening') === 'true')
                         ) && (
                                 <button
                                     id="force-sub-btn-v2"
