@@ -15,6 +15,7 @@ interface ArtworkViewerProps {
     onDelete?: () => void;
     showPrice?: boolean;
     theme?: "white" | "black";
+    isLoggedIn?: boolean;
 }
 
 export default function ArtworkViewer({
@@ -23,7 +24,8 @@ export default function ArtworkViewer({
     onClose,
     onDelete,
     showPrice = false,
-    theme = "white"
+    theme = "white",
+    isLoggedIn = false
 }: ArtworkViewerProps) {
     const [currentIndex, setCurrentIndex] = useState(initialIndex);
     const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
@@ -236,29 +238,33 @@ export default function ArtworkViewer({
         >
             {/* 상단 버튼들 - 항상 표시 */}
             <div className="absolute top-4 left-4 right-4 z-50 flex justify-between">
-                <Link
-                    href={`/edit/${currentArtwork.id}`}
-                    className="touch-target flex items-center justify-center gap-2"
-                    style={{
-                        minWidth: "52px",
-                        height: "52px",
-                        padding: "0 14px",
-                        background: buttonBg,
-                        borderRadius: "26px",
-                        textDecoration: "none",
-                        color: iconColor,
-                        fontFamily: "'Noto Sans KR', sans-serif",
-                        fontSize: "15px",
-                        fontWeight: 600,
-                    }}
-                    aria-label="수정하기"
-                >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                    </svg>
-                    <span>수정</span>
-                </Link>
+                {isLoggedIn ? (
+                    <Link
+                        href={`/edit/${currentArtwork.id}`}
+                        className="touch-target flex items-center justify-center gap-2"
+                        style={{
+                            minWidth: "52px",
+                            height: "52px",
+                            padding: "0 14px",
+                            background: buttonBg,
+                            borderRadius: "26px",
+                            textDecoration: "none",
+                            color: iconColor,
+                            fontFamily: "'Noto Sans KR', sans-serif",
+                            fontSize: "15px",
+                            fontWeight: 600,
+                        }}
+                        aria-label="수정하기"
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                        </svg>
+                        <span>수정</span>
+                    </Link>
+                ) : (
+                    <div />
+                )}
 
                 <button
                     onClick={onClose}
@@ -551,22 +557,24 @@ export default function ArtworkViewer({
                         {currentIndex + 1} / {artworks.length}
                     </span>
 
-                    <button
-                        onClick={() => setShowDeleteConfirm(true)}
-                        style={{
-                            padding: "10px 18px",
-                            background: "transparent",
-                            border: `1px solid rgba(200, 50, 50, 0.4)`,
-                            borderRadius: "8px",
-                            color: "#c83232",
-                            fontFamily: "'Noto Sans KR', sans-serif",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                            cursor: "pointer",
-                        }}
-                    >
-                        삭제
-                    </button>
+                    {isLoggedIn && (
+                        <button
+                            onClick={() => setShowDeleteConfirm(true)}
+                            style={{
+                                padding: "10px 18px",
+                                background: "transparent",
+                                border: `1px solid rgba(200, 50, 50, 0.4)`,
+                                borderRadius: "8px",
+                                color: "#c83232",
+                                fontFamily: "'Noto Sans KR', sans-serif",
+                                fontSize: "14px",
+                                fontWeight: 500,
+                                cursor: "pointer",
+                            }}
+                        >
+                            삭제
+                        </button>
+                    )}
                 </div>
             </div>
 

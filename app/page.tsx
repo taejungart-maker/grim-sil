@@ -535,18 +535,17 @@ function HomeContent() {
         )
       }
 
-      {
-        selectedArtwork && (
-          <ArtworkViewer
-            artworks={selectedArtwork.yearArtworks}
-            initialIndex={selectedArtwork.index}
-            onClose={() => setSelectedArtwork(null)}
-            onDelete={handleArtworkDeleted}
-            showPrice={settings.showPrice}
-            theme={settings.theme}
-          />
-        )
-      }
+      {selectedArtwork && (
+        <ArtworkViewer
+          artworks={selectedArtwork.yearArtworks}
+          initialIndex={selectedArtwork.index}
+          onClose={() => setSelectedArtwork(null)}
+          onDelete={handleArtworkDeleted}
+          showPrice={settings.showPrice}
+          theme={settings.theme}
+          isLoggedIn={isLoggedIn}
+        />
+      )}
 
       <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} onSuccess={() => router.refresh()} />
       <PaymentModal isOpen={showPaymentModal} onClose={() => setShowPaymentModal(false)} onSuccess={() => window.location.reload()} />

@@ -336,6 +336,7 @@ export default function VIPPageClient({ VIP_ID, isAlwaysFree = false }: VIPPageC
                     onClose={() => setSelectedArtwork(null)}
                     onDelete={handleArtworkDeleted}
                     theme={settings.theme as "white" | "black"}
+                    isLoggedIn={isLoggedIn}
                 />
             )}
 
