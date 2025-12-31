@@ -543,7 +543,6 @@ function HomeContent() {
           onDelete={handleArtworkDeleted}
           showPrice={settings.showPrice}
           theme={settings.theme}
-          isLoggedIn={isLoggedIn}
         />
       )}
 

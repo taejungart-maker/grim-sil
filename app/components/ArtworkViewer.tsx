@@ -7,6 +7,7 @@ import { deleteArtwork } from "../utils/db";
 import { getExchangeRate, convertKRWtoUSD } from "../utils/exchangeRate";
 import { useState, useEffect, useRef } from "react";
 import { useImageProtection, useDevToolsDetection } from "../hooks/useImageProtection";
+import { useAuth } from "../contexts/AuthContext";
 
 interface ArtworkViewerProps {
     artworks: Artwork[];
@@ -15,7 +16,6 @@ interface ArtworkViewerProps {
     onDelete?: () => void;
     showPrice?: boolean;
     theme?: "white" | "black";
-    isLoggedIn?: boolean;
 }
 
 export default function ArtworkViewer({
@@ -25,8 +25,8 @@ export default function ArtworkViewer({
     onDelete,
     showPrice = false,
     theme = "white",
-    isLoggedIn = false
 }: ArtworkViewerProps) {
+    const { isAuthenticated: isLoggedIn } = useAuth();
     const [currentIndex, setCurrentIndex] = useState(initialIndex);
     const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
     const [showCaption, setShowCaption] = useState(false); // 처음엔 캡션 숨김
