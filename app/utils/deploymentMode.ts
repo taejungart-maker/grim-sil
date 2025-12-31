@@ -13,36 +13,37 @@ export type DeploymentMode = 'always_free' | 'showroom' | 'commercial';
  * - commercial: 상용 모드 (유료 링크, 실제 결제 필요)
  */
 export function getDeploymentMode(): DeploymentMode {
-    const mode = process.env.NEXT_PUBLIC_DEPLOYMENT_MODE;
-
-    // 🔍 DEBUG: 환경 변수 확인용 로그 (배포 전 삭제 예정)
-    if (typeof window !== 'undefined') {
-        console.log('[DEPLOYMENT_MODE] Raw ENV value:', mode);
-        console.log('[DEPLOYMENT_MODE] Type:', typeof mode);
-    }
-
-    if (mode === 'always_free' || mode === 'showroom' || mode === 'commercial') {
-        console.log('[DEPLOYMENT_MODE] Returning:', mode);
-        return mode;
-    }
-
-    // 클라이언트 사이드에서 호스트네임을 통한 자동 감지 (환경 변수 누락 대비)
+    // 1. 호스트네임 기반 자동 감지 (최우선순위: 하드코딩된 무료 도메인)
     if (typeof window !== 'undefined') {
         const hostname = window.location.hostname;
+        // 문혜경, 황미경, 하현주 작가님은 어떤 환경에서도 항상 무료
         if (
             hostname.includes('hahyunju') ||
             hostname.includes('moonhyekyung') ||
             hostname.includes('hwangmikyung') ||
             hostname.includes('free')
         ) {
+            console.log('[DEPLOYMENT_MODE] Free Artist Domain detected - forcing always_free');
             return 'always_free';
         }
 
-        // 🔧 TEMP FIX: localhost에서는 showroom 모드로 테스트
+        // 로컬 테스트 환경
         if (hostname === 'localhost' || hostname === '127.0.0.1') {
-            console.log('[DEPLOYMENT_MODE] Localhost detected - forcing showroom mode');
+            console.log('[DEPLOYMENT_MODE] Localhost detected');
+            // 로컬에서는 환경 변수를 따르되, 없으면 showroom
+            const envMode = process.env.NEXT_PUBLIC_DEPLOYMENT_MODE as DeploymentMode;
+            if (envMode === 'always_free' || envMode === 'showroom' || envMode === 'commercial') {
+                return envMode;
+            }
             return 'showroom';
         }
+    }
+
+    // 2. 환경 변수 기반 감지
+    const mode = process.env.NEXT_PUBLIC_DEPLOYMENT_MODE as DeploymentMode;
+
+    if (mode === 'always_free' || mode === 'showroom' || mode === 'commercial') {
+        return mode;
     }
 
     // 기본값: 안전하게 무료 모드
