@@ -8,10 +8,10 @@ const DOMAIN_ARTIST_MAPPING: Record<string, string> = {
     // ========== 박야일 홍보 사이트 ==========
     'grim-sil.vercel.app': '-vqsk',
 
-    // ========== 무료 개인 브랜드 갤러리 ==========
-    'hahyunju-gallery.vercel.app': 'vip-gallery-01',  // 하현주 (고유 ID)
-    'moonhyekyung-gallery.vercel.app': '-3ibp',       // 문혜경
-    'hwangmikyung-gallery.vercel.app': '-5e4p',       // 황미경
+    // ========== 무료 개인 브랜드 갤러리 (각각 고유 ID) ==========
+    'hahyunju-gallery.vercel.app': '-hyunju',         // 하현주 (고유 ID) ✅ 수정됨
+    'moonhyekyung-gallery.vercel.app': '-3ibp',       // 문혜경 (고유 ID)
+    'hwangmikyung-gallery.vercel.app': '-5e4p',       // 황미경 (고유 ID)
 
     // ========== 로컬 개발 환경 ==========
     'localhost:3000': '-vqsk',
@@ -49,8 +49,8 @@ export function getClientArtistId(): string {
             return '-vqsk';
         }
         if (host.includes('hahyunju') && host.endsWith('.vercel.app')) {
-            console.log(`[ARTIST_ID] Vercel preview detected: vip-gallery-01 (하현주)`);
-            return 'vip-gallery-01';
+            console.log(`[ARTIST_ID] Vercel preview detected: -hyunju (하현주)`);
+            return '-hyunju';
         }
         if (host.includes('moonhyekyung') && host.endsWith('.vercel.app')) {
             console.log(`[ARTIST_ID] Vercel preview detected: -3ibp (문혜경)`);
@@ -71,7 +71,7 @@ export function getClientArtistId(): string {
 
         // Preview URL 패턴 매칭
         if (cleanHost.includes('grim-sil')) return '-vqsk';
-        if (cleanHost.includes('hahyunju')) return 'vip-gallery-01';
+        if (cleanHost.includes('hahyunju')) return '-hyunju';
         if (cleanHost.includes('moonhyekyung')) return '-3ibp';
         if (cleanHost.includes('hwangmikyung')) return '-5e4p';
     }
