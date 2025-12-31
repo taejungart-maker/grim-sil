@@ -393,8 +393,24 @@ function HomeContent() {
             </div>
           </div>
 
-          {/* 이용약관 및 정책 */}
-          <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center", marginBottom: "20px" }}>
+          {/* 이용약관 및 정책 (PG 심사 필수) */}
+          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", justifyContent: "center", marginBottom: "24px" }}>
+            <button
+              onClick={() => setPolicyModal({ isOpen: true, policyId: "terms" })}
+              style={{
+                color: settings.theme === "black" ? "#999" : "#666",
+                textDecoration: "underline",
+                fontSize: "12px",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: "4px 0",
+                fontFamily: "inherit"
+              }}
+            >
+              이용약관
+            </button>
+            <span style={{ margin: "0 4px", opacity: 0.3 }}>|</span>
             <button
               onClick={() => setPolicyModal({ isOpen: true, policyId: "privacy" })}
               style={{
@@ -404,13 +420,13 @@ function HomeContent() {
                 background: "none",
                 border: "none",
                 cursor: "pointer",
-                padding: 0,
+                padding: "4px 0",
                 fontFamily: "inherit"
               }}
             >
               개인정보처리방침
             </button>
-            <span style={{ margin: "0 8px", color: settings.theme === "black" ? "#444" : "#ddd" }}>|</span>
+            <span style={{ margin: "0 4px", opacity: 0.3 }}>|</span>
             <button
               onClick={() => setPolicyModal({ isOpen: true, policyId: "refund" })}
               style={{
@@ -420,13 +436,13 @@ function HomeContent() {
                 background: "none",
                 border: "none",
                 cursor: "pointer",
-                padding: 0,
+                padding: "4px 0",
                 fontFamily: "inherit"
               }}
             >
               환불 정책
             </button>
-            <span style={{ margin: "0 8px", color: settings.theme === "black" ? "#444" : "#ddd" }}>|</span>
+            <span style={{ margin: "0 4px", opacity: 0.3 }}>|</span>
             <button
               onClick={() => setPolicyModal({ isOpen: true, policyId: "exchange" })}
               style={{
@@ -436,7 +452,7 @@ function HomeContent() {
                 background: "none",
                 border: "none",
                 cursor: "pointer",
-                padding: 0,
+                padding: "4px 0",
                 fontFamily: "inherit"
               }}
             >

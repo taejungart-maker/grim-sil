@@ -301,16 +301,19 @@ export default function VIPPageClient({ VIP_ID, isAlwaysFree = false }: VIPPageC
                         </div>
                     </div>
 
-                    {/* 정책 링크 (중앙 집중화 데이터 사용) */}
+                    {/* 정책 링크 (PG 심사 필수) */}
                     <div style={{ marginBottom: "24px", display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "12px" }}>
                         <button onClick={() => setPolicyModal({ isOpen: true, policyId: "terms" })} style={{ color: "inherit", textDecoration: "underline", background: "none", border: "none", cursor: "pointer", padding: "4px 0", fontSize: "12px" }}>이용약관</button>
-                        <button onClick={() => setPolicyModal({ isOpen: true, policyId: "privacy" })} style={{ color: "inherit", textDecoration: "underline", background: "none", border: "none", cursor: "pointer", padding: "4px 0", fontSize: "12px" }}>개인정보방침</button>
+                        <span style={{ margin: "0 4px", opacity: 0.3 }}>|</span>
+                        <button onClick={() => setPolicyModal({ isOpen: true, policyId: "privacy" })} style={{ color: "inherit", textDecoration: "underline", background: "none", border: "none", cursor: "pointer", padding: "4px 0", fontSize: "12px" }}>개인정보처리방침</button>
+                        <span style={{ margin: "0 4px", opacity: 0.3 }}>|</span>
                         <button onClick={() => setPolicyModal({ isOpen: true, policyId: "refund" })} style={{ color: "inherit", textDecoration: "underline", background: "none", border: "none", cursor: "pointer", padding: "4px 0", fontSize: "12px" }}>환불 정책</button>
+                        <span style={{ margin: "0 4px", opacity: 0.3 }}>|</span>
                         <button onClick={() => setPolicyModal({ isOpen: true, policyId: "exchange" })} style={{ color: "inherit", textDecoration: "underline", background: "none", border: "none", cursor: "pointer", padding: "4px 0", fontSize: "12px" }}>교환 정책</button>
                     </div>
 
                     <div style={{ fontSize: "12px", opacity: 0.5 }}>
-                        &copy; {new Date().getFullYear()} {settings.galleryNameKo}. All rights reserved.
+                        &copy; 2024-{new Date().getFullYear()} {settings.galleryNameKo}. All rights reserved.
                     </div>
                 </div>
 

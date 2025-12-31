@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import ShareModal from "../components/ShareModal";
+import PolicyModal from "../components/PolicyModal";
 import { loadSettings, loadSettingsById } from "../utils/settingsDb";
 import { defaultSiteConfig, SiteConfig } from "../config/site";
 
@@ -15,6 +16,7 @@ export default function AboutPage() {
     const [settings, setSettings] = useState<SiteConfig>(defaultSiteConfig);
     const [isLoading, setIsLoading] = useState(true);
     const [showShareModal, setShowShareModal] = useState(false);
+    const [policyId, setPolicyId] = useState<"terms" | "privacy" | "refund" | "exchange" | null>(null);
     const [currentYear, setCurrentYear] = useState(2025); // 기본값
 
     useEffect(() => {
@@ -249,11 +251,71 @@ export default function AboutPage() {
                 theme={settings.theme}
             />
 
-            <footer className="py-20 text-center" style={{ borderTop: `1px solid ${borderColor}`, marginTop: "64px" }}>
-                <p style={{ fontSize: "14px", color: mutedColor }}>
-                    © {currentYear} {settings.artistName}. All rights reserved.
-                </p>
+            {/* 정책 및 사업자 정보 푸터 (PG 심사 필수) */}
+            <footer className="py-20 px-6 text-center" style={{ borderTop: `1px solid ${borderColor}`, marginTop: "64px", background: settings.theme === "black" ? "#050505" : "#fcfcfc" }}>
+                <div className="max-w-4xl mx-auto">
+                    {/* 상단 사업자 정보 */}
+                    <div style={{
+                        fontSize: "13px",
+                        lineHeight: "1.8",
+                        color: mutedColor,
+                        marginBottom: "32px",
+                        textAlign: "center"
+                    }}>
+                        <div style={{ marginBottom: "8px" }}>
+                            <strong>상호:</strong> 태정 | <strong>대표자:</strong> 오용택 | <strong>사업자등록번호:</strong> 205-53-72177
+                        </div>
+                        <div style={{ marginBottom: "8px" }}>
+                            <strong>통신판매업 신고:</strong> 제2025-서울중구-XXXX호 (신고 예정)
+                        </div>
+                        <div style={{ marginBottom: "8px" }}>
+                            <strong>주소:</strong> 서울특별시 중구 동호로11바길 34, 101호(신당동)
+                        </div>
+                        <div>
+                            <strong>대표전화:</strong> 010-8618-3323 | <strong>이메일:</strong> artflow010@gmail.com
+                        </div>
+                    </div>
+
+                    {/* 정책 링크 */}
+                    <div style={{
+                        display: "flex",
+                        gap: "12px",
+                        flexWrap: "wrap",
+                        justifyContent: "center",
+                        marginBottom: "32px"
+                    }}>
+                        {["terms", "privacy", "refund", "exchange"].map((id) => (
+                            <button
+                                key={id}
+                                onClick={() => setPolicyId(id as any)}
+                                style={{
+                                    color: textColor,
+                                    textDecoration: "underline",
+                                    fontSize: "12px",
+                                    background: "none",
+                                    border: "none",
+                                    cursor: "pointer",
+                                    padding: "4px 0"
+                                }}
+                            >
+                                {id === "terms" ? "이용약관" : id === "privacy" ? "개인정보처리방침" : id === "refund" ? "환불 정책" : "교환 정책"}
+                            </button>
+                        ))}
+                    </div>
+
+                    <p style={{ fontSize: "12px", color: mutedColor, opacity: 0.6 }}>
+                        © {currentYear} {settings.artistName}. All rights reserved.
+                    </p>
+                </div>
             </footer>
+
+            {/* 정책 모달 */}
+            <PolicyModal
+                isOpen={!!policyId}
+                onClose={() => setPolicyId(null)}
+                policyId={policyId || "terms"}
+                theme={settings.theme}
+            />
         </div>
     );
 }
