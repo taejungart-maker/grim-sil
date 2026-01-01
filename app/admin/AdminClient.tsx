@@ -97,14 +97,15 @@ export default function AdminClient({ injectedArtistId }: AdminClientProps) {
     // 로그인 처리
     const handleLogin = async () => {
         try {
-            const savedPassword = await loadPasswordById(effectiveArtistId);
-            if (password === savedPassword) {
-                login();
+            // [V10_FIX] AuthContext의 login은 내부적으로 verifyPassword를 수행함
+            const success = await login(password);
+            if (success) {
                 setPasswordError(false);
             } else {
                 setPasswordError(true);
             }
         } catch (error) {
+            console.error("Login component error:", error);
             setPasswordError(true);
         }
     };

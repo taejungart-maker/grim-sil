@@ -93,24 +93,27 @@ export default function HomeClient({ injectedArtistId }: HomeClientProps) {
     }
 
     return (
-        <div className="min-h-screen" style={{ backgroundColor: themeColors.background, color: themeColors.text }}>
+        <div className="min-h-screen" style={{ backgroundColor: themeColors.bg, color: themeColors.text }}>
             <Header
-                settings={settings}
+                galleryNameKo={settings.galleryNameKo}
+                theme={settings.theme}
                 isLoggedIn={isLoggedIn}
-                onLogin={() => setShowLoginModal(true)}
+                isPaid={isPaid}
+                needsPayment={needsPayment}
                 onLogout={logout}
-                onShare={() => setShowShareModal(true)}
+                onOpenPayment={() => setShowPaymentModal(true)}
+                onKakaoShare={() => setShowShareModal(true)}
             />
 
             {settings.newsText && (
-                <NewsTicker text={settings.newsText} theme={settings.theme} />
+                <NewsTicker newsText={settings.newsText} theme={settings.theme} />
             )}
 
             <main className="max-w-7xl mx-auto px-4 py-8">
                 <YearMonthTabs
                     yearMonths={yearMonths}
-                    selected={selectedYearMonth}
-                    onSelect={setSelectedYearMonth}
+                    selectedYearMonth={selectedYearMonth || ""}
+                    onYearMonthSelect={setSelectedYearMonth}
                     theme={settings.theme}
                 />
 
@@ -120,12 +123,11 @@ export default function HomeClient({ injectedArtistId }: HomeClientProps) {
                             key={artwork.id}
                             artwork={artwork}
                             onClick={() => setSelectedArtwork({ artwork, index: idx, yearArtworks: filteredArtworks })}
-                            theme={settings.theme}
                         />
                     ))}
                 </div>
 
-                {settings.showArtistNote && <EncouragementSection theme={settings.theme} settings={settings} />}
+                {settings.showArtistNote && <EncouragementSection theme={settings.theme} />}
                 <ArtistPicksSection theme={settings.theme} picks={settings.artistPicks} />
             </main>
 
@@ -146,6 +148,8 @@ export default function HomeClient({ injectedArtistId }: HomeClientProps) {
                 onClose={() => setShowShareModal(false)}
                 shareUrl={typeof window !== 'undefined' ? window.location.origin : ''}
                 title={settings.siteTitle}
+                description={settings.siteDescription || ""}
+                theme={settings.theme}
             />
         </div>
     );

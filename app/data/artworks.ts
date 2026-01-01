@@ -111,23 +111,20 @@ export const sampleArtworks: Artwork[] = [
     },
 ];
 
-// 연도+월별로 작품 그룹화
-export function getArtworksByYearMonth(artworks: Artwork[]): Map<YearMonthKey, Artwork[]> {
-    const grouped = new Map<YearMonthKey, Artwork[]>();
+// 특정 연도+월의 작품들만 추출 (HomeClient용)
+export function getArtworksByYearMonth(artworks: Artwork[], key: YearMonthKey): Artwork[] {
+    return artworks.filter(artwork => createYearMonthKey(artwork.year, artwork.month) === key);
+}
 
+// 연도+월별로 작품 그룹화 (VIPPageClient 등에서 Map으로 사용)
+export function getGroupedArtworksByYearMonth(artworks: Artwork[]): Map<YearMonthKey, Artwork[]> {
+    const grouped = new Map<YearMonthKey, Artwork[]>();
     artworks.forEach(artwork => {
         const key = createYearMonthKey(artwork.year, artwork.month);
         const existing = grouped.get(key) || [];
         grouped.set(key, [...existing, artwork]);
     });
-
-    // 정렬: 연도 내림차순, 월 내림차순
-    return new Map([...grouped.entries()].sort((a, b) => {
-        const aData = parseYearMonthKey(a[0]);
-        const bData = parseYearMonthKey(b[0]);
-        if (aData.year !== bData.year) return bData.year - aData.year;
-        return (bData.month || 0) - (aData.month || 0);
-    }));
+    return grouped;
 }
 
 // 연도+월 목록 추출

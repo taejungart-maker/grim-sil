@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { getYearMonths, getArtworksByYearMonth, Artwork, YearMonthKey, createYearMonthKey } from "../data/artworks";
+import { getYearMonths, getGroupedArtworksByYearMonth, Artwork, YearMonthKey, createYearMonthKey } from "../data/artworks";
 import { loadDemoDataIfEmpty } from "../utils/demoData";
 import { useSyncedArtworks, useSyncedSettings } from "../hooks/useSyncedArtworks";
 import { useAuth } from "../contexts/AuthContext";
@@ -130,7 +130,7 @@ export default function VIPPageClient({ VIP_ID, isAlwaysFree = false }: VIPPageC
     const yearMonths = getYearMonths(artworks);
 
     // Group artworks by year/month
-    const groupedArtworks = useMemo(() => getArtworksByYearMonth(artworks), [artworks]);
+    const groupedArtworks = useMemo(() => getGroupedArtworksByYearMonth(artworks), [artworks]);
     const currentYearMonthArtworks = selectedYearMonth ? (groupedArtworks.get(selectedYearMonth) || []) : [];
 
     const colors = {

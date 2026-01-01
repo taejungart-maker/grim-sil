@@ -1,4 +1,4 @@
-import { getClientArtistId } from "./utils/getArtistId";
+import { getClientArtistId } from "../utils/getArtistId";
 import AdminClient from "./AdminClient";
 import { unstable_noStore as noStore } from "next/cache";
 
