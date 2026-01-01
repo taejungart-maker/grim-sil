@@ -1,32 +1,29 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { loadSettings } from "./utils/settingsDb";
+import { loadSettings, loadSettingsById } from "./utils/settingsDb";
 import { unstable_noStore as noStore } from "next/cache";
 
 export const revalidate = 0;
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata() {
-  noStore(); // 🔥 절대 캐시하지 않음 (상용 제품 수준의 실시간성 확보)
+  noStore();
+  const { headers } = require('next/headers');
+  const h = headers();
+  const artistId = h.get('x-artist-id') || '-vqsk';
+
   try {
-    const settings = await loadSettings();
-    const runtimeId = process.env.NEXT_PUBLIC_ARTIST_ID || "default";
+    // [COMMAND] 헤더 기반 데이터 페칭 강제
+    const settings = await loadSettingsById(artistId);
+
     const title = settings.siteTitle || `${settings.artistName} 작가님의 온라인 화첩`;
     const description = settings.siteDescription || `${settings.artistName} 작가의 작품세계를 담은 공간입니다.`;
 
-    // URL: 환경 변수에서 동적으로 가져오기 (각 갤러리별로 다른 URL)
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ||
-      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://grim-sil.vercel.app");
+    const domain = h.get('host') || "grim-sil.vercel.app";
+    const baseUrl = `https://${domain}`;
 
-    // OG 이미지: 작가 프로필 사진 우선 사용 (카카오톡 공유용)
-    // 💡 작가님 요청에 따라 파일명을 'parkyail_og.jpg'로 고정 인식되도록 강화합니다.
-    // 💡 안정성을 위해 Vercel 미리보기 URL 대신 항상 실 운영 도메인을 사용합니다.
-    const productionUrl = "https://grim-sil.vercel.app";
-    const ogImagePath = `/parkyail_og.jpg?v=${Date.now()}`;
-    const ogImage = `${productionUrl}${ogImagePath}`;
-
-    // 🔥 플랫폼 캐시 완벽 방지: 파일명을 바꿔도 혹시 모를 기억을 지우기 위해 숫자를 붙입니다.
-    const finalImageUrl = ogImage;
+    let finalImageUrl = settings.aboutmeImage || `${baseUrl}/og-default.png`;
+    if (!finalImageUrl.includes('?')) finalImageUrl += `?v=${Date.now()}`;
 
     return {
       title,
@@ -36,40 +33,17 @@ export async function generateMetadata() {
         title,
         description,
         url: baseUrl,
-        siteName: `${settings.artistName} 작가님의 온라인 화첩`,
-        images: [
-          {
-            url: finalImageUrl,
-            width: 800,
-            height: 400,
-            alt: `${settings.artistName} 작가 프로필`,
-          }
-        ],
+        siteName: title,
+        images: [{ url: finalImageUrl, width: 800, height: 400 }],
         type: "website",
-        locale: "ko_KR",
       },
-      twitter: {
-        card: "summary_large_image",
-        title,
-        description,
-        images: [finalImageUrl],
-      },
-      // 카카오톡 최적화를 위한 추가 메타데이터
       other: {
-        // 카카오톡 공유 시 이미지 캐시 방지
-        'og:image:secure_url': finalImageUrl,
-        'og:image:type': 'image/jpeg',
-        'og:site_name': `${settings.artistName} 작가님의 온라인 화첩`,
-        'debug-artist-id': runtimeId,
-        'debug-crawled-at': new Date().toISOString(),
-      },
+        'x-artist-id-debug': artistId,
+      }
     };
   } catch (error) {
-    console.error("Failed to generate metadata:", error);
-    return {
-      title: "작가님의 온라인 화첩",
-      description: "작가님의 작품세계를 담은 온라인 화첩입니다.",
-    };
+    console.error("Metadata generation failed:", error);
+    return { title: "온라인 화첩" };
   }
 }
 

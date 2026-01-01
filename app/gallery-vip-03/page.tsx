@@ -2,7 +2,8 @@ import { Suspense } from "react";
 import VIPPageClient from "../components/VIPPageClient";
 import { loadSettingsById } from "../utils/settingsDb";
 
-const VIP_ID = "vip-gallery-03";
+// [DATA_SYNC_FIX] 홍보용 데이터를 03번 링크에서 보여주기 위해 ID를 고정함
+const VIP_ID = "-vqsk";
 
 export async function generateMetadata() {
     try {

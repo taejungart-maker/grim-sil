@@ -5,7 +5,7 @@
  * - 개별 비밀번호 관리
  */
 
-import { supabase } from "./supabase";
+import { getSupabaseClient } from "./supabase";
 import bcrypt from "bcryptjs";
 
 export interface VipArtist {
@@ -24,6 +24,7 @@ export interface VipArtist {
  */
 export async function getNextVipNumber(): Promise<number> {
     try {
+        const supabase = getSupabaseClient();
         const { data, error } = await supabase
             .from("artists")
             .select("link_id")
@@ -81,6 +82,7 @@ export async function createVipArtist(
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // artists 테이블에 삽입
+        const supabase = getSupabaseClient();
         const { data: artist, error: artistError } = await supabase
             .from("artists")
             .insert([
@@ -141,6 +143,7 @@ export async function createVipArtist(
  */
 export async function getAllVipArtists(): Promise<VipArtist[]> {
     try {
+        const supabase = getSupabaseClient();
         const { data, error } = await supabase
             .from("artists")
             .select("*")
@@ -173,6 +176,7 @@ export async function getAllVipArtists(): Promise<VipArtist[]> {
  */
 export async function deleteVipArtist(artistId: string): Promise<void> {
     try {
+        const supabase = getSupabaseClient();
         // 해당 아티스트의 모든 작품 삭제
         const { error: artworksError } = await supabase
             .from("artworks")
@@ -231,6 +235,7 @@ export async function getVipArtistByLinkId(
     linkId: string
 ): Promise<VipArtist | null> {
     try {
+        const supabase = getSupabaseClient();
         const { data, error } = await supabase
             .from("artists")
             .select("*")

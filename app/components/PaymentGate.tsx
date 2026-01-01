@@ -55,11 +55,7 @@ export default function PaymentGate({ children, forcedMode }: PaymentGateProps) 
         );
     }
 
-    // 결제 완료: 통과
-    if (isPaid) {
-        return <>{children}</>;
-    }
-
-    // 결제 필요: 결제 페이지 표시
-    return <PaymentRequiredPage />;
+    // [PG_SCREENING_MOD] 결제 완료 여부와 상관없이 항상 children(작품 목록 등)을 보여줍니다.
+    // 결제 유도는 Header의 '구독버튼'을 통해 진행합니다.
+    return <>{children}</>;
 }

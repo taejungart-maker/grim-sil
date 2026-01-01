@@ -1,4 +1,6 @@
-import { supabase, ARTIST_ID } from "./supabase";
+import { getSupabaseClient } from "./supabase";
+import { getClientArtistId } from "./getArtistId";
+import { unstable_noStore as noStore } from "next/cache";
 
 export interface Encouragement {
     id: string;
@@ -15,13 +17,15 @@ export interface ArtistPick {
     imageUrl?: string;
 }
 
-// 1. 따뜻한 응원 한마디 (댓글) 기능
+// 1. 따쪽한 응원 한마디 (댓글) 기능
 export async function loadEncouragements(): Promise<Encouragement[]> {
+    noStore(); // 🔥 서버사이드 캐시 파괴
     try {
+        const supabase = getSupabaseClient();
         const { data, error } = await supabase
             .from("encouragements")
             .select("*")
-            .eq("target_artist_id", ARTIST_ID)
+            .eq("target_artist_id", getClientArtistId())
             .order("created_at", { ascending: false });
 
         if (error) throw error;
@@ -34,10 +38,11 @@ export async function loadEncouragements(): Promise<Encouragement[]> {
 
 export async function saveEncouragement(authorName: string, content: string, authorArchiveUrl?: string): Promise<Encouragement | null> {
     try {
+        const supabase = getSupabaseClient();
         const { data, error } = await supabase
             .from("encouragements")
             .insert({
-                target_artist_id: ARTIST_ID,
+                target_artist_id: getClientArtistId(),
                 author_name: authorName,
                 author_archive_url: authorArchiveUrl,
                 content: content,
@@ -55,11 +60,12 @@ export async function saveEncouragement(authorName: string, content: string, aut
 
 export async function deleteEncouragement(id: string): Promise<boolean> {
     try {
+        const supabase = getSupabaseClient();
         const { error } = await supabase
             .from("encouragements")
             .delete()
             .eq("id", id)
-            .eq("target_artist_id", ARTIST_ID);
+            .eq("target_artist_id", getClientArtistId());
 
         if (error) throw error;
         return true;
@@ -71,7 +77,9 @@ export async function deleteEncouragement(id: string): Promise<boolean> {
 
 // 2. 실시간 소식 피드 기능 (전체 작가 대상 자동화)
 export async function loadRecentNews(): Promise<{ id: string, text: string, type: string }[]> {
+    noStore(); // 🔥 실시간성을 위해 캐시 파괴
     try {
+        const supabase = getSupabaseClient();
         // 1. 신규 작가 합류 소식
         const { data: recentSettings } = await supabase
             .from("settings")

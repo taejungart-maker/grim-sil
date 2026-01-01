@@ -1,98 +1,63 @@
 /**
- * 도메인 기반 ARTIST_ID 자동 매핑 (환경변수 의존 완전 탈피)
- * 각 도메인은 고유한 방(Room) ID를 가집니다.
+ * 도메인 기반 ARTIST_ID 자동 매핑 (환경변수 완전 제거 버전)
+ * "환경 변수를 믿지 말고, 현재 접속한 URL 주소를 믿어라"
  */
 
-// 도메인 → ARTIST_ID 완전 매핑 테이블
 const DOMAIN_ARTIST_MAPPING: Record<string, string> = {
-    // ========== 박야일 홍보 사이트 ==========
     'grim-sil.vercel.app': '-vqsk',
-
-    // ========== 무료 개인 브랜드 갤러리 (각각 고유 ID) ==========
-    'hahyunju-gallery.vercel.app': '-hyunju',         // 하현주 (고유 ID) ✅ 수정됨
-    'moonhyekyung-gallery.vercel.app': '-3ibp',       // 문혜경 (고유 ID)
-    'hwangmikyung-gallery.vercel.app': '-5e4p',       // 황미경 (고유 ID)
-
-    // ========== 로컬 개발 환경 ==========
-    'localhost:3000': '-vqsk',
+    'grim-sil.com': '-vqsk',
+    'www.grim-sil.com': '-vqsk',
+    'hahyunju-gallery.vercel.app': '-hyunju',
+    'hahyunju.com': '-hyunju',
+    'www.hahyunju.com': '-hyunju',
+    'moonhyekyung-gallery.vercel.app': '-3ibp',
+    'hwangmikyung-gallery.vercel.app': '-5e4p',
     'localhost': '-vqsk',
 };
 
-/**
- * 현재 접속 도메인에서 ARTIST_ID 자동 감지
- * 환경변수에 의존하지 않고 100% 도메인 기반으로 작동
- */
 export function getClientArtistId(): string {
-    // ✅ 클라이언트 사이드: 브라우저 URL에서 직접 도메인 추출
-    if (typeof window !== 'undefined') {
-        const host = window.location.host;
+    // 1. 서버 사이드: Middleware가 주입한 x-artist-id 헤더만 절대 신뢰
+    if (typeof window === 'undefined') {
+        try {
+            const { headers } = require('next/headers');
+            const headerList = headers();
+            const artistId = headerList.get('x-artist-id');
+
+            if (artistId) return artistId;
+
+            // [FAILSAFE] 만약 미들웨어가 작동하지 않는 환경(특수 API 등)이라면 
+            // 직접 호스트 분석을 수행하되 환경변수는 절대 보지 않음
+            const host = headerList.get('host') || "";
+            const cleanHost = host.split(':')[0].toLowerCase();
+
+            if (cleanHost.includes('hahyunju')) return '-hyunju';
+            if (cleanHost.includes('moonhyekyung')) return '-3ibp';
+            if (cleanHost.includes('hwangmikyung')) return '-5e4p';
+            if (cleanHost.includes('grim-sil')) return '-vqsk';
+        } catch (e) { }
+    } else {
+        // 2. 클라이언트 사이드: window.location.hostname 절대 신뢰
+        const host = window.location.hostname.toLowerCase();
+
+        // VIP 경로 판별 (클라이언트 사이드 호환성 유지)
         const pathname = window.location.pathname;
-
-        // VIP 갤러리 경로 체크 (/gallery-vip-XX)
         const vipMatch = pathname.match(/^\/gallery-vip-(\d+)/);
-        if (vipMatch) {
-            const vipId = `vip-gallery-${vipMatch[1].padStart(2, '0')}`;
-            console.log(`[ARTIST_ID] VIP Gallery detected: ${vipId}`);
-            return vipId;
-        }
+        if (vipMatch) return `vip-gallery-${vipMatch[1].padStart(2, '0')}`;
 
-        // 도메인 매핑 테이블에서 찾기
-        const mappedId = DOMAIN_ARTIST_MAPPING[host];
-        if (mappedId) {
-            console.log(`[ARTIST_ID] Domain mapped: ${host} → ${mappedId}`);
-            return mappedId;
-        }
+        if (DOMAIN_ARTIST_MAPPING[host]) return DOMAIN_ARTIST_MAPPING[host];
 
-        // Vercel Preview URL 처리 (grim-sil-xxx.vercel.app 형태)
-        if (host.includes('grim-sil') && host.endsWith('.vercel.app')) {
-            console.log(`[ARTIST_ID] Vercel preview detected: -vqsk (박야일)`);
-            return '-vqsk';
-        }
-        if (host.includes('hahyunju') && host.endsWith('.vercel.app')) {
-            console.log(`[ARTIST_ID] Vercel preview detected: -hyunju (하현주)`);
-            return '-hyunju';
-        }
-        if (host.includes('moonhyekyung') && host.endsWith('.vercel.app')) {
-            console.log(`[ARTIST_ID] Vercel preview detected: -3ibp (문혜경)`);
-            return '-3ibp';
-        }
-        if (host.includes('hwangmikyung') && host.endsWith('.vercel.app')) {
-            console.log(`[ARTIST_ID] Vercel preview detected: -5e4p (황미경)`);
-            return '-5e4p';
-        }
-
-        console.warn(`[ARTIST_ID] Unknown domain: ${host}, using fallback`);
+        if (host.includes('hahyunju')) return '-hyunju';
+        if (host.includes('moonhyekyung')) return '-3ibp';
+        if (host.includes('hwangmikyung')) return '-5e4p';
+        if (host.includes('grim-sil')) return '-vqsk';
     }
 
-    // ✅ 서버 사이드: VERCEL_URL 환경변수에서 도메인 추출
-    const vercelUrl = process.env.VERCEL_URL;
-    if (vercelUrl) {
-        const cleanHost = vercelUrl.replace(/^https?:\/\//, '');
-
-        // Preview URL 패턴 매칭
-        if (cleanHost.includes('grim-sil')) return '-vqsk';
-        if (cleanHost.includes('hahyunju')) return '-hyunju';
-        if (cleanHost.includes('moonhyekyung')) return '-3ibp';
-        if (cleanHost.includes('hwangmikyung')) return '-5e4p';
-    }
-
-    // 최종 Fallback (박야일 홍보용)
+    // 최종 Fallback: 어떤 방법으로도 식별 불가 시 안전하게 기본값 반환 (절대 하현주 ID 아님)
     return '-vqsk';
 }
 
-/**
- * 현재 Artist ID 및 도메인 디버그 정보 출력
- */
-export function debugArtistId(): { host: string; artistId: string; source: string } {
+export function debugArtistId() {
     const artistId = getClientArtistId();
-    const host = typeof window !== 'undefined' ? window.location.host : 'server';
-    const source = typeof window !== 'undefined' ? 'client' : 'server';
-
-    console.log('=== ARTIST ID DEBUG ===');
-    console.log(`Host: ${host}`);
-    console.log(`Artist ID: ${artistId}`);
-    console.log(`Source: ${source}`);
-    console.log('=======================');
-
-    return { host, artistId, source };
+    console.log(`[ArtistId Audit] ID: ${artistId}`);
+    return artistId;
 }

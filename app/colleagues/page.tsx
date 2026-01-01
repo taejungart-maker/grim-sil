@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../contexts/AuthContext";
-import { supabase, ARTIST_ID } from "../utils/supabase";
+import { getSupabaseClient } from "../utils/supabase";
+import { getClientArtistId } from "../utils/getArtistId";
 import { getThemeColors, SIGNATURE_COLORS } from "../utils/themeColors";
 import Header from "../components/Header";
 import { useSyncedSettings } from "../hooks/useSyncedArtworks";
@@ -25,6 +26,8 @@ export default function ColleaguesPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
 
+    const supabase = getSupabaseClient(); // Added this line
+
     const colors = getThemeColors(settings.theme);
 
     // 로그인하지 않았으면 메인으로 리다이렉트
@@ -41,7 +44,7 @@ export default function ColleaguesPage() {
                 const { data, error } = await supabase
                     .from("settings")
                     .select("artist_id, artist_name, gallery_name_ko, aboutme_image, gallery_url")
-                    .neq("artist_id", ARTIST_ID); // 본인 제외
+                    .neq("artist_id", getClientArtistId()); // 본인 제외
 
                 if (error) throw error;
 
@@ -77,7 +80,7 @@ export default function ColleaguesPage() {
 
         // URL에 방문자 정보 포함
         const url = new URL(artist.gallery_url);
-        url.searchParams.set("visitor", ownerId || ARTIST_ID);
+        url.searchParams.set("visitor", ownerId || getClientArtistId());
         url.searchParams.set("visitorName", settings.artistName || "동료작가");
 
         window.location.href = url.toString();

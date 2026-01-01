@@ -21,9 +21,7 @@ export async function GET() {
     try {
         for (const src of SOURCES) {
             try {
-                const response = await fetch(src.rss, {
-                    next: { revalidate: 60 }
-                });
+                const response = await fetch(src.rss);
 
                 if (!response.ok) continue;
 

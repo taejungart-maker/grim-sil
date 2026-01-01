@@ -9,9 +9,13 @@ import bcrypt from 'bcryptjs';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 export async function POST(request: NextRequest) {
+    // 매 요청마다 새로운 클라이언트 생성 (사살된 싱글톤 대체)
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+        global: { fetch: (url, options) => fetch(url, { ...options, cache: 'no-store' }) }
+    });
+
     try {
         const { artist_id, new_password } = await request.json();
 

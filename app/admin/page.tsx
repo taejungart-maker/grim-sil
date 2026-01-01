@@ -1,4 +1,6 @@
 "use client";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -10,7 +12,7 @@ import { migrateAllImagesToStorage, countBase64Images, MigrationProgress } from 
 import { useAuth } from "../contexts/AuthContext";
 import { resetPaymentStatus } from "../utils/paymentUtils";
 import { isAlwaysFreeMode } from "../utils/deploymentMode";
-import { ARTIST_ID as GLOBAL_ARTIST_ID } from "../utils/supabase";
+import { getClientArtistId } from "../utils/getArtistId";
 import { createVipArtist, getAllVipArtists, deleteVipArtist, generateVipLinkUrl, VipArtist } from "../utils/vipArtistDb";
 import QRCode from "qrcode";
 import { SIGNATURE_COLORS } from "../utils/themeColors";
@@ -22,7 +24,7 @@ export default function AdminPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const vipId = searchParams.get("vipId") || ""; // VIP 세일즈 갤러리 ID
-    const effectiveArtistId = vipId || GLOBAL_ARTIST_ID;
+    const effectiveArtistId = vipId || getClientArtistId();
 
     const { isAuthenticated, login, logout } = useAuth();
     const [password, setPassword] = useState("");
@@ -328,7 +330,17 @@ export default function AdminPage() {
                     }}>
                         갤러리 설정
                     </h1>
-                    {vipId && <span style={{ padding: "4px 8px", background: "#6366f1", color: "#fff", borderRadius: "6px", fontSize: "12px", fontWeight: 700 }}>{vipId}</span>}
+                    <span style={{
+                        padding: "4px 8px",
+                        background: vipId ? "#6366f1" : "rgba(0,0,0,0.05)",
+                        color: vipId ? "#fff" : "#888",
+                        borderRadius: "6px",
+                        fontSize: "12px",
+                        fontWeight: 700,
+                        fontFamily: "monospace"
+                    }}>
+                        ID: {effectiveArtistId}
+                    </span>
                 </div>
                 <div style={{ display: "flex", gap: "12px" }}>
                     <button

@@ -1,6 +1,7 @@
-// Supabase 유틸리티 - 작품 데이터 저장소 (클라우드 동기화)
 import { Artwork } from "../data/artworks";
-import { supabase, ArtworkRow, ARTIST_ID } from "./supabase";
+import { getSupabaseClient, ArtworkRow } from "./supabase";
+import { getClientArtistId } from "./getArtistId";
+import { unstable_noStore as noStore } from "next/cache";
 
 // ID 생성
 export function generateId(): string {
@@ -34,7 +35,7 @@ export function validateArtistId(id?: string): string {
     // 이외의 경우(undefined, null, 빈 문자열 등)는 
     // 전역 ARTIST_ID로 가되, 이것이 default인지 확인 루틴 거침
     if (!id || id === "undefined" || id === "null") {
-        return ARTIST_ID || "default";
+        return getClientArtistId() || "default";
     }
 
     return id;
@@ -60,15 +61,17 @@ function artworkToRow(artwork: Artwork & { createdAt?: number }, ownerId?: strin
 
 // 모든 작품 가져오기 (Storage URL만 포함, Base64는 제외)
 export async function getAllArtworks(ownerId?: string): Promise<Artwork[]> {
+    noStore(); // 🔥 서버사이드 캐시 파괴
     try {
         const targetArtistId = validateArtistId(ownerId);
+        const supabase = getSupabaseClient();
         console.log(`=== [ISOLATION AUDIT] Fetching artworks for ID: ${targetArtistId} ===`);
 
-        // 메타데이터 로드 (image_url 포함하되, Base64는 처리 시 건너뜀)
+        // 메타데이터 로드
         const { data, error, status } = await supabase
             .from("artworks")
             .select("id, title, year, month, dimensions, medium, description, price, created_at, image_url, artist_name")
-            .eq("artist_id", targetArtistId) // 현재 작가의 데이터만 가져오기
+            .eq("artist_id", targetArtistId)
             .order("created_at", { ascending: false });
 
         console.log("Supabase response status:", status);
@@ -113,6 +116,7 @@ export async function addArtwork(artwork: Omit<Artwork, "id"> & { id?: string },
 
     const row = artworkToRow(newArtwork as Artwork, targetArtistId);
 
+    const supabase = getSupabaseClient();
     const { data, error } = await supabase
         .from("artworks")
         .insert(row)
@@ -130,8 +134,9 @@ export async function addArtwork(artwork: Omit<Artwork, "id"> & { id?: string },
 // 작품 수정
 export async function updateArtwork(artwork: Artwork, ownerId?: string): Promise<Artwork> {
     const row = artworkToRow(artwork, ownerId);
-    const targetArtistId = ownerId || ARTIST_ID;
+    const targetArtistId = ownerId || getClientArtistId();
 
+    const supabase = getSupabaseClient();
     const { data, error } = await supabase
         .from("artworks")
         .update(row)
@@ -150,7 +155,8 @@ export async function updateArtwork(artwork: Artwork, ownerId?: string): Promise
 
 // 작품 삭제
 export async function deleteArtwork(id: string, ownerId?: string): Promise<void> {
-    const targetArtistId = ownerId || ARTIST_ID;
+    const targetArtistId = ownerId || getClientArtistId();
+    const supabase = getSupabaseClient();
     const { error } = await supabase
         .from("artworks")
         .delete()
@@ -165,7 +171,9 @@ export async function deleteArtwork(id: string, ownerId?: string): Promise<void>
 
 // 단일 작품 가져오기
 export async function getArtwork(id: string, ownerId?: string): Promise<Artwork | undefined> {
-    const targetArtistId = ownerId || ARTIST_ID;
+    noStore(); // 🔥 캐시 파괴
+    const targetArtistId = ownerId || getClientArtistId();
+    const supabase = getSupabaseClient();
     const { data, error } = await supabase
         .from("artworks")
         .select("*")
@@ -300,7 +308,7 @@ export async function uploadImageToStorage(file: File, artistId?: string): Promi
     const resizedBlob = await resizeImageToBlob(file);
 
     // Artist ID 기반 경로 생성 (완전 격리)
-    const effectiveArtistId = artistId || ARTIST_ID;
+    const effectiveArtistId = artistId || getClientArtistId();
     const fileExt = "jpg";
     const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
     const filePath = `${effectiveArtistId}/images/${fileName}`; // Artist ID별 폴더 분리
@@ -308,6 +316,7 @@ export async function uploadImageToStorage(file: File, artistId?: string): Promi
     console.log(`[IMAGE_UPLOAD] Uploading to: ${filePath} for Artist ID: ${effectiveArtistId}`);
 
     // Supabase Storage에 업로드
+    const supabase = getSupabaseClient();
     const { error: uploadError } = await supabase.storage
         .from(STORAGE_BUCKET)
         .upload(filePath, resizedBlob, {
@@ -343,6 +352,7 @@ export async function deleteImageFromStorage(imageUrl: string): Promise<void> {
 
         const filePath = urlParts[1];
 
+        const supabase = getSupabaseClient();
         const { error } = await supabase.storage
             .from(STORAGE_BUCKET)
             .remove([filePath]);
@@ -511,13 +521,14 @@ export async function importAllData(file: File): Promise<{ success: boolean; cou
 export async function incrementVisitorCount() {
     try {
         const today = new Date().toISOString().split('T')[0];
+        const supabase = getSupabaseClient();
 
         // 오늘 날짜의 데이터가 있는지 확인
         const { data, error } = await supabase
             .from('visitor_stats')
             .select('count')
             .eq('date', today)
-            .eq('artist_id', ARTIST_ID) // 현재 작가의 통계만 가져오기
+            .eq('artist_id', getClientArtistId()) // 현재 작가의 통계만 가져오기
             .single();
 
         if (error && error.code !== 'PGRST116') { // PGRST116 is "not found"
@@ -526,16 +537,18 @@ export async function incrementVisitorCount() {
 
         if (data) {
             // 있으면 업데이트
+            const supabase = getSupabaseClient();
             await supabase
                 .from('visitor_stats')
                 .update({ count: data.count + 1 })
                 .eq('date', today)
-                .eq('artist_id', ARTIST_ID); // 현재 작가의 통계만 업데이트
+                .eq('artist_id', getClientArtistId()); // 현재 작가의 통계만 업데이트
         } else {
             // 없으면 새로 생성
+            const supabase = getSupabaseClient();
             await supabase
                 .from('visitor_stats')
-                .insert([{ date: today, count: 1, artist_id: ARTIST_ID }]); // artist_id 포함
+                .insert([{ date: today, count: 1, artist_id: getClientArtistId() }]); // artist_id 포함
         }
     } catch (error) {
         console.error("Failed to increment visitor count:", error);
@@ -544,11 +557,13 @@ export async function incrementVisitorCount() {
 
 // 최근 방문자 통계 가져오기 (최근 7일)
 export async function getVisitorStats(days = 7) {
+    noStore(); // 🔥 캐시 파괴
     try {
+        const supabase = getSupabaseClient();
         const { data, error } = await supabase
             .from('visitor_stats')
             .select('*')
-            .eq('artist_id', ARTIST_ID) // 현재 작가의 통계만 가져오기
+            .eq('artist_id', getClientArtistId()) // 현재 작가의 통계만 가져오기
             .order('date', { ascending: false })
             .limit(days);
 

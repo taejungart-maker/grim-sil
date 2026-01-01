@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { Artwork } from "../data/artworks";
-import { supabase } from "../utils/supabase";
 import { SIGNATURE_COLORS } from "../utils/themeColors";
 
 interface ArtworkCardProps {

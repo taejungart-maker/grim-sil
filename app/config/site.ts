@@ -29,13 +29,14 @@ export const defaultSiteConfig = {
     // 가격 표시 여부
     showPrice: false as boolean,
 
+    // 각 섹션 표시 여부 (하위 호환성 및 빌드 오류 방지)
+    showArtistNote: true as boolean,
+    showCritique: true as boolean,
+    showHistory: true as boolean,
+
     // 대표 작가노트 (새 작품 등록 시 자동 적용)
     defaultArtistNote: "" as string,
 
-    // 작가 소개 및 평론 설정
-    showArtistNote: true as boolean,
-    showCritique: false as boolean,
-    showHistory: false as boolean,
     aboutmeNote: "" as string,
     aboutmeCritique: "" as string,
     aboutmeHistory: "" as string,
@@ -52,7 +53,28 @@ export const defaultSiteConfig = {
 export const ADMIN_PASSWORD = "admin1234";
 
 // 설정 타입
-export type SiteConfig = typeof defaultSiteConfig;
+export interface SiteConfig {
+    galleryNameEn: string;
+    galleryNameKo: string;
+    artistName: string;
+    siteTitle: string;
+    siteDescription: string;
+    theme: "white" | "black";
+    gridColumns: 1 | 3 | 4;
+    showPrice: boolean;
+    showArtistNote: boolean;
+    showCritique: boolean;
+    showHistory: boolean;
+    defaultArtistNote: string;
+    aboutmeNote: string;
+    aboutmeCritique: string;
+    aboutmeHistory: string;
+    aboutmeImage: string;
+    artistPicks: { name: string; archiveUrl: string; imageUrl?: string }[];
+    newsText: string;
+}
+
+export type SiteConfigType = typeof defaultSiteConfig;
 
 // 하위 호환성을 위한 export
 export const siteConfig = defaultSiteConfig;

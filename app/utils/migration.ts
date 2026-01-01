@@ -3,8 +3,9 @@
 
 import { Artwork } from "../data/artworks";
 import { SiteConfig, defaultSiteConfig } from "../config/site";
-import { supabase } from "./supabase";
+import { getSupabaseClient } from "./supabase";
 import { addArtwork, getAllArtworks } from "./db";
+import { unstable_noStore as noStore } from "next/cache";
 
 // ====================================
 // IndexedDB 직접 읽기 (레거시 데이터)
@@ -184,6 +185,7 @@ export async function migrateLocalDataToSupabase(): Promise<MigrationResult> {
                 updated_at: new Date().toISOString(),
             };
 
+            const supabase = getSupabaseClient();
             const { error } = await supabase
                 .from("settings")
                 .upsert(settingsRow, { onConflict: "id" });
@@ -201,6 +203,7 @@ export async function migrateLocalDataToSupabase(): Promise<MigrationResult> {
         const legacyPassword = await readLegacyPassword();
 
         if (legacyPassword) {
+            const supabase = getSupabaseClient();
             const { error } = await supabase
                 .from("settings")
                 .upsert({

@@ -1,12 +1,12 @@
-"use client";
-// [GLOBAL_SYNC_TRIGGER_V1] Triggering automatic redeploy for all artist galleries via GitHub webhook
-// Timestamp: 2025-12-28 04:50:00 (KST)
+// Timestamp: 2026-01-01 13:10:00 (KST) - Cache Purge Forced
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 import { useState, useEffect, useMemo, useCallback, Suspense, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { getYearMonths, getArtworksByYearMonth, Artwork, YearMonthKey } from "./data/artworks";
 import { loadSettings, quickAddPick } from "./utils/settingsDb";
-import { ARTIST_ID } from "./utils/supabase";
+import { getClientArtistId } from "./utils/getArtistId";
 import { getThemeColors, SIGNATURE_COLORS } from "./utils/themeColors";
 import type { SiteConfig } from "./config/site";
 import { loadDemoDataIfEmpty } from "./utils/demoData";
@@ -71,12 +71,10 @@ function HomeContent() {
 
   useEffect(() => {
     setIsMounted(true);
-    if (typeof window !== 'undefined') {
-      if (searchParams.get("showPayment") === "true") {
-        setShowPaymentModal(true);
-      }
-    }
-  }, [searchParams]);
+  }, []); // [PG_SCREENING_MOD] 자동 팝업 방지: 사용자가 '구독하기' 버튼을 눌렀을 때만 팝업이 뜨도록 유도합니다.
+  useEffect(() => {
+    // 기존 자동 팝업 로직 삭제
+  }, []);
 
   useEffect(() => {
     if (!demoLoaded && !artworksLoading && artworks.length === 0) {
@@ -181,16 +179,18 @@ function HomeContent() {
 
       {showNewsTicker && !policyModal.isOpen && <NewsTicker theme={settings.theme} newsText={settings.newsText} />}
 
-      {/* 구독 만료 시 흐린 유리 오버레이 */}
+      {/* [PG_SCREENING_FIX] 접속 시 자동으로 뜨는 가림막 제거 (심사 가이드 준수) */}
+      {/* 
       {needsPayment && !isPaid && (
         <ExpiredOverlay
           galleryName={settings.galleryNameKo}
           onResubscribe={() => setShowPaymentModal(true)}
         />
       )}
+      */}
 
       {/* 🚀 동료 갤러리에서 방문한 작가에게 추천 버튼 표시 (약관 모달이 닫혀있을 때만) */}
-      {showQuickAdd && !policyModal.isOpen && (visitorId || (isLoggedIn && ownerId && ownerId !== ARTIST_ID)) && (
+      {showQuickAdd && !policyModal.isOpen && (visitorId || (isLoggedIn && ownerId && ownerId !== getClientArtistId())) && (
         <div style={{
           position: "fixed",
           bottom: "100px",

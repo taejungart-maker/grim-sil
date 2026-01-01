@@ -49,8 +49,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const isValid = await verifyPassword(password);
 
             if (isValid) {
-                const { ARTIST_ID } = await import("../utils/supabase");
-                setAuthSession(password, ARTIST_ID);
+                const { getClientArtistId } = await import("../utils/getArtistId");
+                const currentArtistId = getClientArtistId();
+                setAuthSession(password, currentArtistId);
                 setIsAuthenticated(true);
                 return true;
             }

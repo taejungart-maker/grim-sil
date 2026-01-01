@@ -4,7 +4,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { Artwork } from "../data/artworks";
 import { getAllArtworks } from "../utils/db";
-import { supabase, ARTIST_ID } from "../utils/supabase";
+import { getSupabaseClient } from "../utils/supabase";
+import { getClientArtistId } from "../utils/getArtistId";
 
 interface UseSyncedArtworksResult {
     artworks: Artwork[];
@@ -36,6 +37,7 @@ export function useSyncedArtworks(vipId?: string): UseSyncedArtworksResult {
     useEffect(() => {
         loadArtworks();
 
+        const supabase = getSupabaseClient();
         // Supabase Realtime 구독
         const channel = supabase
             .channel(`artworks-changes-${vipId || 'main'}`)
@@ -45,22 +47,25 @@ export function useSyncedArtworks(vipId?: string): UseSyncedArtworksResult {
                     event: "*", // INSERT, UPDATE, DELETE 모두 수신
                     schema: "public",
                     table: "artworks",
-                    filter: `artist_id=eq.${vipId || ARTIST_ID}`
+                    filter: `artist_id=eq.${vipId || getClientArtistId()}`
                 },
                 (payload) => {
-                    console.log(`[ISOLATION] Realtime for ${vipId || 'main'}:`, payload.eventType);
+                    const currentId = vipId || getClientArtistId();
+                    console.log(`[ISOLATION] Realtime for ${currentId}:`, payload.eventType);
                     // 변경사항 발생 시 전체 목록 새로고침
                     loadArtworks();
                 }
             )
             .subscribe((status) => {
                 if (status === 'SUBSCRIBED') {
-                    console.log(`[ISOLATION] Realtime Subscribed for: ${vipId || ARTIST_ID}`);
+                    const currentId = vipId || getClientArtistId();
+                    console.log(`[ISOLATION] Realtime Subscribed for: ${currentId}`);
                 }
             });
 
         // 정리 함수
         return () => {
+            const supabase = getSupabaseClient();
             supabase.removeChannel(channel);
         };
     }, [loadArtworks]);
@@ -105,24 +110,28 @@ export function useSyncedSettings(vipId?: string): UseSyncedSettingsResult {
     useEffect(() => {
         loadSettingsData();
 
-        // 설정 테이블 Realtime 구독
+        const supabase = getSupabaseClient();
+        const effectiveId = vipId || getClientArtistId();
+        // 설정 테이블 Realtime 구독 (내 갤러리 설정만 수신)
         const channel = supabase
-            .channel("settings-changes")
+            .channel(`settings-changes-${effectiveId}`)
             .on(
                 "postgres_changes",
                 {
                     event: "*",
                     schema: "public",
                     table: "settings",
+                    filter: `id=eq.${effectiveId}`
                 },
-                () => {
-                    console.log("Settings updated");
+                (payload) => {
+                    console.log(`Settings updated for ${effectiveId}:`, payload.eventType);
                     loadSettingsData();
                 }
             )
             .subscribe();
 
         return () => {
+            const supabase = getSupabaseClient();
             supabase.removeChannel(channel);
         };
     }, [loadSettingsData]);

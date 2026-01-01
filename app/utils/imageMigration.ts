@@ -1,5 +1,5 @@
 // Base64 이미지 → Supabase Storage 마이그레이션 스크립트
-import { supabase } from "./supabase";
+import { getSupabaseClient } from "./supabase";
 
 export interface MigrationProgress {
     total: number;
@@ -63,6 +63,7 @@ async function migrateArtworkImage(
     const filePath = `artworks/${fileName}`;
 
     // Storage에 업로드
+    const supabase = getSupabaseClient();
     const { data, error } = await supabase.storage
         .from("artworks")
         .upload(filePath, blob, {
@@ -95,6 +96,7 @@ export async function migrateAllImagesToStorage(
     };
 
     try {
+        const supabase = getSupabaseClient();
         // Base64 이미지가 있는 작품만 가져오기 (한 번에 하나씩 처리)
         const { data: artworks, error } = await supabase
             .from("artworks")
@@ -125,6 +127,7 @@ export async function migrateAllImagesToStorage(
             const result = await migrateArtworkImage(artwork.id, artwork.image_url);
 
             if (result.success && result.newUrl) {
+                const supabase = getSupabaseClient();
                 // DB 업데이트
                 const { error: updateError } = await supabase
                     .from("artworks")
@@ -160,6 +163,7 @@ export async function migrateAllImagesToStorage(
 
 // Base64 이미지 개수 확인
 export async function countBase64Images(): Promise<number> {
+    const supabase = getSupabaseClient();
     const { count, error } = await supabase
         .from("artworks")
         .select("*", { count: "exact", head: true })

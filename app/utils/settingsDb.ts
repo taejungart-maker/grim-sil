@@ -1,9 +1,26 @@
-// 설정 저장소 - Supabase를 사용하여 클라우드 동기화
-import { SiteConfig, defaultSiteConfig } from "..//config/site";
-import { supabase, ARTIST_ID } from "./supabase";
+import { SiteConfig, defaultSiteConfig } from "../config/site";
+import { getSupabaseClient } from "./supabase";
+import { getClientArtistId } from "./getArtistId";
+import { unstable_noStore as noStore } from "next/cache";
 
-// 각 작가별로 고유한 설정 ID 사용
-const SETTINGS_ID = ARTIST_ID;
+/**
+ * [COMMAND] 서버사이드 데이터 페칭 강제 (x-artist-id 기반)
+ * 전역 환경변수가 아닌, 미들웨어가 주입한 헤더를 최우선으로 신뢰합니다.
+ */
+export async function loadSettings(): Promise<SiteConfig> {
+    if (typeof window === 'undefined') {
+        try {
+            const { headers } = require('next/headers');
+            const h = headers();
+            const artistId = h.get('x-artist-id') || getClientArtistId();
+            return loadSettingsById(artistId);
+        } catch (e) {
+            // 정적 렌더링 시 headers() 사용 불가 대응
+            return loadSettingsById(getClientArtistId());
+        }
+    }
+    return loadSettingsById(getClientArtistId());
+}
 
 // 설정 Row 타입
 interface SettingsRow {
@@ -78,15 +95,12 @@ function configToRow(config: SiteConfig): Partial<SettingsRow> {
     };
 }
 
-// 설정 불러오기
-export async function loadSettings(): Promise<SiteConfig> {
-    // 클라이언트/서버 모두 지원 (도메인 기반)
-    return loadSettingsById(ARTIST_ID);
-}
 
 // 특정 작가 ID의 설정 불러오기
 export async function loadSettingsById(artistId: string): Promise<SiteConfig> {
+    noStore(); // 🔥 서버사이드 캐시 파괴
     try {
+        const supabase = getSupabaseClient();
         const { data, error } = await supabase
             .from("settings")
             .select("*")
@@ -107,13 +121,14 @@ export async function loadSettingsById(artistId: string): Promise<SiteConfig> {
 
 // 설정 저장 (upsert)
 export async function saveSettings(config: SiteConfig, overrideId?: string): Promise<void> {
-    const settingsId = overrideId || SETTINGS_ID;
+    const settingsId = overrideId || getClientArtistId();
     const row = {
         id: settingsId,
         ...configToRow(config),
         updated_at: new Date().toISOString(),
     };
 
+    const supabase = getSupabaseClient();
     const { error } = await supabase
         .from("settings")
         .upsert(row, { onConflict: "id" });
@@ -147,6 +162,7 @@ export async function quickAddPick(ownerId: string, pick: { name: string; archiv
         updated_at: new Date().toISOString(),
     };
 
+    const supabase = getSupabaseClient();
     const { error } = await supabase
         .from("settings")
         .upsert(row, { onConflict: "id" });
@@ -168,10 +184,12 @@ const DEFAULT_PASSWORD = "admin1234";
 // 비밀번호 불러오기
 export async function loadPassword(): Promise<string> {
     try {
+        const artistId = getClientArtistId();
+        const supabase = getSupabaseClient();
         const { data, error } = await supabase
             .from("settings")
             .select("admin_password")
-            .eq("id", SETTINGS_ID)
+            .eq("id", artistId)
             .single();
 
         if (error || !data || !data.admin_password) {
@@ -186,10 +204,12 @@ export async function loadPassword(): Promise<string> {
 
 // 비밀번호 저장
 export async function savePassword(password: string): Promise<void> {
+    const artistId = getClientArtistId();
+    const supabase = getSupabaseClient();
     const { error } = await supabase
         .from("settings")
         .upsert({
-            id: SETTINGS_ID,
+            id: artistId,
             admin_password: password,
             updated_at: new Date().toISOString(),
         }, { onConflict: "id" });
@@ -213,6 +233,7 @@ export async function verifyPassword(input: string): Promise<boolean> {
 // VIP 갤러리 비밀번호 불러오기
 export async function loadPasswordById(artistId: string): Promise<string> {
     try {
+        const supabase = getSupabaseClient();
         const { data, error } = await supabase
             .from("settings")
             .select("admin_password")
@@ -231,6 +252,7 @@ export async function loadPasswordById(artistId: string): Promise<string> {
 
 // VIP 갤러리 비밀번호 저장
 export async function savePasswordById(artistId: string, password: string): Promise<void> {
+    const supabase = getSupabaseClient();
     const { error } = await supabase
         .from("settings")
         .upsert({

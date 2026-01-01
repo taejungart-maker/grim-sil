@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { isAlwaysFreeMode } from "../utils/deploymentMode";
 import { getThemeColors, SIGNATURE_COLORS } from "../utils/themeColors";
 
@@ -30,6 +31,8 @@ export default function Header({
     vipId,
     isAlwaysFree = false
 }: HeaderProps) {
+    const searchParams = useSearchParams();
+    const isScreeningMode = searchParams.get('screening') === 'true';
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
@@ -217,10 +220,10 @@ export default function Header({
                     {/* [ZERO_CACHE_FORCE] 구조 변경으로 캐시 무력화 */}
                     <div id="nav-actions-container-v2" className="flex items-center gap-2 sm:gap-3 sm:ml-auto">
                         {/* 구독하기 버튼 - 호스트네임 하드 가드 (V2) + 심사 모드(?screening=true) 대응 */}
-                        {isMounted && (!isPaid || (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('screening') === 'true')) && (
+                        {isMounted && (!isPaid || isScreeningMode) && (
                             (vipId && !isAlwaysFree) ||
                             (!vipId && !isAlwaysFreeMode() && !isFreeArtistHost) ||
-                            (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('screening') === 'true')
+                            isScreeningMode
                         ) && (
                                 <button
                                     id="force-sub-btn-v2"
@@ -242,7 +245,7 @@ export default function Header({
                                         transition: "all 0.2s ease"
                                     }}
                                 >
-                                    <span>구독하기</span>
+                                    <span>구독버튼</span>
                                 </button>
                             )}
 

@@ -165,6 +165,9 @@ export default function VIPPageClient({ VIP_ID, isAlwaysFree = false }: VIPPageC
                 vipId={VIP_ID}
                 isAlwaysFree={isAlwaysFree}
             />
+
+            {/* [PG_SCREENING_FIX] 상단 배너 제거 (Header의 '구독버튼'으로 일원화하여 콘텐츠 가시성 확보) */}
+
             <PaymentGate forcedMode={isAlwaysFree ? "always_free" : "commercial"}>
 
                 {yearMonths.length > 0 && selectedYearMonth && (

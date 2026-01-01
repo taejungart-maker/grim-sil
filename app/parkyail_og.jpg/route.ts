@@ -6,8 +6,9 @@ export const revalidate = 0;
 
 export async function GET(request: NextRequest) {
     try {
-        // 1. 박야일 작가님(-vqsk) 설정 로드
-        const artistId = process.env.NEXT_PUBLIC_ARTIST_ID || "-vqsk";
+        // 1. 도메인 기반 아티스트 ID 감지
+        const { getClientArtistId } = require("../utils/getArtistId");
+        const artistId = getClientArtistId();
         const settings = await loadSettingsById(artistId);
 
         // 2. 프로필 이미지 URL 확인

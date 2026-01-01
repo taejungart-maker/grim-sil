@@ -1,13 +1,14 @@
-import { supabase } from "../utils/supabase";
+import { getSupabaseClient } from "../utils/supabase";
 
 export const dynamic = "force-dynamic";
 
 export default async function CheckDataPage() {
+    const supabase = getSupabaseClient();
     // 1. 모든 설정 로드
     const { data: allSettings } = await supabase
         .from("settings")
         .select("*")
-        .order("artist_id");
+        .order("id");
 
     // 2. 아티스트별 작품 수 집계
     const { data: artworks } = await supabase
@@ -29,13 +30,18 @@ export default async function CheckDataPage() {
 
     const isIsolated = testData?.length === 0;
 
-    const artistId = process.env.NEXT_PUBLIC_ARTIST_ID || "default";
+    const { getClientArtistId } = require("../utils/getArtistId");
+    const artistId = getClientArtistId();
+
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "NOT_SET";
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "NOT_SET";
 
     return (
         <div style={{ padding: "40px", fontFamily: "monospace", fontSize: "13px", lineHeight: "1.6" }}>
-            <h1>🛡️ Absolute Isolation Audit V5 (System Live)</h1>
+            <h1>System Isolation Audit</h1>
+            <div style={{ background: '#f5f5f5', padding: '20px', borderRadius: '8px', marginBottom: '40px' }}>
+                <p><b>Detected ID:</b> <span style={{ color: "blue" }}>{artistId}</span></p>
+            </div>
             <p style={{ color: "gray" }}><b>Last Hardened Deployment:</b> {deployTime}</p>
             <hr />
 
