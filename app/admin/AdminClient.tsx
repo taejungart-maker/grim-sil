@@ -258,12 +258,12 @@ export default function AdminClient({ injectedArtistId }: AdminClientProps) {
                     <section>
                         <h2 className="text-xl font-bold mb-6 flex items-center gap-2">🎨 테마 및 레이아웃</h2>
                         <div className="grid grid-cols-2 gap-4">
-                            <button onClick={() => setSettings({ ...settings, theme: "white" })} className={`p-4 rounded-xl border-2 font-bold ${settings.theme === "white" ? "border-black bg-white text-black" : "border-gray-200 opacity-50 text-gray-400"}`}>화이트 테마</button>
-                            <button onClick={() => setSettings({ ...settings, theme: "black" })} className={`p-4 rounded-xl border-2 font-bold ${settings.theme === "black" ? "border-white bg-black text-white" : "border-gray-800 opacity-50 text-gray-400"}`}>블랙 테마</button>
+                            <button onClick={() => setSettings({ ...settings, theme: "white" })} className={`p-2.5 rounded-xl border-2 font-bold ${settings.theme === "white" ? "border-black bg-white text-black" : "border-gray-200 opacity-50 text-gray-400"}`}>화이트 테마</button>
+                            <button onClick={() => setSettings({ ...settings, theme: "black" })} className={`p-2.5 rounded-xl border-2 font-bold ${settings.theme === "black" ? "border-white bg-black text-white" : "border-gray-800 opacity-50 text-gray-400"}`}>블랙 테마</button>
                         </div>
                         <div className="mt-6 flex gap-2">
                             {[1, 3, 4].map(cols => (
-                                <button key={cols} onClick={() => setSettings({ ...settings, gridColumns: cols as any })} className={`flex-1 p-3 rounded-xl border-2 font-bold ${settings.gridColumns === cols ? "border-indigo-500 bg-indigo-50 text-indigo-700" : "border-transparent bg-gray-50 text-gray-400"}`}>{cols}열 배열</button>
+                                <button key={cols} onClick={() => setSettings({ ...settings, gridColumns: cols as any })} className={`flex-1 p-2 rounded-xl border-2 font-bold ${settings.gridColumns === cols ? "border-indigo-500 bg-indigo-50 text-indigo-700" : "border-transparent bg-gray-50 text-gray-400"}`}>{cols}열 배열</button>
                             ))}
                         </div>
                     </section>
