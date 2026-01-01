@@ -9,25 +9,24 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata() {
   noStore();
-  const artistId = getClientArtistId();
 
   try {
-    // [V9_FIX] 강화된 getClientArtistId()를 통해 어떤 환경에서도 정확한 ID 추출
+    // [V11_ASYNC] Next.js 16 비동기 헤더 및 ID 식별 강제 적용
+    const { getServerArtistId } = require('./utils/getArtistId');
+    const artistId = await getServerArtistId();
+
     const settings = await loadSettingsById(artistId);
 
     const title = settings.siteTitle || `${settings.artistName} 작가님의 온라인 화첩`;
     const description = settings.siteDescription || `${settings.artistName} 작가의 작품세계를 담은 공간입니다.`;
 
-    // [V10_FIX] 사용자 명령: OG 태그에 테넌트 식별자 강제 주입 & 환경변수 100% 배제
     const { headers } = require('next/headers');
-    const h = headers();
-    const domain = h.get('x-forwarded-host') || h.get('host') || "grim-sil.vercel.app";
+    const h = await headers(); // [V11_FIX] await headers() 적용
+    const domain = h.get('x-forwarded-host') || h.get('host') || "hahyunju.com";
     const baseUrl = `https://${domain}`;
 
-    // 카카오톡 인식용 고유 URL (도메인 뒤에 파라미터를 붙여 다른 링크로 강제 인식)
     const ogUrl = `${baseUrl}?artist=${artistId}`;
 
-    // 이미지 경로 캐시 강제 갱신 (사용자 명령: ?v=${artistId})
     let finalImageUrl = settings.aboutmeImage || `${baseUrl}/og-default.png`;
     finalImageUrl += finalImageUrl.includes('?') ? `&v=${artistId}` : `?v=${artistId}`;
 
@@ -41,10 +40,10 @@ export async function generateMetadata() {
       openGraph: {
         title: title,
         description: description,
-        url: ogUrl, // [CRITICAL] 카톡이 서로 다른 링크로 인식하게 함
+        url: ogUrl,
         siteName: title,
         images: [{
-          url: finalImageUrl, // [CRITICAL] 이미지 캐시 강제 갱신
+          url: finalImageUrl,
           width: 800,
           height: 400
         }],
@@ -58,8 +57,12 @@ export async function generateMetadata() {
       }
     };
   } catch (error) {
-    console.error("Metadata generation failed:", error);
-    return { title: "온라인 화첩" };
+    console.error("Metadata generation failed [CRITICAL]:", error);
+    // [V11_SECURITY] 식별 실패 시 빈 객체나 최소한의 정보만 반환하여 데이터 혼입 차단
+    return {
+      title: "작가 온라인 화첩",
+      description: "로딩 중이거나 접근이 거부되었습니다."
+    };
   }
 }
 

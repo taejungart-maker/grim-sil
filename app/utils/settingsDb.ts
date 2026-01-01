@@ -8,18 +8,17 @@ import { unstable_noStore as noStore } from "next/cache";
  * 전역 환경변수가 아닌, 미들웨어가 주입한 헤더를 최우선으로 신뢰합니다.
  */
 export async function loadSettings(): Promise<SiteConfig> {
-    if (typeof window === 'undefined') {
-        try {
-            const { headers } = require('next/headers');
-            const h = headers();
-            const artistId = h.get('x-artist-id') || getClientArtistId();
+    try {
+        if (typeof window === 'undefined') {
+            const { getServerArtistId } = require('./getArtistId');
+            const artistId = await getServerArtistId();
             return loadSettingsById(artistId);
-        } catch (e) {
-            // 정적 렌더링 시 headers() 사용 불가 대응
-            return loadSettingsById(getClientArtistId());
         }
+        return loadSettingsById(getClientArtistId());
+    } catch (e) {
+        console.error("Failed to load settings:", e);
+        return loadSettingsById(getClientArtistId());
     }
-    return loadSettingsById(getClientArtistId());
 }
 
 // 설정 Row 타입

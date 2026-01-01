@@ -7,8 +7,9 @@ export const revalidate = 0;
 
 export default async function AdminPage() {
     noStore();
-    // [V8_FIX] 서버 사이드(미들웨어 헤더)에서 확정된 ID를 가져옴
-    const artistId = getClientArtistId();
+    // [V11_ASYNC] 서버 사이드 비동기 테넌트 식별
+    const { getServerArtistId } = require("../utils/getArtistId");
+    const artistId = await getServerArtistId();
 
     console.log(`[Admin Entrance] Injected Artist ID: ${artistId}`);
 
