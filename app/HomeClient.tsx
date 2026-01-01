@@ -26,6 +26,8 @@ import EncouragementSection from "./components/EncouragementSection";
 import ArtistPicksSection from "./components/ArtistPicksSection";
 import ExpiredOverlay from "./components/ExpiredOverlay";
 import PolicyModal from "./components/PolicyModal";
+import CTASection from "./components/CTASection";
+import Footer from "./components/Footer";
 
 interface HomeClientProps {
     injectedArtistId: string;
@@ -130,6 +132,12 @@ export default function HomeClient({ injectedArtistId }: HomeClientProps) {
                 {settings.showArtistNote && <EncouragementSection theme={settings.theme} />}
                 <ArtistPicksSection theme={settings.theme} picks={settings.artistPicks} />
             </main>
+
+            {/* 나도 갤러리 만들기 CTA */}
+            <CTASection theme={settings.theme} />
+
+            {/* 푸터 (사업자 정보 + 정책) */}
+            <Footer theme={settings.theme} />
 
             {/* 모달들 */}
             {selectedArtwork && (
