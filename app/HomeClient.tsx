@@ -119,7 +119,14 @@ export default function HomeClient({ injectedArtistId }: HomeClientProps) {
                     theme={settings.theme}
                 />
 
-                <div className={`grid mt-8 gap-6 grid-cols-${settings.gridColumns}`}>
+                <div
+                    className="grid mt-8 gap-6"
+                    style={{
+                        gridTemplateColumns: settings.gridColumns === 1
+                            ? "1fr"
+                            : `repeat(${settings.gridColumns}, 1fr)`
+                    }}
+                >
                     {filteredArtworks.map((artwork, idx) => (
                         <ArtworkCard
                             key={artwork.id}
