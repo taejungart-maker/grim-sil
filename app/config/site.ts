@@ -75,7 +75,7 @@ export interface SiteConfig {
     aboutmeImage: string;
     artistPicks: { name: string; archiveUrl: string; imageUrl?: string }[];
     newsText: string;
-    updatedAt?: string;
+    updatedAt: string;
 }
 
 export type SiteConfigType = typeof defaultSiteConfig;
