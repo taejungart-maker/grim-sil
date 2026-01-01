@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-    const host = request.headers.get('host') || "";
+    // [V8_FIX] headers('host') 대신 nextUrl.hostname을 사용하여 포트 간섭 및 프록시 오염 차단
+    const host = request.nextUrl.hostname;
 
     // 도메인별 ID 매핑 (이것이 완벽한 격리의 핵심)
     const artistMap: Record<string, string> = {
@@ -14,20 +15,12 @@ export function middleware(request: NextRequest) {
         'www.hahyunju.com': '-hyunju',
         'moonhyekyung-gallery.vercel.app': '-3ibp',
         'hwangmikyung-gallery.vercel.app': '-5e4p',
-        'localhost:3000': '-vqsk',
         'localhost': '-vqsk',
     };
 
-    // 호스트명 그대로 매칭 시도
-    let artistId = artistMap[host] || "";
+    let artistId = artistMap[host.toLowerCase()] || "";
 
-    // 포트 제거 후 매칭 시도 (Fallback)
-    if (!artistId) {
-        const cleanHost = host.split(':')[0].toLowerCase();
-        artistId = artistMap[cleanHost] || "";
-    }
-
-    // 키워드 매핑 (Fallback 2 - 브랜치/프리뷰 도메인 대응)
+    // 키워드 매핑 (Fallback - 브랜치/프리뷰 도메인 대응)
     if (!artistId) {
         const lowerHost = host.toLowerCase();
         if (lowerHost.includes('hahyunju')) artistId = '-hyunju';
@@ -36,12 +29,14 @@ export function middleware(request: NextRequest) {
         else if (lowerHost.includes('grim-sil')) artistId = '-vqsk';
     }
 
-    // 최종 기본값 (절대 하현주 ID 보지 않음)
+    // 최종 기본값 (박야일)
     if (!artistId) artistId = '-vqsk';
 
-    // 헤더에 ID 주입
+    // 새로운 헤더와 함께 요청 전달
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set('x-artist-id', artistId);
+
+    // console.log(`[Middleware V8] Host: ${host} -> x-artist-id: ${artistId}`);
 
     return NextResponse.next({
         request: {
