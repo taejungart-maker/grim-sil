@@ -18,15 +18,18 @@ export async function generateMetadata() {
     const title = settings.siteTitle || `${settings.artistName} 작가님의 온라인 화첩`;
     const description = settings.siteDescription || `${settings.artistName} 작가의 작품세계를 담은 공간입니다.`;
 
+    // [V10_FIX] 사용자 명령: OG 태그에 테넌트 식별자 강제 주입 & 환경변수 100% 배제
     const { headers } = require('next/headers');
     const h = headers();
     const domain = h.get('x-forwarded-host') || h.get('host') || "grim-sil.vercel.app";
     const baseUrl = `https://${domain}`;
 
-    // 이미지 경로 캐시 방지 (도메인 + 시간을 조합하여 고유성 확보)
+    // 카카오톡 인식용 고유 URL (도메인 뒤에 파라미터를 붙여 다른 링크로 강제 인식)
+    const ogUrl = `${baseUrl}?artist=${artistId}`;
+
+    // 이미지 경로 캐시 강제 갱신 (사용자 명령: ?v=${artistId})
     let finalImageUrl = settings.aboutmeImage || `${baseUrl}/og-default.png`;
-    const cacheBuster = `v=${artistId}-${Date.now().toString().slice(-6)}`;
-    finalImageUrl += finalImageUrl.includes('?') ? `&${cacheBuster}` : `?${cacheBuster}`;
+    finalImageUrl += finalImageUrl.includes('?') ? `&v=${artistId}` : `?v=${artistId}`;
 
     return {
       title,
@@ -36,11 +39,15 @@ export async function generateMetadata() {
         canonical: baseUrl,
       },
       openGraph: {
-        title,
-        description,
-        url: baseUrl,
+        title: title,
+        description: description,
+        url: ogUrl, // [CRITICAL] 카톡이 서로 다른 링크로 인식하게 함
         siteName: title,
-        images: [{ url: finalImageUrl, width: 800, height: 400 }],
+        images: [{
+          url: finalImageUrl, // [CRITICAL] 이미지 캐시 강제 갱신
+          width: 800,
+          height: 400
+        }],
         type: "website",
       },
       // 테넌트 식별 확인용 (헤드에 남음)
