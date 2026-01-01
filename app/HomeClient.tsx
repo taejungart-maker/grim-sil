@@ -137,6 +137,10 @@ export default function HomeClient({ injectedArtistId }: HomeClientProps) {
                     artworks={selectedArtwork.yearArtworks}
                     initialIndex={selectedArtwork.index}
                     onClose={() => setSelectedArtwork(null)}
+                    onDelete={() => {
+                        setSelectedArtwork(null);
+                        refreshArtworks();
+                    }}
                     showPrice={settings.showPrice}
                     theme={settings.theme}
                 />
