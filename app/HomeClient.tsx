@@ -154,29 +154,17 @@ export default function HomeClient({ injectedArtistId }: HomeClientProps) {
 
             {/* [V15] 플로팅 액션 버튼 (관리자 전용) */}
             {isLoggedIn && (
-                <div className="fixed right-6 bottom-24 sm:bottom-10 flex flex-col gap-4 z-40">
-                    {/* 작품 등록 버튼 */}
+                <div className="fixed right-6 bottom-6 flex flex-col gap-3 z-40">
+                    {/* SNS 공유 센터 버튼 */}
                     <Link
-                        href={injectedArtistId.startsWith('vip') ? `/add?vipId=${injectedArtistId}` : "/add"}
-                        className="flex items-center justify-center w-14 h-14 bg-indigo-600 text-white rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all"
-                        style={{ backgroundColor: settings.theme === "black" ? "#6366f1" : SIGNATURE_COLORS.antiqueBurgundy }}
-                        title="새 작품 등록"
-                    >
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                        </svg>
-                    </Link>
-
-                    {/* SNS 공유 버튼 */}
-                    <button
-                        onClick={() => setShowShareModal(true)}
-                        className="flex items-center justify-center w-14 h-14 bg-white rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all border-2"
+                        href="/share"
+                        className="flex items-center justify-center w-14 h-14 shadow-2xl hover:scale-110 active:scale-95 transition-all"
                         style={{
-                            borderColor: settings.theme === "black" ? "#6366f1" : SIGNATURE_COLORS.antiqueBurgundy,
-                            color: settings.theme === "black" ? "#6366f1" : SIGNATURE_COLORS.antiqueBurgundy
+                            backgroundColor: settings.theme === "black" ? "#6366f1" : "#6366f1",
+                            borderRadius: "50%",
+                            color: "#ffffff"
                         }}
-                        title="화첩 공유하기"
+                        title="SNS 공유 센터"
                     >
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                             <circle cx="18" cy="5" r="3"></circle>
@@ -185,7 +173,23 @@ export default function HomeClient({ injectedArtistId }: HomeClientProps) {
                             <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
                             <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
                         </svg>
-                    </button>
+                    </Link>
+
+                    {/* 작품 등록 버튼 */}
+                    <Link
+                        href={injectedArtistId.startsWith('vip') ? `/add?vipId=${injectedArtistId}` : "/add"}
+                        className="flex items-center justify-center w-14 h-14 text-white shadow-2xl hover:scale-110 active:scale-95 transition-all"
+                        style={{
+                            backgroundColor: settings.theme === "black" ? "#10b981" : SIGNATURE_COLORS.antiqueBurgundy,
+                            borderRadius: "50%"
+                        }}
+                        title="새 작품 등록"
+                    >
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </Link>
                 </div>
             )}
         </div>
