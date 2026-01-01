@@ -31,7 +31,7 @@ export function getClientArtistId(): string {
             const lowerHost = host.toLowerCase();
 
             // 도메인/키워드 판별 (middleware.ts와 동기화)
-            if (lowerHost.includes('hahyunju')) return '-hyunju';
+            if (lowerHost.includes('hahyunju') || lowerHost.includes('artflow')) return '-hyunju';
             if (lowerHost.includes('moonhyekyung')) return '-3ibp';
             if (lowerHost.includes('hwangmikyung')) return '-5e4p';
             if (lowerHost.includes('grim-sil')) return '-vqsk';

@@ -23,7 +23,7 @@ export function middleware(request: NextRequest) {
     // 키워드 매핑 (Fallback - 브랜치/프리뷰 도메인 대응)
     if (!artistId) {
         const lowerHost = host.toLowerCase();
-        if (lowerHost.includes('hahyunju')) artistId = '-hyunju';
+        if (lowerHost.includes('hahyunju') || lowerHost.includes('artflow')) artistId = '-hyunju';
         else if (lowerHost.includes('moonhyekyung')) artistId = '-3ibp';
         else if (lowerHost.includes('hwangmikyung')) artistId = '-5e4p';
         else if (lowerHost.includes('grim-sil')) artistId = '-vqsk';
