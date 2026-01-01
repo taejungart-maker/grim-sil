@@ -47,6 +47,9 @@ export const defaultSiteConfig = {
 
     // 실시간 뉴스 문구
     newsText: "🎨 작가님의 새로운 소식과 전시 일정을 전해드립니다. 방문해 주신 모든 분들을 환영합니다. ✨" as string,
+
+    // [V12] 마지막 수정 시각 (캐시 방지용)
+    updatedAt: "" as string,
 };
 
 // 관리자 비밀번호 (구매 후 변경하세요!)
@@ -72,6 +75,7 @@ export interface SiteConfig {
     aboutmeImage: string;
     artistPicks: { name: string; archiveUrl: string; imageUrl?: string }[];
     newsText: string;
+    updatedAt?: string;
 }
 
 export type SiteConfigType = typeof defaultSiteConfig;

@@ -72,10 +72,11 @@ export default function AboutPage() {
                     <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
                         <button
                             onClick={async () => {
+                                const shareUrl = typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.host}${window.location.pathname}${vipId ? `?vipId=${vipId}` : `?artist=${settings.galleryNameEn}`}&v=${settings.updatedAt ? new Date(settings.updatedAt).getTime() : Date.now()}` : "";
                                 const shareData = {
                                     title: `${settings.artistName} 작가님 소개`,
                                     text: `${settings.artistName} 작가의 작품 세계와 작가 노트를 만나보세요.`,
-                                    url: window.location.href,
+                                    url: shareUrl,
                                 };
                                 if (navigator.share) {
                                     try {
@@ -245,7 +246,7 @@ export default function AboutPage() {
             <ShareModal
                 isOpen={showShareModal}
                 onClose={() => setShowShareModal(false)}
-                shareUrl={typeof window !== 'undefined' ? window.location.href : ''}
+                shareUrl={typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.host}${window.location.pathname}${vipId ? `?vipId=${vipId}` : `?artist=${settings.galleryNameEn}`}&v=${settings.updatedAt ? new Date(settings.updatedAt).getTime() : Date.now()}` : ""}
                 title={`${settings.artistName} 작가님 소개`}
                 description={`${settings.artistName} 작가의 작품 세계와 작가 노트를 만나보세요.`}
                 theme={settings.theme}

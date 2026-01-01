@@ -25,10 +25,12 @@ export async function generateMetadata() {
     const domain = h.get('x-forwarded-host') || h.get('host') || "hahyunju.com";
     const baseUrl = `https://${domain}`;
 
-    const ogUrl = `${baseUrl}?artist=${artistId}`;
+    // [V12] 정밀한 캐시 방지: 설정 수정 시마다 새로운 고유 URL 생성
+    const version = settings.updatedAt ? new Date(settings.updatedAt).getTime() : Date.now();
+    const ogUrl = `${baseUrl}?artist=${artistId}&v=${version}`;
 
     let finalImageUrl = settings.aboutmeImage || `${baseUrl}/og-default.png`;
-    finalImageUrl += finalImageUrl.includes('?') ? `&v=${artistId}` : `?v=${artistId}`;
+    finalImageUrl += finalImageUrl.includes('?') ? `&v=${version}` : `?v=${version}`;
 
     return {
       title,

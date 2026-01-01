@@ -143,12 +143,13 @@ export default function HomeClient({ injectedArtistId }: HomeClientProps) {
             )}
 
             <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
+            {/* 공유 모달 */}
             <ShareModal
                 isOpen={showShareModal}
                 onClose={() => setShowShareModal(false)}
-                shareUrl={typeof window !== 'undefined' ? window.location.origin : ''}
-                title={settings.siteTitle}
-                description={settings.siteDescription || ""}
+                shareUrl={typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.host}${window.location.pathname}?artist=${injectedArtistId}&v=${settings.updatedAt ? new Date(settings.updatedAt).getTime() : Date.now()}` : ""}
+                title={`${settings.galleryNameKo} 초대`}
+                description={`${settings.artistName} 작가님의 온라인 화첩에 초대합니다.`}
                 theme={settings.theme}
             />
         </div>

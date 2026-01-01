@@ -67,6 +67,7 @@ function rowToConfig(row: SettingsRow): SiteConfig {
         aboutmeImage: row.aboutme_image || defaultSiteConfig.aboutmeImage,
         artistPicks: row.artist_picks || defaultSiteConfig.artistPicks,
         newsText: row.news_text || defaultSiteConfig.newsText,
+        updatedAt: row.updated_at || defaultSiteConfig.updatedAt,
     };
 }
 
