@@ -249,30 +249,32 @@ export default function Header({
                                 </button>
                             )}
 
-                        {/* 화첩 공유 버튼 (Native API 우선) */}
-                        <button
-                            id="header-share-btn-v2"
-                            onClick={onKakaoShare}
-                            className="flex items-center gap-1.5"
-                            style={{
-                                padding: "6px 12px",
-                                background: theme === "black" ? "#FEE500" : SIGNATURE_COLORS.antiqueBurgundy,
-                                color: theme === "black" ? "#2a2a2a" : "#fff",
-                                borderRadius: "6px",
-                                border: "none",
-                                cursor: "pointer",
-                                fontFamily: "'Noto Sans KR', sans-serif",
-                                fontWeight: 500,
-                                fontSize: "13px",
-                                letterSpacing: "0.02em",
-                                whiteSpace: "nowrap",
-                                boxShadow: `0 2px 6px ${theme === "black" ? "rgba(0,0,0,0.3)" : "rgba(128, 48, 48, 0.2)"}`,
-                            }}
-                            aria-label="화첩 공유"
-                        >
-                            <span className="hidden sm:inline">화첩 공유</span>
-                            <span className="sm:hidden">공유</span>
-                        </button>
+                        {/* 화첩 공유 버튼 (로그인한 경우에만 노출) */}
+                        {isLoggedIn && (
+                            <button
+                                id="header-share-btn-v2"
+                                onClick={onKakaoShare}
+                                className="flex items-center gap-1.5"
+                                style={{
+                                    padding: "6px 12px",
+                                    background: theme === "black" ? "#FEE500" : SIGNATURE_COLORS.antiqueBurgundy,
+                                    color: theme === "black" ? "#2a2a2a" : "#fff",
+                                    borderRadius: "6px",
+                                    border: "none",
+                                    cursor: "pointer",
+                                    fontFamily: "'Noto Sans KR', sans-serif",
+                                    fontWeight: 500,
+                                    fontSize: "13px",
+                                    letterSpacing: "0.02em",
+                                    whiteSpace: "nowrap",
+                                    boxShadow: `0 2px 6px ${theme === "black" ? "rgba(0,0,0,0.3)" : "rgba(128, 48, 48, 0.2)"}`,
+                                }}
+                                aria-label="화첩 공유"
+                            >
+                                <span className="hidden sm:inline">화첩 공유</span>
+                                <span className="sm:hidden">공유</span>
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
