@@ -53,6 +53,8 @@ export async function generateMetadata() {
       // 테넌트 식별 확인용 (헤드에 남음)
       other: {
         'x-artist-id-tenant': artistId,
+        'x-diag-host': domain,
+        'x-diag-time': new Date().toISOString(),
       }
     };
   } catch (error) {
