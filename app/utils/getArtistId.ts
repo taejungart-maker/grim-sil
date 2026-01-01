@@ -25,15 +25,19 @@ export function getClientArtistId(): string {
 
             if (artistId) return artistId;
 
-            // [FAILSAFE] 만약 미들웨어가 작동하지 않는 환경(특수 API 등)이라면 
-            // 직접 호스트 분석을 수행하되 환경변수는 절대 보지 않음
-            const host = headerList.get('host') || "";
-            const cleanHost = host.split(':')[0].toLowerCase();
+            // [FAILSAFE] 미들웨어 헤더가 없는 특수 상황 (카톡 크롤러, 정적 빌드 등)
+            // 직접 호스트 분석을 수행하여 테넌트 수렴을 방지함
+            const host = headerList.get('x-forwarded-host') || headerList.get('host') || "";
+            const lowerHost = host.toLowerCase();
 
-            if (cleanHost.includes('hahyunju')) return '-hyunju';
-            if (cleanHost.includes('moonhyekyung')) return '-3ibp';
-            if (cleanHost.includes('hwangmikyung')) return '-5e4p';
-            if (cleanHost.includes('grim-sil')) return '-vqsk';
+            // 도메인/키워드 판별 (middleware.ts와 동기화)
+            if (lowerHost.includes('hahyunju')) return '-hyunju';
+            if (lowerHost.includes('moonhyekyung')) return '-3ibp';
+            if (lowerHost.includes('hwangmikyung')) return '-5e4p';
+            if (lowerHost.includes('grim-sil')) return '-vqsk';
+
+            // 로컬 테스트 호환성
+            if (lowerHost.includes('localhost')) return '-vqsk';
         } catch (e) { }
     } else {
         // 2. 클라이언트 사이드: window.location.hostname 절대 신뢰
