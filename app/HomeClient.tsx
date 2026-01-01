@@ -117,7 +117,7 @@ export default function HomeClient({ injectedArtistId }: HomeClientProps) {
                     theme={settings.theme}
                 />
 
-                <div className={`grid mt-8 gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-${settings.gridColumns}`}>
+                <div className={`grid mt-8 gap-6 grid-cols-${settings.gridColumns}`}>
                     {filteredArtworks.map((artwork, idx) => (
                         <ArtworkCard
                             key={artwork.id}
