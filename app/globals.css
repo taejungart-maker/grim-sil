@@ -183,6 +183,7 @@ html:not(.hydrated) body {
 .artwork-card {
   position: relative;
   width: 100%;
+  aspect-ratio: 1;
   border-radius: 16px;
   overflow: hidden;
   cursor: pointer;

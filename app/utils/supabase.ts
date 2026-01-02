@@ -6,7 +6,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 // 아티스트 ID (도메인 기반 자동 감지)
-// export const ARTIST_ID = getClientArtistId(); // 🔥 전역 상수 제거 (서버 사이드 동적 감지를 위해)
+export const ARTIST_ID = getClientArtistId(); // 🔥 12월 30일 디자인 복구를 위해 재활성화
 
 // [SECURITY_KILL] 전역 싱글톤 사살. "싱글톤 클라이언트를 즉시 사살하라"
 // 파일 최상단에서 supabase를 정의하면 Vercel Lambda가 메모리에 구형 ID를 보관하므로 절대 금지.
