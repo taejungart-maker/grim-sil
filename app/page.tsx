@@ -1,6 +1,6 @@
 "use client";
 // [MASONRY_GRID_CONFIRMED] Deploy verified Masonry layout with user approval
-// Timestamp: 2026-01-02 10:31:00 (KST)
+// Timestamp: 2026-01-02 11:17:00 (KST) - Force rebuild to clear Vercel cache
 import { useState, useEffect, useMemo, useCallback, Suspense, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
