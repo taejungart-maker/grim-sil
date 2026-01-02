@@ -262,13 +262,30 @@ function HomeContent() {
           <>
             <div style={{
               display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
-              gap: "16px",
+              gridTemplateColumns: settings.gridColumns === 1 ? "1fr" : settings.gridColumns === 3 ? "repeat(3, 1fr)" : "repeat(4, 1fr)",
+              gridAutoRows: settings.gridColumns === 1 ? "auto" : "180px",
+              gap: settings.gridColumns === 1 ? "24px" : "8px",
             }}>
               {currentYearMonthArtworks.map((artwork: Artwork, index: number) => {
+                let gridStyle: React.CSSProperties = {};
+                if (settings.gridColumns >= 3 && currentYearMonthArtworks.length > 1) {
+                  // 랜덤한 Masonry 패턴
+                  const patterns = [
+                    { gridColumn: "span 2", gridRow: "span 2" }, // 2x2
+                    { gridColumn: "span 2", gridRow: "span 1" }, // 2x1
+                    { gridColumn: "span 1", gridRow: "span 2" }, // 1x2
+                    { gridColumn: "span 1", gridRow: "span 1" }, // 1x1
+                    { gridColumn: "span 1", gridRow: "span 1" }, // 1x1 (더 많은 확률)
+                  ];
+                  // 작품 ID를 기반으로 일관된 패턴 선택 (새로고침해도 같은 패턴)
+                  const patternIndex = parseInt(artwork.id.slice(-3), 36) % patterns.length;
+                  gridStyle = patterns[patternIndex];
+                } else if (settings.gridColumns === 1) {
+                  gridStyle = { aspectRatio: "16/10" };
+                }
                 return (
-                  <div key={artwork.id}>
-                    <ArtworkCard artwork={artwork} onClick={() => handleArtworkClick(artwork, index)} priority={index < 6} />
+                  <div key={artwork.id} style={gridStyle}>
+                    <ArtworkCard artwork={artwork} onClick={() => handleArtworkClick(artwork, index)} priority={index < 6} minimal />
                   </div>
                 );
               })}
