@@ -1,6 +1,4 @@
-"use client";
-
-import { useMemo } from "react";
+﻿"use client";
 
 import { SIGNATURE_COLORS } from "../utils/themeColors";
 
@@ -21,28 +19,24 @@ const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1544005313-94ddf0286df2
 
 const MOCK_PICKS = [
     {
-        name: "문혜경 작가",
+        name: "臾명삙寃??묎?",
         archiveUrl: "#",
         imageUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop"
     },
     {
-        name: "황미경 작가",
+        name: "?⑸?寃??묎?",
         archiveUrl: "#",
         imageUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop"
     },
     {
-        name: "김화문 작가",
+        name: "源?붾Ц ?묎?",
         archiveUrl: "#",
         imageUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop"
     }
 ];
 
 export default function ArtistPicksSection({ theme, picks = [] }: ArtistPicksSectionProps) {
-    const displayPicks = useMemo(() => {
-        const basePicks = picks.length > 0 ? picks : MOCK_PICKS;
-        return [...basePicks].sort(() => Math.random() - 0.5);
-    }, [picks]);
-
+    const displayPicks = picks.length > 0 ? picks : MOCK_PICKS;
     const bgColor = theme === "black" ? "#1a1a1a" : SIGNATURE_COLORS.agingPaper;
     const textColor = theme === "black" ? "#ffffff" : SIGNATURE_COLORS.inkCharcoal;
     const borderColor = theme === "black" ? "#333" : SIGNATURE_COLORS.sandGray;
@@ -67,14 +61,14 @@ export default function ArtistPicksSection({ theme, picks = [] }: ArtistPicksSec
                             marginBottom: "8px"
                         }}
                     >
-                        함께 활동하는 동료 작가
+                        ?④퍡 ?쒕룞?섎뒗 ?숇즺 ?묎?
                     </h2>
                     <p style={{ color: SIGNATURE_COLORS.sandGray, fontSize: "12px" }}>
-                        서로 응원하며 함께 성장하는 작가 네트워크입니다.
+                        ?쒕줈 ?묒썝?섎ŉ ?④퍡 ?깆옣?섎뒗 ?묎? ?ㅽ듃?뚰겕?낅땲??
                     </p>
                 </div>
 
-                {/* 4열 그리드 레이아웃 (모바일: 2열) */}
+                {/* 4??洹몃━???덉씠?꾩썐 (紐⑤컮?? 2?? */}
                 <div
                     style={{
                         display: "grid",
@@ -100,11 +94,11 @@ export default function ArtistPicksSection({ theme, picks = [] }: ArtistPicksSec
                                 if (pick.archiveUrl && pick.archiveUrl !== "#") {
                                     window.open(pick.archiveUrl, "_blank");
                                 } else {
-                                    alert(`${pick.name}님의 아카이브 주소가 아직 등록되지 않았습니다.`);
+                                    alert(`${pick.name}?섏쓽 ?꾩뭅?대툕 二쇱냼媛 ?꾩쭅 ?깅줉?섏? ?딆븯?듬땲??`);
                                 }
                             }}
                         >
-                            {/* 컴팩트한 원형 프로필 이미지 */}
+                            {/* 而댄뙥?명븳 ?먰삎 ?꾨줈???대?吏 */}
                             <div style={{
                                 padding: "16px 16px 8px 16px",
                                 display: "flex",
@@ -131,7 +125,7 @@ export default function ArtistPicksSection({ theme, picks = [] }: ArtistPicksSec
                                     />
                                 </div>
                             </div>
-                            {/* 컴팩트한 텍스트 영역 */}
+                            {/* 而댄뙥?명븳 ?띿뒪???곸뿭 */}
                             <div style={{ padding: "8px 12px 16px 12px", textAlign: "center" }}>
                                 <h3 style={{
                                     fontSize: "13px",
@@ -150,8 +144,7 @@ export default function ArtistPicksSection({ theme, picks = [] }: ArtistPicksSec
                                     color: SIGNATURE_COLORS.royalIndigo,
                                     opacity: 0.8
                                 }}>
-                                    방문 →
-                                </div>
+                                    諛⑸Ц ??                                </div>
                             </div>
                         </div>
                     ))}

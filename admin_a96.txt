@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -26,56 +26,56 @@ export default function AdminClient({ injectedArtistId }: AdminClientProps) {
     const searchParams = useSearchParams();
     const vipId = searchParams.get("vipId") || "";
 
-    // [V8_FIX] 서버사이드(미들웨어)에서 확정되어 주입된 ID를 절대적 기준으로 사용
+    // [V8_FIX] ?쒕쾭?ъ씠??誘몃뱾?⑥뼱)?먯꽌 ?뺤젙?섏뼱 二쇱엯??ID瑜??덈???湲곗??쇰줈 ?ъ슜
     const effectiveArtistId = vipId || injectedArtistId;
 
     const { isAuthenticated, login, logout } = useAuth();
     const [password, setPassword] = useState("");
     const [passwordError, setPasswordError] = useState(false);
 
-    // 설정 상태
+    // ?ㅼ젙 ?곹깭
     const [settings, setSettings] = useState<SiteConfig>(defaultSiteConfig);
     const [isSaving, setIsSaving] = useState(false);
     const [saveSuccess, setSaveSuccess] = useState(false);
 
-    // 비밀번호 변경 상태
+    // 鍮꾨?踰덊샇 蹂寃??곹깭
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [passwordChangeError, setPasswordChangeError] = useState("");
     const [passwordChangeSuccess, setPasswordChangeSuccess] = useState(false);
 
-    // 통계 관련 상태
+    // ?듦퀎 愿???곹깭
     const [visitorStats, setVisitorStats] = useState<{ date: string, count: number }[]>([]);
     const [totalViews, setTotalViews] = useState(0);
 
     const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
 
-    // 데이터 백업 상태
+    // ?곗씠??諛깆뾽 ?곹깭
     const [isExporting, setIsExporting] = useState(false);
     const [isImporting, setIsImporting] = useState(false);
     const [importMessage, setImportMessage] = useState("");
     const [exportText, setExportText] = useState("");
     const [importText, setImportText] = useState("");
 
-    // 마이그레이션 상태
+    // 留덉씠洹몃젅?댁뀡 ?곹깭
     const [isMigrating, setIsMigrating] = useState(false);
     const [migrationResult, setMigrationResult] = useState<MigrationResult | null>(null);
     const [legacyDataInfo, setLegacyDataInfo] = useState<{ hasArtworks: boolean; hasSettings: boolean; artworksCount: number } | null>(null);
 
-    // 이미지 마이그레이션 상태
+    // ?대?吏 留덉씠洹몃젅?댁뀡 ?곹깭
     const [isImageMigrating, setIsImageMigrating] = useState(false);
     const [imageMigrationProgress, setImageMigrationProgress] = useState<MigrationProgress | null>(null);
     const [base64ImageCount, setBase64ImageCount] = useState<number>(0);
 
-    // 초기 데이터 로딩
+    // 珥덇린 ?곗씠??濡쒕뵫
     useEffect(() => {
-        // [V8_FIX] 확실하게 검증된 effectiveArtistId로만 로드
+        // [V8_FIX] ?뺤떎?섍쾶 寃利앸맂 effectiveArtistId濡쒕쭔 濡쒕뱶
         loadSettingsById(effectiveArtistId).then(setSettings);
         hasLegacyData().then(setLegacyDataInfo);
         countBase64Images().then(setBase64ImageCount);
 
         if (isAuthenticated) {
-            // QR 코드 생성
+            // QR 肄붾뱶 ?앹꽦
             const currentUrl = typeof window !== 'undefined' ? window.location.origin : '';
             if (currentUrl) {
                 const galleryUrl = vipId ? `${currentUrl}/gallery-${vipId}` : currentUrl;
@@ -86,7 +86,7 @@ export default function AdminClient({ injectedArtistId }: AdminClientProps) {
                 }).then(setQrCodeUrl).catch(console.error);
             }
 
-            // 통계
+            // ?듦퀎
             getVisitorStats(7).then(data => {
                 setVisitorStats(data);
                 setTotalViews(data.reduce((acc, curr) => acc + curr.count, 0));
@@ -94,11 +94,10 @@ export default function AdminClient({ injectedArtistId }: AdminClientProps) {
         }
     }, [effectiveArtistId, isAuthenticated, vipId]);
 
-    // 로그인 처리
+    // 濡쒓렇??泥섎━
     const handleLogin = async () => {
         try {
-            // [V10_FIX] AuthContext의 login은 내부적으로 verifyPassword를 수행함
-            const success = await login(password);
+            // [V10_FIX] AuthContext??login? ?대??곸쑝濡?verifyPassword瑜??섑뻾??            const success = await login(password);
             if (success) {
                 setPasswordError(false);
             } else {
@@ -110,31 +109,29 @@ export default function AdminClient({ injectedArtistId }: AdminClientProps) {
         }
     };
 
-    // 설정 저장
-    const handleSave = async () => {
+    // ?ㅼ젙 ???    const handleSave = async () => {
         setIsSaving(true);
         setSaveSuccess(false);
         try {
-            // [V8_FIX] 명시적으로 effectiveArtistId를 넘겨서 저장 대상 강제 고정
+            // [V8_FIX] 紐낆떆?곸쑝濡?effectiveArtistId瑜??섍꺼????????媛뺤젣 怨좎젙
             await saveSettings(settings, effectiveArtistId);
             setSaveSuccess(true);
             setTimeout(() => setSaveSuccess(false), 3000);
             if (!vipId) router.push("/");
         } catch (error) {
-            alert("설정 저장 중 오류가 발생했습니다.");
+            alert("?ㅼ젙 ???以??ㅻ쪟媛 諛쒖깮?덉뒿?덈떎.");
         } finally {
             setIsSaving(false);
         }
     };
 
-    // 비밀번호 변경
-    const handlePasswordChange = async () => {
+    // 鍮꾨?踰덊샇 蹂寃?    const handlePasswordChange = async () => {
         if (newPassword.length < 4) {
-            setPasswordChangeError("비밀번호는 4자 이상이어야 합니다.");
+            setPasswordChangeError("鍮꾨?踰덊샇??4???댁긽?댁뼱???⑸땲??");
             return;
         }
         if (newPassword !== confirmPassword) {
-            setPasswordChangeError("비밀번호가 일치하지 않습니다.");
+            setPasswordChangeError("鍮꾨?踰덊샇媛 ?쇱튂?섏? ?딆뒿?덈떎.");
             return;
         }
         try {
@@ -144,12 +141,11 @@ export default function AdminClient({ injectedArtistId }: AdminClientProps) {
             setConfirmPassword("");
             setTimeout(() => setPasswordChangeSuccess(false), 3000);
         } catch (error) {
-            setPasswordChangeError("비밀번호 변경 실패");
+            setPasswordChangeError("鍮꾨?踰덊샇 蹂寃??ㅽ뙣");
         }
     };
 
-    // 아티스트 픽 관리
-    const handleAddPick = () => {
+    // ?꾪떚?ㅽ듃 ??愿由?    const handleAddPick = () => {
         setSettings({ ...settings, artistPicks: [...(settings.artistPicks || []), { name: "", archiveUrl: "", imageUrl: "" }] });
     };
     const handleRemovePick = (index: number) => {
@@ -170,20 +166,20 @@ export default function AdminClient({ injectedArtistId }: AdminClientProps) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
                 <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-xl">
-                    <h1 className="text-3xl font-bold text-center mb-2">관리자 로그인</h1>
-                    <p className="text-gray-500 text-center mb-8">테넌트 식별 ID: <span className="font-mono text-indigo-600">{effectiveArtistId}</span></p>
+                    <h1 className="text-3xl font-bold text-center mb-2">愿由ъ옄 濡쒓렇??/h1>
+                    <p className="text-gray-500 text-center mb-8">?뚮꼳???앸퀎 ID: <span className="font-mono text-indigo-600">{effectiveArtistId}</span></p>
                     <input
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-                        placeholder="비밀번호 입력"
+                        placeholder="鍮꾨?踰덊샇 ?낅젰"
                         className="w-full p-4 text-lg border-2 rounded-xl mb-4 focus:border-indigo-500 outline-none"
                         style={{ borderColor: passwordError ? "#dc2626" : "#e5e7eb" }}
                     />
-                    {passwordError && <p className="text-red-500 text-sm text-center mb-4">비밀번호가 틀렸습니다</p>}
-                    <button onClick={handleLogin} className="w-full p-4 bg-black text-white rounded-xl font-bold text-lg hover:bg-gray-800 transition">로그인</button>
-                    <button onClick={() => router.push("/")} className="w-full mt-4 text-gray-500 text-sm underline">메인으로 돌아가기</button>
+                    {passwordError && <p className="text-red-500 text-sm text-center mb-4">鍮꾨?踰덊샇媛 ??몄뒿?덈떎</p>}
+                    <button onClick={handleLogin} className="w-full p-4 bg-black text-white rounded-xl font-bold text-lg hover:bg-gray-800 transition">濡쒓렇??/button>
+                    <button onClick={() => router.push("/")} className="w-full mt-4 text-gray-500 text-sm underline">硫붿씤?쇰줈 ?뚯븘媛湲?/button>
                 </div>
             </div>
         );
@@ -193,44 +189,44 @@ export default function AdminClient({ injectedArtistId }: AdminClientProps) {
         <div className="min-h-screen" style={{ background: bgColor, color: textColor }}>
             <header className="p-5 border-b flex justify-between items-center sticky top-0 z-50 bg-inherit" style={{ borderColor }}>
                 <div className="flex items-center gap-3">
-                    <h1 className="text-2xl font-bold" style={{ color: settings.theme === "black" ? "#fff" : "#8b7355" }}>갤러리 설정</h1>
+                    <h1 className="text-2xl font-bold" style={{ color: settings.theme === "black" ? "#fff" : "#8b7355" }}>媛ㅻ윭由??ㅼ젙</h1>
                     <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded font-mono text-xs">ID: {effectiveArtistId}</span>
                 </div>
                 <div className="flex gap-2">
-                    <button onClick={handleSave} disabled={isSaving} className="px-5 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 disabled:opacity-50 transition">{isSaving ? "저장 중..." : "설정 저장"}</button>
-                    <button onClick={() => router.push("/")} className="px-5 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg hover:opacity-80 transition text-sm">나가기</button>
+                    <button onClick={handleSave} disabled={isSaving} className="px-5 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 disabled:opacity-50 transition">{isSaving ? "???以?.." : "?ㅼ젙 ???}</button>
+                    <button onClick={() => router.push("/")} className="px-5 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg hover:opacity-80 transition text-sm">?섍?湲?/button>
                 </div>
             </header>
 
             <main className="max-w-3xl mx-auto p-6 md:p-10">
-                {saveSuccess && <div className="p-4 mb-6 bg-green-500 text-white rounded-xl text-center font-bold">성공적으로 저장되었습니다!</div>}
+                {saveSuccess && <div className="p-4 mb-6 bg-green-500 text-white rounded-xl text-center font-bold">?깃났?곸쑝濡???λ릺?덉뒿?덈떎!</div>}
 
                 <div className="space-y-12">
-                    {/* 기본 정보 */}
+                    {/* 湲곕낯 ?뺣낫 */}
                     <section>
-                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">🏠 기본 정보</h2>
+                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">?룧 湲곕낯 ?뺣낫</h2>
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-semibold mb-2 opacity-70">화첩 한글 이름 (상단 바)</label>
+                                <label className="block text-sm font-semibold mb-2 opacity-70">?붿꺽 ?쒓? ?대쫫 (?곷떒 諛?</label>
                                 <input className="w-full p-4 border-2 rounded-xl bg-transparent" style={{ borderColor }} value={settings.galleryNameKo} onChange={e => setSettings({ ...settings, galleryNameKo: e.target.value })} />
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold mb-2 opacity-70">작가 이름</label>
+                                <label className="block text-sm font-semibold mb-2 opacity-70">?묎? ?대쫫</label>
                                 <input className="w-full p-4 border-2 rounded-xl bg-transparent" style={{ borderColor }} value={settings.artistName} onChange={e => setSettings({ ...settings, artistName: e.target.value })} />
                             </div>
                         </div>
                     </section>
 
-                    {/* SEO 설정 */}
+                    {/* SEO ?ㅼ젙 */}
                     <section>
-                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">🌐 사이트 설정 (SEO)</h2>
+                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">?뙋 ?ъ씠???ㅼ젙 (SEO)</h2>
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-semibold mb-2 opacity-70">사이트 제목 (브라우저 탭)</label>
+                                <label className="block text-sm font-semibold mb-2 opacity-70">?ъ씠???쒕ぉ (釉뚮씪?곗? ??</label>
                                 <input className="w-full p-4 border-2 rounded-xl bg-transparent" style={{ borderColor }} value={settings.siteTitle} onChange={e => setSettings({ ...settings, siteTitle: e.target.value })} />
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold mb-2 opacity-70">사이트 설명</label>
+                                <label className="block text-sm font-semibold mb-2 opacity-70">?ъ씠???ㅻ챸</label>
                                 <textarea className="w-full p-4 border-2 rounded-xl bg-transparent" style={{ borderColor }} rows={3} value={settings.siteDescription} onChange={e => setSettings({ ...settings, siteDescription: e.target.value })} />
                             </div>
                             <div className="pt-2">
@@ -242,35 +238,35 @@ export default function AdminClient({ injectedArtistId }: AdminClientProps) {
                                     }}
                                     className="text-sm text-indigo-600 font-semibold hover:underline flex items-center gap-1"
                                 >
-                                    <span>✨ 카카오톡 미리보기 강제 갱신 (캐시 삭제)</span>
+                                    <span>??移댁뭅?ㅽ넚 誘몃━蹂닿린 媛뺤젣 媛깆떊 (罹먯떆 ??젣)</span>
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                                         <polyline points="15 3 21 3 21 9"></polyline>
                                         <line x1="10" y1="14" x2="21" y2="3"></line>
                                     </svg>
                                 </button>
-                                <p className="mt-2 text-[11px] opacity-50">프로필 사진이나 제목 변경 후 카카오톡에 예전 정보가 뜰 때 사용하세요.</p>
+                                <p className="mt-2 text-[11px] opacity-50">?꾨줈???ъ쭊?대굹 ?쒕ぉ 蹂寃???移댁뭅?ㅽ넚???덉쟾 ?뺣낫媛 ?????ъ슜?섏꽭??</p>
                             </div>
                         </div>
                     </section>
 
-                    {/* 테마 및 레이아웃 */}
+                    {/* ?뚮쭏 諛??덉씠?꾩썐 */}
                     <section>
-                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">🎨 테마 및 레이아웃</h2>
+                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">?렓 ?뚮쭏 諛??덉씠?꾩썐</h2>
                         <div className="grid grid-cols-2 gap-4">
-                            <button onClick={() => setSettings({ ...settings, theme: "white" })} className={`p-2.5 rounded-xl border-2 font-bold ${settings.theme === "white" ? "border-black bg-white text-black" : "border-gray-200 opacity-50 text-gray-400"}`}>화이트 테마</button>
-                            <button onClick={() => setSettings({ ...settings, theme: "black" })} className={`p-2.5 rounded-xl border-2 font-bold ${settings.theme === "black" ? "border-white bg-black text-white" : "border-gray-800 opacity-50 text-gray-400"}`}>블랙 테마</button>
+                            <button onClick={() => setSettings({ ...settings, theme: "white" })} className={`p-4 rounded-xl border-2 font-bold ${settings.theme === "white" ? "border-black bg-white text-black" : "border-gray-200 opacity-50 text-gray-400"}`}>?붿씠???뚮쭏</button>
+                            <button onClick={() => setSettings({ ...settings, theme: "black" })} className={`p-4 rounded-xl border-2 font-bold ${settings.theme === "black" ? "border-white bg-black text-white" : "border-gray-800 opacity-50 text-gray-400"}`}>釉붾옓 ?뚮쭏</button>
                         </div>
                         <div className="mt-6 flex gap-2">
                             {[1, 3, 4].map(cols => (
-                                <button key={cols} onClick={() => setSettings({ ...settings, gridColumns: cols as any })} className={`flex-1 p-2 rounded-xl border-2 font-bold ${settings.gridColumns === cols ? "border-indigo-500 bg-indigo-50 text-indigo-700" : "border-transparent bg-gray-50 text-gray-400"}`}>{cols}열 배열</button>
+                                <button key={cols} onClick={() => setSettings({ ...settings, gridColumns: cols as any })} className={`flex-1 p-3 rounded-xl border-2 font-bold ${settings.gridColumns === cols ? "border-indigo-500 bg-indigo-50 text-indigo-700" : "border-transparent bg-gray-50 text-gray-400"}`}>{cols}??諛곗뿴</button>
                             ))}
                         </div>
                     </section>
 
-                    {/* 작가 소개 */}
+                    {/* ?묎? ?뚭컻 */}
                     <section className="pt-8 border-t" style={{ borderColor }}>
-                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">👤 작가 소개 설정</h2>
+                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">?뫀 ?묎? ?뚭컻 ?ㅼ젙</h2>
                         <div className="space-y-6">
                             <div className="flex gap-6 items-start">
                                 <div className="w-32 h-40 bg-gray-100 rounded-2xl overflow-hidden shadow-inner flex-shrink-0 border-2" style={{ borderColor }}>
@@ -284,67 +280,55 @@ export default function AdminClient({ injectedArtistId }: AdminClientProps) {
                                             setSettings({ ...settings, aboutmeImage: url });
                                         }
                                     }} />
-                                    <label htmlFor="p-upload" className="inline-block px-4 py-2 border-2 rounded-lg font-bold cursor-pointer hover:bg-gray-50 transition" style={{ borderColor }}>이미지 변경</label>
-                                    <p className="mt-2 text-xs opacity-50">작가 프로필 사진을 업로드해 주세요.</p>
+                                    <label htmlFor="p-upload" className="inline-block px-4 py-2 border-2 rounded-lg font-bold cursor-pointer hover:bg-gray-50 transition" style={{ borderColor }}>?대?吏 蹂寃?/label>
+                                    <p className="mt-2 text-xs opacity-50">?묎? ?꾨줈???ъ쭊???낅줈?쒗빐 二쇱꽭??</p>
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold mb-2 opacity-70">작가 노트</label>
+                                <label className="block text-sm font-semibold mb-2 opacity-70">?묎? ?명듃</label>
                                 <textarea className="w-full p-4 border-2 rounded-xl bg-transparent font-serif" style={{ borderColor }} rows={6} value={settings.aboutmeNote} onChange={e => setSettings({ ...settings, aboutmeNote: e.target.value })} />
                             </div>
                         </div>
                     </section>
 
-                    {/* 실시간 뉴스 */}
+                    {/* ?ㅼ떆媛??댁뒪 */}
                     <section className="p-6 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 border-2" style={{ borderColor: SIGNATURE_COLORS.royalIndigo }}>
-                        <h3 className="text-lg font-bold text-indigo-700 mb-2">실시간 뉴스 문구</h3>
-                        <textarea className="w-full p-4 border-2 rounded-xl bg-transparent" style={{ borderColor }} value={settings.newsText} onChange={e => setSettings({ ...settings, newsText: e.target.value })} placeholder="상단바에 흐르는 뉴스 문구를 입력하세요" />
+                        <h3 className="text-lg font-bold text-indigo-700 mb-2">?ㅼ떆媛??댁뒪 臾멸뎄</h3>
+                        <textarea className="w-full p-4 border-2 rounded-xl bg-transparent" style={{ borderColor }} value={settings.newsText} onChange={e => setSettings({ ...settings, newsText: e.target.value })} placeholder="?곷떒諛붿뿉 ?먮Ⅴ???댁뒪 臾멸뎄瑜??낅젰?섏꽭?? />
                     </section>
 
-                    {/* 동료 작가 추천 */}
+                    {/* ?숇즺 ?묎? 異붿쿇 */}
                     <section>
-                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">🤝 동료 작가 추천</h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">?쩃 ?숇즺 ?묎? 異붿쿇</h2>
+                        <div className="space-y-4">
                             {settings.artistPicks?.map((pick, i) => (
-                                <div key={i} className="p-4 border-2 rounded-2xl relative bg-gray-50/50" style={{ borderColor }}>
-                                    <button
-                                        onClick={() => handleRemovePick(i)}
-                                        className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center bg-red-500 text-white rounded-full text-xs font-bold shadow-sm hover:bg-red-600 transition"
-                                    >×</button>
-                                    <div className="space-y-3 pt-2">
-                                        <div className="px-1">
-                                            <label className="block text-[10px] uppercase font-bold opacity-40 mb-1">작가명</label>
-                                            <input className="w-full p-2 border-b bg-transparent text-sm font-medium focus:border-indigo-500 outline-none transition" style={{ borderColor }} placeholder="작가명" value={pick.name} onChange={e => handleUpdatePick(i, "name", e.target.value)} />
-                                        </div>
-                                        <div className="px-1">
-                                            <label className="block text-[10px] uppercase font-bold opacity-40 mb-1">URL</label>
-                                            <input className="w-full p-2 border-b bg-transparent text-xs opacity-70 focus:border-indigo-500 outline-none transition" style={{ borderColor }} placeholder="갤러리 URL" value={pick.archiveUrl} onChange={e => handleUpdatePick(i, "archiveUrl", e.target.value)} />
-                                        </div>
+                                <div key={i} className="p-5 border-2 rounded-2xl relative" style={{ borderColor }}>
+                                    <button onClick={() => handleRemovePick(i)} className="absolute top-4 right-4 text-red-500 font-bold">??젣</button>
+                                    <div className="grid gap-3">
+                                        <input className="w-full p-2 border-b bg-transparent" style={{ borderColor }} placeholder="?묎?紐? value={pick.name} onChange={e => handleUpdatePick(i, "name", e.target.value)} />
+                                        <input className="w-full p-2 border-b bg-transparent" style={{ borderColor }} placeholder="媛ㅻ윭由?URL" value={pick.archiveUrl} onChange={e => handleUpdatePick(i, "archiveUrl", e.target.value)} />
                                     </div>
                                 </div>
                             ))}
-                            <button onClick={handleAddPick} className="flex flex-col items-center justify-center aspect-video sm:aspect-square border-2 border-dashed rounded-2xl text-indigo-600 font-bold hover:bg-indigo-50 transition gap-2">
-                                <span className="text-2xl">+</span>
-                                <span className="text-xs">작가 추가</span>
-                            </button>
+                            <button onClick={handleAddPick} className="w-full p-4 border-2 border-dashed rounded-2xl text-indigo-600 font-bold hover:bg-indigo-50 transition">+ ?묎? 異붽?</button>
                         </div>
                     </section>
 
-                    {/* 비밀번호 변경 */}
+                    {/* 鍮꾨?踰덊샇 蹂寃?*/}
                     <section className="p-6 bg-red-50 dark:bg-red-900/10 rounded-2xl border-2" style={{ borderColor: "#fee2e2" }}>
-                        <h2 className="text-lg font-bold mb-4">🔐 보안 설정</h2>
-                        {passwordChangeSuccess && <p className="mb-4 text-green-600 font-bold">비밀번호가 변경되었습니다.</p>}
+                        <h2 className="text-lg font-bold mb-4">?뵍 蹂댁븞 ?ㅼ젙</h2>
+                        {passwordChangeSuccess && <p className="mb-4 text-green-600 font-bold">鍮꾨?踰덊샇媛 蹂寃쎈릺?덉뒿?덈떎.</p>}
                         <div className="space-y-3">
-                            <input type="password" placeholder="새 비밀번호" className="w-full p-3 border-2 rounded-xl" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
-                            <input type="password" placeholder="비밀번호 확인" className="w-full p-3 border-2 rounded-xl" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} />
-                            <button onClick={handlePasswordChange} className="w-full p-3 bg-indigo-600 text-white rounded-xl font-bold">비밀번호 변경</button>
+                            <input type="password" placeholder="??鍮꾨?踰덊샇" className="w-full p-3 border-2 rounded-xl" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
+                            <input type="password" placeholder="鍮꾨?踰덊샇 ?뺤씤" className="w-full p-3 border-2 rounded-xl" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} />
+                            <button onClick={handlePasswordChange} className="w-full p-3 bg-indigo-600 text-white rounded-xl font-bold">鍮꾨?踰덊샇 蹂寃?/button>
                         </div>
                     </section>
 
-                    {/* 로그아웃 및 하단 */}
+                    {/* 濡쒓렇?꾩썐 諛??섎떒 */}
                     <div className="pt-10 text-center opacity-50 space-y-4">
-                        <button onClick={() => logout()} className="text-red-500 font-bold underline">관리자 로그아웃</button>
-                        <p className="text-sm">저장 후 페이지를 새로고침하면 변경사항이 반영됩니다.</p>
+                        <button onClick={() => logout()} className="text-red-500 font-bold underline">愿由ъ옄 濡쒓렇?꾩썐</button>
+                        <p className="text-sm">??????섏씠吏瑜??덈줈怨좎묠?섎㈃ 蹂寃쎌궗??씠 諛섏쁺?⑸땲??</p>
                     </div>
                 </div>
             </main>
