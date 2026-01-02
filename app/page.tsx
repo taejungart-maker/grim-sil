@@ -1,6 +1,6 @@
 "use client";
-// [GLOBAL_SYNC_TRIGGER_V1] Triggering automatic redeploy for all artist galleries via GitHub webhook
-// Timestamp: 2025-12-28 04:50:00 (KST)
+// [MASONRY_GRID_CONFIRMED] Deploy verified Masonry layout with user approval
+// Timestamp: 2026-01-02 10:31:00 (KST)
 import { useState, useEffect, useMemo, useCallback, Suspense, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -262,23 +262,13 @@ function HomeContent() {
           <>
             <div style={{
               display: "grid",
-              gridTemplateColumns: settings.gridColumns === 1 ? "1fr" : settings.gridColumns === 3 ? "repeat(3, 1fr)" : "repeat(4, 1fr)",
-              gridAutoRows: settings.gridColumns === 1 ? "auto" : "180px",
-              gap: settings.gridColumns === 1 ? "24px" : "8px",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: "16px",
             }}>
               {currentYearMonthArtworks.map((artwork: Artwork, index: number) => {
-                let gridStyle: React.CSSProperties = {};
-                if (settings.gridColumns >= 3 && currentYearMonthArtworks.length > 1) {
-                  if (index === 0) gridStyle = { gridColumn: "span 2", gridRow: "span 2" };
-                  else if (index === 5) gridStyle = { gridRow: "span 2" };
-                  else if (index === 6) gridStyle = { gridColumn: "span 2" };
-                  else if (index === 7) gridStyle = { gridRow: "span 2" };
-                } else if (settings.gridColumns === 1) {
-                  gridStyle = { aspectRatio: "16/10" };
-                }
                 return (
-                  <div key={artwork.id} style={gridStyle}>
-                    <ArtworkCard artwork={artwork} onClick={() => handleArtworkClick(artwork, index)} priority={index < 6} minimal />
+                  <div key={artwork.id}>
+                    <ArtworkCard artwork={artwork} onClick={() => handleArtworkClick(artwork, index)} priority={index < 6} />
                   </div>
                 );
               })}
