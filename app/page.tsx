@@ -271,11 +271,13 @@ function HomeContent() {
                 if (settings.gridColumns >= 3 && currentYearMonthArtworks.length > 1) {
                   // 랜덤한 Masonry 패턴
                   const patterns = [
+                    { gridColumn: "span 2", gridRow: "span 3" }, // 2x3
+                    { gridColumn: "span 1", gridRow: "span 3" }, // 1x3
                     { gridColumn: "span 2", gridRow: "span 2" }, // 2x2
                     { gridColumn: "span 2", gridRow: "span 1" }, // 2x1
                     { gridColumn: "span 1", gridRow: "span 2" }, // 1x2
                     { gridColumn: "span 1", gridRow: "span 1" }, // 1x1
-                    { gridColumn: "span 1", gridRow: "span 1" }, // 1x1 (더 많은 확률)
+                    { gridColumn: "span 1", gridRow: "span 1" }, // 1x1
                   ];
                   // 작품 ID를 기반으로 일관된 패턴 선택 (새로고침해도 같은 패턴)
                   const patternIndex = parseInt(artwork.id.slice(-3), 36) % patterns.length;
