@@ -346,22 +346,24 @@ export default function ProfileCardPage() {
                                 fontFamily: "'Playfair Display', serif",
                                 fontSize: "16px",
                                 letterSpacing: "3px",
-                                fontStyle: "italic", // 이탤릭
+                                fontStyle: "italic",
                                 color: mutedGold,
                                 marginBottom: "12px",
+                                textAlign: "center", // 중앙 정렬
                             }}
                         >
                             {settings.artistName} GALLERY
                         </p>
 
                         {/* 작가명 + 언더라인 */}
-                        <div style={{ marginBottom: "24px" }}>
+                        <div style={{ marginBottom: "24px", textAlign: "center" }}>
                             <h3
                                 style={{
                                     fontSize: "32px",
                                     fontWeight: 700,
                                     marginBottom: "8px",
                                     color: textColor,
+                                    textAlign: "center", // 중앙 정렬
                                 }}
                             >
                                 {settings.artistName}
