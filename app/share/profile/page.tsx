@@ -80,13 +80,13 @@ export default function ProfileCardPage() {
         canvas.width = 1200;
         canvas.height = 1500;
 
-        // 화이트 큐브 배경
-        ctx.fillStyle = "#ffffff";
+        // 아이보리 크림 배경 (레퍼런스 디자인)
+        ctx.fillStyle = "#F8F6F0";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // === 1. Masonry 작품 배치 (상단) ===
+        // === 1. 작품 3개 수평 배치 (레퍼런스 스타일) ===
         const imgWidth = 340;
-        const imgHeight = 340;
+        const imgHeight = 280;
         const gap = 30;
         const startX = (canvas.width - (imgWidth * 3 + gap * 2)) / 2;
         const topY = 60;
@@ -102,116 +102,116 @@ export default function ProfileCardPage() {
             });
 
             const x = startX + i * (imgWidth + gap);
-            // 가운데 작품만 20px 아래로
-            const y = i === 1 ? topY + 20 : topY;
+            // 모두 같은 높이 (레퍼런스와 동일)
+            const y = topY;
 
-            // 부드럽게 바닥에 밀착된 그림자 (Guardian's precision)
-            ctx.shadowColor = "rgba(0, 0, 0, 0.08)";
-            ctx.shadowBlur = 12;
-            ctx.shadowOffsetY = 5;
-
+            // 그림자 없음 (레퍼런스와 동일)
             ctx.drawImage(img, x, y, imgWidth, imgHeight);
-
-            // 그림자 리셋
-            ctx.shadowColor = "transparent";
-            ctx.shadowBlur = 0;
-            ctx.shadowOffsetY = 0;
         }
 
-        // 작품과 타이틀 사이 충분한 여백 (100px+)
-        let yPos = 630;
+        // 작품과 타이틀 사이 여백 (레퍼런스 분석)
+        let yPos = 480;
 
-        // === 2. 갤러리명 (작가님 GALLERY - 명품 브랜딩) ===
-        ctx.font = "400 42px 'Playfair Display', 'Noto Serif KR', serif";
-        ctx.fillStyle = "#B5924F"; // 뮤트 골드
-        ctx.letterSpacing = "10px"; // 명품 브랜드 자간
+        // === 2. 갤러리명 (이탤릭, 골드 - 레퍼런스 스타일) ===
+        ctx.font = "italic 36px 'Playfair Display', 'Noto Serif KR', serif";
+        ctx.fillStyle = "#C9A961"; // 골드/베이지 (레퍼런스)
+        ctx.letterSpacing = "6px";
         ctx.textAlign = "center";
-        const galleryTitle = `${settings.artistName.toUpperCase()} GALLERY`;
+        const galleryTitle = `${settings.artistName} GALLERY`;
         ctx.fillText(galleryTitle, canvas.width / 2, yPos);
-        yPos += 60;
+        yPos += 80;
 
-        // === 3. 작가명 (딥 차콜) ===
-        ctx.font = "700 56px 'Noto Serif KR', serif";
+        // === 3. 작가명 (매우 크고 볼드 - 레퍼런스) ===
+        ctx.font = "700 90px 'Noto Serif KR', serif";
         ctx.fillStyle = "#2a2a2a";
-        ctx.letterSpacing = "0.05em";
+        ctx.letterSpacing = "8px";
         ctx.fillText(settings.artistName, canvas.width / 2, yPos);
-        yPos += 90;
+        yPos += 30;
 
-        // === 4. 전시 정보 ===
+        // 언더라인 (레퍼런스)
+        const lineWidth = 100;
+        ctx.strokeStyle = "#2a2a2a";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(canvas.width / 2 - lineWidth / 2, yPos);
+        ctx.lineTo(canvas.width / 2 + lineWidth / 2, yPos);
+        ctx.stroke();
+        yPos += 70;
+
+        // === 4. 전시 정보 (레퍼런스 스타일) ===
         if (exhibitionTitle) {
-            ctx.font = "600 48px 'Noto Serif KR', serif";
+            ctx.font = "700 50px 'Noto Sans KR', sans-serif";
             ctx.fillStyle = "#2a2a2a";
-            ctx.letterSpacing = "0.02em";
+            ctx.letterSpacing = "2px";
             ctx.fillText(exhibitionTitle, canvas.width / 2, yPos);
-            yPos += 60;
+            yPos += 80;
 
-            // 날짜 (고딕체 - 깔끔함)
+            // 날짜 (얼은 국고딕)
             if (exhibitionDate) {
-                ctx.font = "400 32px 'Noto Sans KR', sans-serif";
-                ctx.fillStyle = "#5a5a5a";
-                ctx.letterSpacing = "0px"; // 고딕은 자간 정상
+                ctx.font = "300 32px 'Noto Sans KR', sans-serif";
+                ctx.fillStyle = "#6a6a6a";
+                ctx.letterSpacing = "4px";
                 ctx.fillText(exhibitionDate, canvas.width / 2, yPos);
                 yPos += 50;
             }
 
-            // 장소 (고딕체)
+            // 장소 (중간 국고딕)
             if (exhibitionPlace) {
-                ctx.font = "500 32px 'Noto Sans KR', sans-serif";
+                ctx.font = "400 34px 'Noto Sans KR', sans-serif";
                 ctx.fillStyle = "#4a4a4a";
+                ctx.letterSpacing = "0px";
                 ctx.fillText(exhibitionPlace, canvas.width / 2, yPos);
                 yPos += 50;
             }
 
-            // 상세 주소 (어르신 가독성 - 고딕체)
+            // 상세 주소 (얼은 국고딕)
             if (exhibitionAddress) {
-                ctx.font = "400 28px 'Noto Sans KR', sans-serif";
-                ctx.fillStyle = "#7a7a7a";
+                ctx.font = "300 28px 'Noto Sans KR', sans-serif";
+                ctx.fillStyle = "#8a8a8a";
+                ctx.letterSpacing = "2px";
                 ctx.fillText(exhibitionAddress, canvas.width / 2, yPos);
-                yPos += 50;
+                yPos += 60;
             }
 
-            // 초대 메시지
+            // 초대 메시지 (마지막에 배치)
             if (exhibitionMessage) {
-                ctx.font = "italic 30px 'Playfair Display', serif";
-                ctx.fillStyle = "#B5924F";
+                yPos += 20;
+                ctx.font = "italic 28px 'Playfair Display', serif";
+                ctx.fillStyle = "#6a6a6a";
+                ctx.letterSpacing = "1px";
                 ctx.fillText(`"${exhibitionMessage}"`, canvas.width / 2, yPos);
-                yPos += 70;
+                yPos += 60;
             }
         }
 
-        // === 5. 연락처 ===
-        yPos += 30;
-        ctx.font = "400 26px 'Noto Sans KR', sans-serif";
-        ctx.fillStyle = "#5a5a5a";
+        // === 5. 연락처 & SNS (레퍼런스 스타일) ===
+        yPos += 40;
+        ctx.font = "300 24px 'Noto Sans KR', sans-serif";
+        ctx.fillStyle = "#6a6a6a";
+        ctx.letterSpacing = "2px";
 
         if (phone) {
-            ctx.fillText(`📞 ${phone}`, canvas.width / 2, yPos);
-            yPos += 40;
+            ctx.fillText(`T. ${phone}`, canvas.width / 2, yPos);
+            yPos += 36;
         }
         if (email) {
-            ctx.fillText(`✉️ ${email}`, canvas.width / 2, yPos);
-            yPos += 40;
+            ctx.fillText(email, canvas.width / 2, yPos);
+            yPos += 36;
         }
 
-        // === 6. SNS ===
+        // SNS (더 얼은 색)
+        ctx.font = "300 22px 'Noto Sans KR', sans-serif";
+        ctx.fillStyle = "#9a9a9a";
         if (youtubeHandle) {
-            ctx.fillStyle = "#B5924F";
-            ctx.fillText(`🎬 ${formatHandle(youtubeHandle)}`, canvas.width / 2, yPos);
-            yPos += 40;
+            ctx.fillText(formatHandle(youtubeHandle), canvas.width / 2, yPos);
+            yPos += 32;
         }
         if (instagramHandle) {
-            ctx.fillStyle = "#B5924F";
-            ctx.fillText(`📷 ${formatHandle(instagramHandle)}`, canvas.width / 2, yPos);
-            yPos += 40;
+            ctx.fillText(formatHandle(instagramHandle), canvas.width / 2, yPos);
+            yPos += 32;
         }
 
-        // === 7. 하단 장식 라인 ===
-        ctx.strokeStyle = "#e8e6e3";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(400, canvas.height - 80);
-        ctx.lineTo(800, canvas.height - 80);
-        ctx.stroke();
+
 
         // 다운로드
         const link = document.createElement("a");
@@ -222,10 +222,10 @@ export default function ProfileCardPage() {
         setIsGenerating(false);
     };
 
-    const bgColor = "#f8f7f4";
+    const bgColor = "#F8F6F0"; // 아이보리 크림 (레퍼런스)
     const textColor = "#2a2a2a";
     const cardBg = "#ffffff";
-    const mutedGold = "#B5924F";
+    const mutedGold = "#C9A961"; // 레퍼런스 골드
     const borderColor = "#e8e6e3";
 
     return (
@@ -319,7 +319,7 @@ export default function ProfileCardPage() {
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
-                                        marginTop: i === 1 ? "8px" : "0", // 가운데만 아래로
+                                        marginTop: "0", // 모두 같은 높이 (레퍼런스)
                                         boxShadow: uploadedArtworks[i] ? "0 4px 12px rgba(0,0,0,0.1)" : "none",
                                     }}
                                 >
@@ -340,30 +340,40 @@ export default function ProfileCardPage() {
                             ))}
                         </div>
 
-                        {/* 갤러리명 */}
+                        {/* 갤러리명 (이탤릭, 골드 - 레퍼런스) */}
                         <p
                             style={{
                                 fontFamily: "'Playfair Display', serif",
                                 fontSize: "16px",
-                                letterSpacing: "0.15em",
+                                letterSpacing: "3px",
+                                fontStyle: "italic", // 이탤릭
                                 color: mutedGold,
                                 marginBottom: "12px",
                             }}
                         >
-                            {settings.galleryNameEn || "Gallery"}
+                            {settings.artistName} GALLERY
                         </p>
 
-                        {/* 작가명 */}
-                        <h3
-                            style={{
-                                fontSize: "32px",
-                                fontWeight: 700,
-                                marginBottom: "24px",
-                                color: textColor,
-                            }}
-                        >
-                            {settings.artistName}
-                        </h3>
+                        {/* 작가명 + 언더라인 */}
+                        <div style={{ marginBottom: "24px" }}>
+                            <h3
+                                style={{
+                                    fontSize: "32px",
+                                    fontWeight: 700,
+                                    marginBottom: "8px",
+                                    color: textColor,
+                                }}
+                            >
+                                {settings.artistName}
+                            </h3>
+                            {/* 언더라인 */}
+                            <div style={{
+                                width: "40px",
+                                height: "2px",
+                                backgroundColor: textColor,
+                                margin: "0 auto",
+                            }} />
+                        </div>
 
                         {/* 전시 정보 */}
                         {exhibitionTitle && (
