@@ -115,8 +115,18 @@ export default function AdminClient({ injectedArtistId }: AdminClientProps) {
         setIsSaving(true);
         setSaveSuccess(false);
         try {
+            // [KAKAO_CACHE_FIX] 저장 시각 자동 갱신 → 카톡 프로필 이미지 즉시 반영
+            const updatedSettings = {
+                ...settings,
+                updatedAt: new Date().toISOString()
+            };
+
             // [V8_FIX] 명시적으로 effectiveArtistId를 넘겨서 저장 대상 강제 고정
-            await saveSettings(settings, effectiveArtistId);
+            await saveSettings(updatedSettings, effectiveArtistId);
+
+            // 로컬 state도 업데이트
+            setSettings(updatedSettings);
+
             setSaveSuccess(true);
             setTimeout(() => setSaveSuccess(false), 3000);
             if (!vipId) router.push("/");
