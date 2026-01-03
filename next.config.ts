@@ -13,6 +13,10 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Force new build to bypass Vercel cache
+  generateBuildId: async () => {
+    return `dec25-design-${Date.now()}`;
+  },
 };
 
 export default nextConfig;
