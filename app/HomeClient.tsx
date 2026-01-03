@@ -65,10 +65,12 @@ export default function HomeClient({ injectedArtistId }: HomeClientProps) {
     });
 
     // UI 필터링 및 렌더링 로직 (기존 HomeContent와 동일)
+    const artworksByYearMonth = useMemo(() => getArtworksByYearMonth(artworks), [artworks]);
+
     const filteredArtworks = useMemo(() => {
         if (!selectedYearMonth) return [];
-        return getArtworksByYearMonth(artworks, selectedYearMonth);
-    }, [artworks, selectedYearMonth]);
+        return artworksByYearMonth.get(selectedYearMonth) || [];
+    }, [artworksByYearMonth, selectedYearMonth]);
 
     const yearMonths = useMemo(() => getYearMonths(artworks), [artworks]);
 
