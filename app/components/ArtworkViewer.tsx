@@ -332,9 +332,9 @@ export default function ArtworkViewer({
                 </div>
             </div>
 
-            {/* 페이지 인디케이터 및 정보 보기 버튼 - 상단 레이어로 항상 표시하여 토글 기능 제공 */}
+            {/* 페이지 인디케이터 및 정보 보기 버튼 - 삭제 버튼과 겹치지 않도록 위로 이동 */}
             <div
-                className="absolute bottom-8 right-8 z-[60] flex flex-col items-end gap-3"
+                className="absolute bottom-24 right-8 z-[70] flex flex-col items-end gap-3"
                 style={{ pointerEvents: "none" }}
             >
                 <button
@@ -344,7 +344,7 @@ export default function ArtworkViewer({
                     }}
                     style={{
                         pointerEvents: "auto",
-                        background: theme === "black" ? "rgba(255, 255, 255, 0.15)" : "rgba(255, 255, 255, 0.85)",
+                        background: theme === "black" ? "rgba(255, 255, 255, 0.15)" : "rgba(255, 255, 255, 0.95)",
                         backdropFilter: "blur(12px)",
                         WebkitBackdropFilter: "blur(12px)",
                         border: `1px solid ${theme === "black" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.1)"}`,
@@ -353,7 +353,7 @@ export default function ArtworkViewer({
                         color: titleColor,
                         fontSize: "14px",
                         fontWeight: 600,
-                        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
                         transition: "all 0.3s ease",
                     }}
                 >
