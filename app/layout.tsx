@@ -88,8 +88,6 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;900&display=swap"
           rel="stylesheet"
         />
-        {/* Kakao JavaScript SDK - 네이티브 공유 기능 */}
-        <Script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" strategy="beforeInteractive" />
         {/* 포트원 SDK V1 - 기존 구독 결제 */}
         <Script src="https://cdn.iamport.kr/v1/iamport.js" strategy="beforeInteractive" />
         {/* 포트원 SDK V2 - 나도 갤러리 만들기 결제 */}

@@ -154,61 +154,34 @@ function HomeContent() {
   }, [refreshArtworks]);
 
   const handleKakaoShare = async () => {
-    // Kakao SDK 초기화 확인
-    if (typeof window !== 'undefined' && (window as any).Kakao) {
-      const Kakao = (window as any).Kakao;
-
-      // 초기화되지 않았으면 초기화
-      if (!Kakao.isInitialized()) {
-        Kakao.init('78fe79161fbb94be26e0ff314feb8ed2');
-      }
-
-      try {
-        // Kakao.Share.sendDefault 사용 - 네이티브 공유 시트 표시
-        Kakao.Share.sendDefault({
-          objectType: 'feed',
-          content: {
-            title: `${settings.artistName} 작가님의 온라인 Gallery`,
-            description: `${settings.artistName} 작가의 작품세계를 담은 공간입니다.`,
-            imageUrl: settings.aboutmeImage || 'https://grim-sil.vercel.app/og-default.png',
-            link: {
-              mobileWebUrl: window.location.href,
-              webUrl: window.location.href,
-            },
-          },
-        });
-        console.log('Kakao 공유 성공!');
-        return;
-      } catch (err) {
-        console.log('Kakao 공유 실패, Web Share API 시도:', err);
-      }
-    }
-
-    // Fallback: Web Share API (Kakao SDK 없을 때)
     const shareData = {
       title: `${settings.artistName} 작가님의 온라인 Gallery`,
+      text: `${settings.artistName} 작가의 작품세계를 담은 공간입니다.`,
       url: typeof window !== 'undefined' ? window.location.href : ''
     };
 
+    // Web Share API 시도
     if (navigator.share) {
       try {
         await navigator.share(shareData);
-        console.log('Web Share 성공!');
+        return;
       } catch (err: any) {
-        if (err.name !== 'AbortError') {
-          fallbackCopyToClipboard();
+        // 사용자가 취소한 경우는 조용히 무시
+        if (err.name === 'AbortError') {
+          return;
         }
+        // 다른 에러는 fallback으로
       }
-    } else {
-      // 최종 Fallback: 클립보드 복사
-      fallbackCopyToClipboard();
     }
-  };
 
-  const fallbackCopyToClipboard = () => {
-    const message = `선생님, 평안하신지요?\n작가 정성스럽게 준비한 온라인 아트를 초대합니다.\n\nGallery 방문하기:\n${typeof window !== 'undefined' ? window.location.href : ''}`;
-    navigator.clipboard.writeText(message);
-    alert('링크가 복사되었습니다! 카카오톡이나 문자로 전송하세요.');
+    // Fallback: 클립보드 복사
+    const message = `${shareData.text}\n\n${shareData.url}`;
+    try {
+      await navigator.clipboard.writeText(message);
+      alert('링크가 복사되었습니다! 카카오톡이나 문자로 전송하세요.');
+    } catch {
+      alert('공유 기능을 사용할 수 없습니다. 링크를 직접 복사해주세요:\n' + shareData.url);
+    }
   };
 
   if (!isMounted) return null;
