@@ -157,8 +157,7 @@ function HomeContent() {
     // 즉시 네이티브 공유 시트 표시
     const shareData = {
       title: `${settings.artistName} 작가님의 온라인 Gallery`,
-      text: `선생님, 평안하신지요?\n작가 정성스럽게 준비한 온라인 아트를 초대합니다.\n\nGallery 방문하기:`,
-      url: typeof window !== 'undefined' ? window.location.origin : ''
+      url: typeof window !== 'undefined' ? window.location.href : ''
     };
 
     console.log('=== Share Debug ===');
@@ -176,18 +175,18 @@ function HomeContent() {
         if (err.name !== 'AbortError') {
           console.log('Fallback으로 전환');
           // 실패 시 클립보드 복사
-          fallbackCopyToClipboard(shareData);
+          fallbackCopyToClipboard();
         }
       }
     } else {
       console.log('navigator.share 미지원 - 즉시 fallback');
       // 네이티브 공유 미지원 시 클립보드 복사
-      fallbackCopyToClipboard(shareData);
+      fallbackCopyToClipboard();
     }
   };
 
-  const fallbackCopyToClipboard = (shareData: { title: string; text: string; url: string }) => {
-    const message = `${shareData.text}\n${shareData.url}`;
+  const fallbackCopyToClipboard = () => {
+    const message = `선생님, 평안하신지요?\n작가 정성스럽게 준비한 온라인 아트를 초대합니다.\n\nGallery 방문하기:\n${typeof window !== 'undefined' ? window.location.href : ''}`;
     navigator.clipboard.writeText(message);
     alert('링크가 복사되었습니다! 카카오톡이나 문자로 전송하세요.');
   };
