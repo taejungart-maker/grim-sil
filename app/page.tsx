@@ -154,33 +154,53 @@ function HomeContent() {
   }, [refreshArtworks]);
 
   const handleKakaoShare = async () => {
-    // 즉시 네이티브 공유 시트 표시
+    // Kakao SDK 초기화 확인
+    if (typeof window !== 'undefined' && (window as any).Kakao) {
+      const Kakao = (window as any).Kakao;
+
+      // 초기화되지 않았으면 초기화
+      if (!Kakao.isInitialized()) {
+        Kakao.init('78fe79161fbb94be26e0ff314feb8ed2');
+      }
+
+      try {
+        // Kakao.Share.sendDefault 사용 - 네이티브 공유 시트 표시
+        Kakao.Share.sendDefault({
+          objectType: 'feed',
+          content: {
+            title: `${settings.artistName} 작가님의 온라인 Gallery`,
+            description: `${settings.artistName} 작가의 작품세계를 담은 공간입니다.`,
+            imageUrl: settings.aboutmeImage || 'https://grim-sil.vercel.app/og-default.png',
+            link: {
+              mobileWebUrl: window.location.href,
+              webUrl: window.location.href,
+            },
+          },
+        });
+        console.log('Kakao 공유 성공!');
+        return;
+      } catch (err) {
+        console.log('Kakao 공유 실패, Web Share API 시도:', err);
+      }
+    }
+
+    // Fallback: Web Share API (Kakao SDK 없을 때)
     const shareData = {
       title: `${settings.artistName} 작가님의 온라인 Gallery`,
       url: typeof window !== 'undefined' ? window.location.href : ''
     };
 
-    console.log('=== Share Debug ===');
-    console.log('navigator.share 존재?', !!navigator.share);
-    console.log('shareData:', shareData);
-
     if (navigator.share) {
       try {
-        console.log('navigator.share() 호출 시도...');
         await navigator.share(shareData);
-        console.log('공유 성공!');
+        console.log('Web Share 성공!');
       } catch (err: any) {
-        console.log('공유 에러:', err.name, err.message);
-        // 사용자가 취소한 경우는 조용히 무시
         if (err.name !== 'AbortError') {
-          console.log('Fallback으로 전환');
-          // 실패 시 클립보드 복사
           fallbackCopyToClipboard();
         }
       }
     } else {
-      console.log('navigator.share 미지원 - 즉시 fallback');
-      // 네이티브 공유 미지원 시 클립보드 복사
+      // 최종 Fallback: 클립보드 복사
       fallbackCopyToClipboard();
     }
   };
