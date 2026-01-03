@@ -40,7 +40,7 @@ export async function getExchangeRate(): Promise<number> {
     }
 }
 
-// 원화를 달러로 변환 (반올림)
+// KRW를 USD로 변환 (반올림)
 export function convertKRWtoUSD(krwAmount: number, rate: number): number {
     return Math.round(krwAmount / rate);
 }

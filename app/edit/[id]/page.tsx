@@ -494,7 +494,7 @@ export default function EditArtworkPage({ params }: EditArtworkPageProps) {
                                     type="text"
                                     value={price}
                                     onChange={(e) => setPrice(e.target.value)}
-                                    placeholder="예: 1,500,000원"
+                                    placeholder="예: 1,500,000 KRW"
                                     className="w-full rounded-xl"
                                     style={{
                                         padding: "16px 20px",

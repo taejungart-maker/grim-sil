@@ -191,47 +191,47 @@ export default function AdminClient({ injectedArtistId }: AdminClientProps) {
 
     return (
         <div className="min-h-screen" style={{ background: bgColor, color: textColor }}>
-            <header className="p-5 border-b flex justify-between items-center sticky top-0 z-50 bg-inherit" style={{ borderColor }}>
-                <div className="flex items-center gap-3">
-                    <h1 className="text-2xl font-bold" style={{ color: settings.theme === "black" ? "#fff" : "#8b7355" }}>갤러리 설정</h1>
-                    <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded font-mono text-xs">ID: {effectiveArtistId}</span>
+            <header className="p-4 md:p-5 border-b flex justify-between items-center sticky top-0 z-50 bg-inherit" style={{ borderColor }}>
+                <div className="flex items-center gap-2 md:gap-3">
+                    <h1 className="text-lg md:text-2xl font-bold" style={{ color: settings.theme === "black" ? "#fff" : "#8b7355" }}>갤러리 설정</h1>
+                    <span className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded font-mono text-[10px] md:text-xs">ID: {effectiveArtistId}</span>
                 </div>
-                <div className="flex gap-2">
-                    <button onClick={handleSave} disabled={isSaving} className="px-5 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 disabled:opacity-50 transition">{isSaving ? "저장 중..." : "설정 저장"}</button>
-                    <button onClick={() => router.push("/")} className="px-5 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg hover:opacity-80 transition text-sm">나가기</button>
+                <div className="flex gap-2 flex-nowrap">
+                    <button onClick={handleSave} disabled={isSaving} className="px-3 md:px-5 py-1.5 md:py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 disabled:opacity-50 transition text-sm md:text-base whitespace-nowrap">{isSaving ? "..." : "설정 저장"}</button>
+                    <button onClick={() => router.push("/")} className="px-3 md:px-5 py-1.5 md:py-2 bg-gray-100 dark:bg-gray-800 rounded-lg hover:opacity-80 transition text-sm md:text-base whitespace-nowrap">나가기</button>
                 </div>
             </header>
 
-            <main className="max-w-3xl mx-auto p-6 md:p-10">
-                {saveSuccess && <div className="p-4 mb-6 bg-green-500 text-white rounded-xl text-center font-bold">성공적으로 저장되었습니다!</div>}
+            <main className="max-w-3xl mx-auto p-4 md:p-10">
+                {saveSuccess && <div className="p-4 mb-6 bg-green-500 text-white rounded-xl text-center font-bold text-sm md:text-base">성공적으로 저장되었습니다!</div>}
 
-                <div className="space-y-12">
+                <div className="space-y-8 md:space-y-12">
                     {/* 기본 정보 */}
                     <section>
-                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">🏠 기본 정보</h2>
+                        <h2 className="text-lg md:text-xl font-bold mb-4 md:mb-6 flex items-center gap-2">🏠 기본 정보</h2>
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-semibold mb-2 opacity-70">화첩 한글 이름 (상단 바)</label>
-                                <input className="w-full p-4 border-2 rounded-xl bg-transparent" style={{ borderColor }} value={settings.galleryNameKo} onChange={e => setSettings({ ...settings, galleryNameKo: e.target.value })} />
+                                <label className="block text-xs md:text-sm font-semibold mb-2 opacity-70">Gallery 한글 이름 (상단 바)</label>
+                                <input className="w-full p-3 md:p-4 border-2 rounded-xl bg-transparent text-sm md:text-base" style={{ borderColor }} value={settings.galleryNameKo} onChange={e => setSettings({ ...settings, galleryNameKo: e.target.value })} />
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold mb-2 opacity-70">작가 이름</label>
-                                <input className="w-full p-4 border-2 rounded-xl bg-transparent" style={{ borderColor }} value={settings.artistName} onChange={e => setSettings({ ...settings, artistName: e.target.value })} />
+                                <label className="block text-xs md:text-sm font-semibold mb-2 opacity-70">작가 이름</label>
+                                <input className="w-full p-3 md:p-4 border-2 rounded-xl bg-transparent text-sm md:text-base" style={{ borderColor }} value={settings.artistName} onChange={e => setSettings({ ...settings, artistName: e.target.value })} />
                             </div>
                         </div>
                     </section>
 
                     {/* SEO 설정 */}
                     <section>
-                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">🌐 사이트 설정 (SEO)</h2>
+                        <h2 className="text-lg md:text-xl font-bold mb-4 md:mb-6 flex items-center gap-2">🌐 사이트 설정 (SEO)</h2>
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-semibold mb-2 opacity-70">사이트 제목 (브라우저 탭)</label>
-                                <input className="w-full p-4 border-2 rounded-xl bg-transparent" style={{ borderColor }} value={settings.siteTitle} onChange={e => setSettings({ ...settings, siteTitle: e.target.value })} />
+                                <label className="block text-xs md:text-sm font-semibold mb-2 opacity-70">사이트 제목 (브라우저 탭)</label>
+                                <input className="w-full p-3 md:p-4 border-2 rounded-xl bg-transparent text-sm md:text-base" style={{ borderColor }} value={settings.siteTitle} onChange={e => setSettings({ ...settings, siteTitle: e.target.value })} />
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold mb-2 opacity-70">사이트 설명</label>
-                                <textarea className="w-full p-4 border-2 rounded-xl bg-transparent" style={{ borderColor }} rows={3} value={settings.siteDescription} onChange={e => setSettings({ ...settings, siteDescription: e.target.value })} />
+                                <label className="block text-xs md:text-sm font-semibold mb-2 opacity-70">사이트 설명</label>
+                                <textarea className="w-full p-3 md:p-4 border-2 rounded-xl bg-transparent text-sm md:text-base" style={{ borderColor }} rows={3} value={settings.siteDescription} onChange={e => setSettings({ ...settings, siteDescription: e.target.value })} />
                             </div>
                             <div className="pt-2">
                                 <button
@@ -256,25 +256,25 @@ export default function AdminClient({ injectedArtistId }: AdminClientProps) {
 
                     {/* 테마 및 레이아웃 */}
                     <section>
-                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">🎨 테마 및 레이아웃</h2>
-                        <div className="grid grid-cols-2 gap-4">
-                            <button onClick={() => setSettings({ ...settings, theme: "white" })} className={`p-2.5 rounded-xl border-2 font-bold ${settings.theme === "white" ? "border-black bg-white text-black" : "border-gray-200 opacity-50 text-gray-400"}`}>화이트 테마</button>
-                            <button onClick={() => setSettings({ ...settings, theme: "black" })} className={`p-2.5 rounded-xl border-2 font-bold ${settings.theme === "black" ? "border-white bg-black text-white" : "border-gray-800 opacity-50 text-gray-400"}`}>블랙 테마</button>
+                        <h2 className="text-lg md:text-xl font-bold mb-4 md:mb-6 flex items-center gap-2">🎨 테마 및 레이아웃</h2>
+                        <div className="grid grid-cols-2 gap-3 md:gap-4">
+                            <button onClick={() => setSettings({ ...settings, theme: "white" })} className={`p-2 md:p-2.5 rounded-xl border-2 font-bold text-sm md:text-base ${settings.theme === "white" ? "border-black bg-white text-black" : "border-gray-200 opacity-50 text-gray-400"}`}>화이트 테마</button>
+                            <button onClick={() => setSettings({ ...settings, theme: "black" })} className={`p-2 md:p-2.5 rounded-xl border-2 font-bold text-sm md:text-base ${settings.theme === "black" ? "border-white bg-black text-white" : "border-gray-800 opacity-50 text-gray-400"}`}>블랙 테마</button>
                         </div>
-                        <div className="mt-6 flex gap-2">
+                        <div className="mt-4 md:mt-6 flex gap-2">
                             {[1, 3, 4].map(cols => (
-                                <button key={cols} onClick={() => setSettings({ ...settings, gridColumns: cols as any })} className={`flex-1 p-2 rounded-xl border-2 font-bold ${settings.gridColumns === cols ? "border-indigo-500 bg-indigo-50 text-indigo-700" : "border-transparent bg-gray-50 text-gray-400"}`}>{cols}열 배열</button>
+                                <button key={cols} onClick={() => setSettings({ ...settings, gridColumns: cols as any })} className={`flex-1 p-2 rounded-xl border-2 font-bold text-xs md:text-base ${settings.gridColumns === cols ? "border-indigo-500 bg-indigo-50 text-indigo-700" : "border-transparent bg-gray-50 text-gray-400"}`}>{cols}열 배열</button>
                             ))}
                         </div>
                     </section>
 
                     {/* 작가 소개 */}
-                    <section className="pt-8 border-t" style={{ borderColor }}>
-                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">👤 작가 소개 설정</h2>
+                    <section className="pt-6 md:pt-8 border-t" style={{ borderColor }}>
+                        <h2 className="text-lg md:text-xl font-bold mb-4 md:mb-6 flex items-center gap-2">👤 작가 소개 설정</h2>
                         <div className="space-y-6">
-                            <div className="flex gap-6 items-start">
-                                <div className="w-32 h-40 bg-gray-100 rounded-2xl overflow-hidden shadow-inner flex-shrink-0 border-2" style={{ borderColor }}>
-                                    {settings.aboutmeImage ? <img src={settings.aboutmeImage} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-gray-300">No Image</div>}
+                            <div className="flex gap-4 md:gap-6 items-start">
+                                <div className="w-24 h-32 md:w-32 md:h-40 bg-gray-100 rounded-2xl overflow-hidden shadow-inner flex-shrink-0 border-2" style={{ borderColor }}>
+                                    {settings.aboutmeImage ? <img src={settings.aboutmeImage} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-xs text-gray-300">No Image</div>}
                                 </div>
                                 <div className="flex-1">
                                     <input type="file" id="p-upload" hidden onChange={async e => {
@@ -284,13 +284,71 @@ export default function AdminClient({ injectedArtistId }: AdminClientProps) {
                                             setSettings({ ...settings, aboutmeImage: url });
                                         }
                                     }} />
-                                    <label htmlFor="p-upload" className="inline-block px-4 py-2 border-2 rounded-lg font-bold cursor-pointer hover:bg-gray-50 transition" style={{ borderColor }}>이미지 변경</label>
-                                    <p className="mt-2 text-xs opacity-50">작가 프로필 사진을 업로드해 주세요.</p>
+                                    <label htmlFor="p-upload" className="inline-block px-3 py-1.5 md:px-4 md:py-2 border-2 rounded-lg font-bold cursor-pointer hover:bg-gray-50 transition text-sm md:text-base" style={{ borderColor }}>이미지 변경</label>
+                                    <p className="mt-2 text-[10px] md:text-xs opacity-50">작가 프로필 사진을 업로드해 주세요.</p>
                                 </div>
                             </div>
-                            <div>
-                                <label className="block text-sm font-semibold mb-2 opacity-70">작가 노트</label>
-                                <textarea className="w-full p-4 border-2 rounded-xl bg-transparent font-serif" style={{ borderColor }} rows={6} value={settings.aboutmeNote} onChange={e => setSettings({ ...settings, aboutmeNote: e.target.value })} />
+                            {/* 평론 */}
+                            <div className="p-5 rounded-2xl border-2 space-y-4" style={{ borderColor }}>
+                                <div className="flex justify-between items-center">
+                                    <label className="text-sm font-bold opacity-70">평론 (CRITIQUE)</label>
+                                    <button
+                                        onClick={() => setSettings({ ...settings, showCritique: !settings.showCritique })}
+                                        className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${settings.showCritique ? "bg-indigo-600 text-white" : "bg-gray-200 text-gray-500"}`}
+                                    >
+                                        {settings.showCritique ? "공개 중" : "비공개"}
+                                    </button>
+                                </div>
+                                <textarea
+                                    className="w-full p-3 md:p-4 border-2 rounded-xl bg-transparent font-serif text-sm md:text-base"
+                                    style={{ borderColor }}
+                                    rows={6}
+                                    value={settings.aboutmeCritique}
+                                    onChange={e => setSettings({ ...settings, aboutmeCritique: e.target.value })}
+                                    placeholder="작가 평론을 입력하세요."
+                                />
+                            </div>
+
+                            {/* 작가 노트 */}
+                            <div className="p-5 rounded-2xl border-2 space-y-4" style={{ borderColor }}>
+                                <div className="flex justify-between items-center">
+                                    <label className="text-sm font-bold opacity-70">작가 노트 (ARTIST NOTE)</label>
+                                    <button
+                                        onClick={() => setSettings({ ...settings, showArtistNote: !settings.showArtistNote })}
+                                        className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${settings.showArtistNote ? "bg-indigo-600 text-white" : "bg-gray-200 text-gray-500"}`}
+                                    >
+                                        {settings.showArtistNote ? "공개 중" : "비공개"}
+                                    </button>
+                                </div>
+                                <textarea
+                                    className="w-full p-3 md:p-4 border-2 rounded-xl bg-transparent font-serif text-sm md:text-base"
+                                    style={{ borderColor }}
+                                    rows={6}
+                                    value={settings.aboutmeNote}
+                                    onChange={e => setSettings({ ...settings, aboutmeNote: e.target.value })}
+                                    placeholder="작가 노트를 입력하세요."
+                                />
+                            </div>
+
+                            {/* 프로필 */}
+                            <div className="p-5 rounded-2xl border-2 space-y-4" style={{ borderColor }}>
+                                <div className="flex justify-between items-center">
+                                    <label className="text-sm font-bold opacity-70">프로필 (PROFILE)</label>
+                                    <button
+                                        onClick={() => setSettings({ ...settings, showHistory: !settings.showHistory })}
+                                        className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${settings.showHistory ? "bg-indigo-600 text-white" : "bg-gray-200 text-gray-500"}`}
+                                    >
+                                        {settings.showHistory ? "공개 중" : "비공개"}
+                                    </button>
+                                </div>
+                                <textarea
+                                    className="w-full p-3 md:p-4 border-2 rounded-xl bg-transparent font-serif text-sm md:text-base"
+                                    style={{ borderColor }}
+                                    rows={6}
+                                    value={settings.history}
+                                    onChange={e => setSettings({ ...settings, history: e.target.value })}
+                                    placeholder="작가 프로필 (학력, 경력, 수상 이력 등)을 입력하세요."
+                                />
                             </div>
                         </div>
                     </section>
@@ -299,35 +357,6 @@ export default function AdminClient({ injectedArtistId }: AdminClientProps) {
                     <section className="p-6 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 border-2" style={{ borderColor: SIGNATURE_COLORS.royalIndigo }}>
                         <h3 className="text-lg font-bold text-indigo-700 mb-2">실시간 뉴스 문구</h3>
                         <textarea className="w-full p-4 border-2 rounded-xl bg-transparent" style={{ borderColor }} value={settings.newsText} onChange={e => setSettings({ ...settings, newsText: e.target.value })} placeholder="상단바에 흐르는 뉴스 문구를 입력하세요" />
-                    </section>
-
-                    {/* 동료 작가 추천 */}
-                    <section>
-                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">🤝 동료 작가 추천</h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                            {settings.artistPicks?.map((pick, i) => (
-                                <div key={i} className="p-4 border-2 rounded-2xl relative bg-gray-50/50" style={{ borderColor }}>
-                                    <button
-                                        onClick={() => handleRemovePick(i)}
-                                        className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center bg-red-500 text-white rounded-full text-xs font-bold shadow-sm hover:bg-red-600 transition"
-                                    >×</button>
-                                    <div className="space-y-3 pt-2">
-                                        <div className="px-1">
-                                            <label className="block text-[10px] uppercase font-bold opacity-40 mb-1">작가명</label>
-                                            <input className="w-full p-2 border-b bg-transparent text-sm font-medium focus:border-indigo-500 outline-none transition" style={{ borderColor }} placeholder="작가명" value={pick.name} onChange={e => handleUpdatePick(i, "name", e.target.value)} />
-                                        </div>
-                                        <div className="px-1">
-                                            <label className="block text-[10px] uppercase font-bold opacity-40 mb-1">URL</label>
-                                            <input className="w-full p-2 border-b bg-transparent text-xs opacity-70 focus:border-indigo-500 outline-none transition" style={{ borderColor }} placeholder="갤러리 URL" value={pick.archiveUrl} onChange={e => handleUpdatePick(i, "archiveUrl", e.target.value)} />
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                            <button onClick={handleAddPick} className="flex flex-col items-center justify-center aspect-video sm:aspect-square border-2 border-dashed rounded-2xl text-indigo-600 font-bold hover:bg-indigo-50 transition gap-2">
-                                <span className="text-2xl">+</span>
-                                <span className="text-xs">작가 추가</span>
-                            </button>
-                        </div>
                     </section>
 
                     {/* 비밀번호 변경 */}

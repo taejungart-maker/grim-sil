@@ -20,7 +20,7 @@ export default function ShareModal({ isOpen, onClose, shareUrl, title, descripti
 
     // [V13] URL이 변경될 때마다 초대 메시지 동기화
     useEffect(() => {
-        setInvitationMessage(`선생님, 평안하신지요?\n작가 정성스럽게 준비한 온라인 아트를 초대합니다.\n\n화첩 방문하기:\n${shareUrl}`);
+        setInvitationMessage(`선생님, 평안하신지요?\n작가 정성스럽게 준비한 온라인 아트를 초대합니다.\n\nGallery 방문하기:\n${shareUrl}`);
     }, [shareUrl]);
 
     useEffect(() => {
@@ -122,7 +122,7 @@ export default function ShareModal({ isOpen, onClose, shareUrl, title, descripti
                 </button>
 
                 <div style={{ textAlign: "center", marginBottom: "28px" }}>
-                    <h2 style={{ fontSize: "22px", fontWeight: 700, color: textColor, marginBottom: "28px", letterSpacing: "-0.02em" }}>화첩 정중히 공유하기</h2>
+                    <h2 style={{ fontSize: "22px", fontWeight: 700, color: textColor, marginBottom: "28px", letterSpacing: "-0.02em" }}>Gallery 정중히 공유하기</h2>
 
                     {/* QR Code Section */}
                     {qrCodeUrl && (
@@ -206,7 +206,7 @@ export default function ShareModal({ isOpen, onClose, shareUrl, title, descripti
                                     <polyline points="16 6 12 2 8 6" />
                                     <line x1="12" y1="2" x2="12" y2="15" />
                                 </svg>
-                                화첩 초대장 보내기 (카카오톡·문자)
+                                Gallery 초대장 보내기 (카카오톡·문자)
                             </>
                         )}
                     </button>

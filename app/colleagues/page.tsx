@@ -51,7 +51,7 @@ export default function ColleaguesPage() {
                 setArtists(data?.map(row => ({
                     id: row.artist_id,
                     artist_name: row.artist_name || "작가님",
-                    gallery_name_ko: row.gallery_name_ko || "온라인 화첩",
+                    gallery_name_ko: row.gallery_name_ko || "온라인 Gallery",
                     aboutme_image: row.aboutme_image,
                     gallery_url: row.gallery_url
                 })) || []);
@@ -71,7 +71,7 @@ export default function ColleaguesPage() {
         artist.gallery_name_ko.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // 작가 화첩 방문 (내 정보 포함)
+    // 작가 Gallery 방문 (내 정보 포함)
     const handleVisit = (artist: ArtistInfo) => {
         if (!artist.gallery_url) {
             alert("이 작가님의 갤러리 주소가 등록되지 않았습니다.");
@@ -81,7 +81,7 @@ export default function ColleaguesPage() {
         // URL에 방문자 정보 포함
         const url = new URL(artist.gallery_url);
         url.searchParams.set("visitor", ownerId || getClientArtistId());
-        url.searchParams.set("visitorName", settings.artistName || "동료작가");
+        url.searchParams.set("visitorName", settings.artistName || "동행작가");
 
         window.location.href = url.toString();
     };
@@ -110,10 +110,10 @@ export default function ColleaguesPage() {
                     marginBottom: "8px",
                     color: SIGNATURE_COLORS.royalIndigo
                 }}>
-                    🎨 동료 갤러리
+                    🎨 동행 갤러리
                 </h1>
                 <p style={{ fontSize: "14px", color: "#666", marginBottom: "24px" }}>
-                    함께하는 작가님들의 화첩을 방문하고 서로 응원해 보세요!
+                    함께하는 작가님들의 Gallery를 방문하고 서로 응원해 보세요!
                 </p>
 
                 {/* 검색창 */}
@@ -141,7 +141,7 @@ export default function ColleaguesPage() {
                     </div>
                 ) : filteredArtists.length === 0 ? (
                     <div style={{ textAlign: "center", padding: "40px", color: "#888" }}>
-                        {searchTerm ? "검색 결과가 없습니다." : "아직 등록된 동료 작가님이 없습니다."}
+                        {searchTerm ? "검색 결과가 없습니다." : "아직 등록된 동행 작가님이 없습니다."}
                     </div>
                 ) : (
                     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -214,7 +214,7 @@ export default function ColleaguesPage() {
                             textDecoration: "underline"
                         }}
                     >
-                        ← 내 화첩으로 돌아가기
+                        ← 내 Gallery로 돌아가기
                     </Link>
                 </div>
             </main>

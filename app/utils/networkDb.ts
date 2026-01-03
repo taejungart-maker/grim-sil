@@ -116,7 +116,7 @@ export async function loadRecentNews(): Promise<{ id: string, text: string, type
             recentArtworks.forEach(a => news.push({
                 id: `art-${a.created_at}`,
                 type: 'ART',
-                text: `${a.artist_name || '동료'} 작가님이 새 작품 '${a.title}'을(를) 방금 등록하셨습니다! 🎨`,
+                text: `${a.artist_name || '동행'} 작가님이 새 작품 '${a.title}'을(를) 방금 등록하셨습니다! 🎨`,
                 time: new Date(a.created_at).getTime()
             }));
         }

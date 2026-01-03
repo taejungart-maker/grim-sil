@@ -180,7 +180,7 @@ function HomeContent() {
         />
       )}
 
-      {/* 🚀 동료 갤러리에서 방문한 작가에게 추천 버튼 표시 */}
+      {/* 🚀 동행 갤러리에서 방문한 작가에게 추천 버튼 표시 */}
       {showQuickAdd && (visitorId || (isLoggedIn && ownerId && ownerId !== ARTIST_ID)) && (
         <div style={{
           position: "fixed",
@@ -218,7 +218,7 @@ function HomeContent() {
               transform: isSubmitting ? "scale(0.98)" : "none"
             }}
           >
-            {quickAdded ? "✅ 내 화첩에 추천되었습니다!" : (isSubmitting ? "⏳ 등록 중..." : "🤝 내 화첩에 이 작가 추천하기")}
+            {quickAdded ? "✅ 내 Gallery에 추천되었습니다!" : (isSubmitting ? "⏳ 등록 중..." : "🤝 내 Gallery에 이 작가 추천하기")}
           </button>
 
           <style jsx>{`
@@ -353,7 +353,7 @@ function HomeContent() {
             fontFamily: "'Noto Sans KR', sans-serif",
           }}
         >
-          작가님만의 온라인 화첩을 만들어보세요
+          작가님만의 온라인 Gallery를 만들어보세요
         </p>
 
         {/* 사업자 정보 (PG 심사 필수) */}
@@ -438,7 +438,7 @@ function HomeContent() {
               결제 안내
             </div>
             <div style={{ fontSize: "12px", color: settings.theme === "black" ? "#777" : "#999" }}>
-              본 서비스는 월 20,000원의 구독 서비스입니다. 결제는 Port One을 통해 안전하게 처리됩니다.
+              본 서비스는 월 20,000 KRW의 구독 서비스입니다. 결제는 Port One을 통해 안전하게 처리됩니다.
               <br />
               구독 취소 시 위약금 없이 즉시 해지 가능하며, 남은 기간에 대한 부분 환불은 이용약관에 따릅니다.
             </div>
@@ -540,7 +540,7 @@ function HomeContent() {
         isOpen={showShareModal}
         onClose={() => setShowShareModal(false)}
         shareUrl={typeof window !== 'undefined' ? window.location.origin : ''}
-        title={`${settings.artistName} 작가님의 온라인 화첩`}
+        title={`${settings.artistName} 작가님의 온라인 Gallery`}
         description={`${settings.artistName} 작가의 작품세계를 담은 공간입니다.`}
         theme={settings.theme}
       />

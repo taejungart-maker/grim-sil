@@ -62,7 +62,7 @@ export default function ProfileCardPage() {
     const mutedColor = settings.theme === "black" ? "#666" : "#888";
     const borderColor = settings.theme === "black" ? "#2a2a2a" : "#e8e6e3";
 
-    // 프로필 카드 다운로드
+    // 초대장 다운로드
     const downloadCard = async () => {
         if (!canvasRef.current) return;
 
@@ -261,7 +261,7 @@ export default function ProfileCardPage() {
 
         // 다운로드
         const link = document.createElement("a");
-        link.download = `${settings.artistName}_프로필카드.png`;
+        link.download = `${settings.artistName}_초대장.png`;
         link.href = canvas.toDataURL("image/png");
         link.click();
 
@@ -308,7 +308,7 @@ export default function ProfileCardPage() {
                     fontFamily: "'Georgia', 'Noto Serif KR', serif",
                     letterSpacing: "0.05em",
                 }}>
-                    프로필 카드
+                    초대장 만들기
                 </h1>
             </header>
 
@@ -323,9 +323,12 @@ export default function ProfileCardPage() {
                         fontWeight: 600,
                         letterSpacing: "0.1em",
                         color: mutedColor,
-                        marginBottom: "24px",
+                        marginBottom: "12px",
                     }}>
-                        미리보기
+                        초대장 미리보기
+                    </p>
+                    <p style={{ fontSize: "12px", color: "#999", marginBottom: "24px" }}>
+                        아래 정보를 입력하면 초대장에 실시간으로 반영됩니다.
                     </p>
                     <div
                         style={{
@@ -665,7 +668,7 @@ export default function ProfileCardPage() {
                             cursor: "pointer",
                             transition: "all 0.2s ease",
                         }}>
-                        {isGenerating ? "생성 중..." : "📥 카드 다운로드"}
+                        {isGenerating ? "생성 중..." : "📥 초대장 다운로드"}
                     </button>
 
                 </div>

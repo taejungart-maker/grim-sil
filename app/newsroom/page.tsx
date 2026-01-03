@@ -19,12 +19,12 @@ interface NewsItem {
 
 const SOURCES = [
     {
-        name: "미술 소식 - 전시",
+        name: "ART NEWS - 전시",
         rss: "https://news.google.com/rss/search?q=%EB%AF%B8%EC%88%A0+%EC%A0%84%EC%8B%9C&hl=ko&gl=KR&ceid=KR:ko",
         category: "전시정보",
     },
     {
-        name: "미술 소식 - 공모전",
+        name: "ART NEWS - 공모전",
         rss: "https://news.google.com/rss/search?q=%EB%AF%B8%EC%88%A0+%EA%B3%B5%EB%AA%A8%EC%A0%84&hl=ko&gl=KR&ceid=KR:ko",
         category: "공모/지원",
     }

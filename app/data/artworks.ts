@@ -8,7 +8,7 @@ export interface Artwork {
     medium: string;          // 재료 (예: "캔버스에 유채")
     imageUrl: string;        // 이미지 경로
     description?: string;    // 작품 설명 (선택)
-    price?: string;          // 가격 (선택, 예: "1,500,000원")
+    price?: string;          // 가격 (선택, 예: "1,500,000 KRW")
     artistName?: string;     // 작가 이름 (선택)
 }
 

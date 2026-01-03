@@ -140,9 +140,9 @@ export async function saveSettings(config: SiteConfig, overrideId?: string): Pro
 }
 
 /**
- * [초간단 상생] 동료 작가 추천 즉시 추가
+ * [초간단 상생] 동행 작가 추천 즉시 추가
  * @param ownerId 추천을 추가할 작가 나의 ID
- * @param pick 추가할 동료 작가 정보
+ * @param pick 추가할 동행 작가 정보
  */
 export async function quickAddPick(ownerId: string, pick: { name: string; archiveUrl: string; imageUrl?: string }): Promise<void> {
     const config = await loadSettingsById(ownerId);

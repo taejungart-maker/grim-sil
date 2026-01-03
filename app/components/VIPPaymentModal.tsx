@@ -155,7 +155,7 @@ export default function VIPPaymentModal({ isOpen, onClose, onSuccess }: VIPPayme
                         <div style={{ background: 'linear-gradient(to bottom, #f8fafc, #ffffff)', borderRadius: '24px', padding: '24px', marginBottom: '32px', border: '1px solid #f1f5f9' }}>
                             <div style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '6px', fontWeight: 500 }}>VIP 구독권 (월간)</div>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                                <span style={{ fontSize: '32px', fontWeight: 900, color: '#1e293b' }}>₩20,000</span>
+                                <span style={{ fontSize: '32px', fontWeight: 900, color: '#1e293b' }}>20,000 KRW</span>
                                 <span style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '-8px' }}>/ 월</span>
                             </div>
                         </div>
@@ -218,7 +218,7 @@ export default function VIPPaymentModal({ isOpen, onClose, onSuccess }: VIPPayme
                                 transition: 'all 0.2s'
                             }}
                         >
-                            {isProcessing ? '결제 요청 중...' : '결제 창 열기 (20,000원)'}
+                            {isProcessing ? '결제 요청 중...' : '결제 창 열기 (20,000 KRW)'}
                         </button>
 
                         {error && (
@@ -256,7 +256,7 @@ export default function VIPPaymentModal({ isOpen, onClose, onSuccess }: VIPPayme
                                 transition: 'all 0.2s'
                             }}
                         >
-                            화첩 시작하기
+                            Gallery 시작하기
                         </button>
                     </div>
                 )}

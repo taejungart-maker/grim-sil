@@ -151,7 +151,7 @@ export default function Header({
                 </div>
             </div>
 
-            {/* 하단: 작가소개 + 미술 소식 + 구독하기 + 화첩 공유 */}
+            {/* 하단: 작가소개 + ART NEWS + 구독하기 + Gallery 공유 */}
             <div
                 className="max-w-6xl mx-auto px-4 sm:px-6"
                 style={{
@@ -164,7 +164,7 @@ export default function Header({
                     className="flex items-center justify-between sm:justify-start"
                     style={{ gap: "12px" }}
                 >
-                    {/* 왼쪽 그룹: 작가소개 + 미술 소식 */}
+                    {/* 왼쪽 그룹: 작가소개 + ART NEWS */}
                     <div className="flex items-center gap-3 sm:gap-4">
                         {/* 작가소개 */}
                         <Link
@@ -182,7 +182,7 @@ export default function Header({
                             작가소개
                         </Link>
 
-                        {/* 미술 소식 */}
+                        {/* ART NEWS */}
                         <Link
                             href={vipId ? `/newsroom?vipId=${vipId}` : "/newsroom"}
                             className="text-sm sm:text-base"
@@ -195,10 +195,10 @@ export default function Header({
                                 whiteSpace: "nowrap"
                             }}
                         >
-                            미술 소식
+                            ART NEWS
                         </Link>
 
-                        {/* 동료 갤러리 (로그인 시에만 표시) */}
+                        {/* 동행 갤러리 (로그인 시에만 표시) */}
                         {isLoggedIn && (
                             <Link
                                 href="/colleagues"
@@ -212,7 +212,7 @@ export default function Header({
                                     whiteSpace: "nowrap"
                                 }}
                             >
-                                동료 갤러리
+                                동행 갤러리
                             </Link>
                         )}
                     </div>
@@ -249,7 +249,7 @@ export default function Header({
                                 </button>
                             )}
 
-                        {/* 화첩 공유 버튼 (로그인한 경우에만 노출) */}
+                        {/* Gallery 공유 버튼 (로그인한 경우에만 노출) */}
                         {isLoggedIn && (
                             <button
                                 id="header-share-btn-v2"
@@ -269,9 +269,9 @@ export default function Header({
                                     whiteSpace: "nowrap",
                                     boxShadow: `0 2px 6px ${theme === "black" ? "rgba(0,0,0,0.3)" : "rgba(128, 48, 48, 0.2)"}`,
                                 }}
-                                aria-label="화첩 공유"
+                                aria-label="Gallery 공유"
                             >
-                                <span className="hidden sm:inline">화첩 공유</span>
+                                <span className="hidden sm:inline">Gallery 공유</span>
                                 <span className="sm:hidden">공유</span>
                             </button>
                         )}

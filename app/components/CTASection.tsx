@@ -36,7 +36,7 @@ export default function CTASection({ theme = "white" }: CTASectionProps) {
                     marginBottom: "32px",
                     lineHeight: 1.6,
                 }}>
-                    월 ₩20,000으로 나만의 온라인 갤러리를 시작하세요
+                    월 20,000 KRW으로 나만의 온라인 갤러리를 시작하세요
                 </p>
                 <Link
                     href="/apply"

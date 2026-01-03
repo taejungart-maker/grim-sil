@@ -38,7 +38,7 @@ export default function ArtworkViewer({
     const [showHint, setShowHint] = useState(true); // 진입 시 안내 문구
     const [hasOpenedCaption, setHasOpenedCaption] = useState(false); // 측션을 한 번이라도 열었는지
     const [showWiggle, setShowWiggle] = useState(true); // 이미지 움질 효과
-    const [exchangeRate, setExchangeRate] = useState<number>(1400); // 기본값 1400원
+    const [exchangeRate, setExchangeRate] = useState<number>(1400); // 기본값 1400 KRW
     const captionRef = useRef<HTMLDivElement>(null);
 
     const currentArtwork = artworks[currentIndex];
@@ -291,11 +291,14 @@ export default function ArtworkViewer({
                 </button>
             </div>
 
-            {/* 작품 이미지 - 전체 화면, 터치하면 캡션 토글 */}
+            {/* 작품 이미지 - 원상 복구된 레이아웃 */}
             <div
                 className="absolute inset-0 flex items-center justify-center"
                 style={{
-                    padding: "70px 16px 40px 16px",
+                    paddingTop: "80px",
+                    paddingBottom: "80px",
+                    paddingLeft: "20px",
+                    paddingRight: "20px",
                     touchAction: "manipulation",
                 }}
                 onClick={handleImageClick}
@@ -311,7 +314,6 @@ export default function ArtworkViewer({
                         transform: slideDirection === 'left' ? 'translateX(-30px)' :
                             slideDirection === 'right' ? 'translateX(30px)' : 'translateX(0)',
                         opacity: slideDirection ? 0.3 : 1,
-                        animation: showWiggle && !slideDirection ? 'wiggle 0.6s ease-in-out' : 'none',
                     }}
                 >
                     <Image
@@ -330,26 +332,49 @@ export default function ArtworkViewer({
                 </div>
             </div>
 
-            {/* 페이지 인디케이터 - 하단에 항상 표시 */}
-            {!showCaption && (
-                <div
-                    className="absolute bottom-4 left-0 right-0 z-30 flex justify-center"
-                    style={{ pointerEvents: "none" }}
+            {/* 페이지 인디케이터 및 정보 보기 버튼 - 상단 레이어로 항상 표시하여 토글 기능 제공 */}
+            <div
+                className="absolute bottom-8 right-8 z-[60] flex flex-col items-end gap-3"
+                style={{ pointerEvents: "none" }}
+            >
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setShowCaption(!showCaption);
+                    }}
+                    style={{
+                        pointerEvents: "auto",
+                        background: theme === "black" ? "rgba(255, 255, 255, 0.15)" : "rgba(255, 255, 255, 0.85)",
+                        backdropFilter: "blur(12px)",
+                        WebkitBackdropFilter: "blur(12px)",
+                        border: `1px solid ${theme === "black" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.1)"}`,
+                        borderRadius: "20px",
+                        padding: "10px 22px",
+                        color: titleColor,
+                        fontSize: "14px",
+                        fontWeight: 600,
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                        transition: "all 0.3s ease",
+                    }}
                 >
+                    {showCaption ? "정보 닫기" : "작품 정보 보기"}
+                </button>
+
+                {!showCaption && (
                     <span
                         style={{
-                            fontFamily: "'Noto Sans KR', sans-serif",
-                            fontSize: "13px",
+                            fontSize: "12px",
                             fontWeight: 500,
-                            color: theme === "black" ? "#666" : "#aaa",
+                            color: theme === "black" ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.3)",
+                            paddingRight: "10px"
                         }}
                     >
                         {currentIndex + 1} / {artworks.length}
                     </span>
-                </div>
-            )}
+                )}
+            </div>
 
-            {/* 이전/다음 버튼 (데스크톱) */}
+            {/* 이전/다음 버튼 (데스크톱 전용) */}
             {currentIndex > 0 && !showCaption && (
                 <button
                     onClick={goToPrev}
@@ -390,198 +415,111 @@ export default function ArtworkViewer({
                 </button>
             )}
 
-            {/* 미술관 캡션 - 하단에서 슬라이드 업 (블러 효과) */}
+            {/* 작품 정보 창 - 하단 오버레이로 원상 복구 */}
             <div
                 ref={captionRef}
-                onTouchStart={handleCaptionTouchStart}
-                onTouchEnd={handleCaptionTouchEnd}
-                onClick={handleCaptionClick}
                 style={{
                     position: "absolute",
                     bottom: 0,
                     left: 0,
                     right: 0,
                     zIndex: 45,
-                    background: theme === "black"
-                        ? "rgba(20, 20, 20, 0.75)"
-                        : "rgba(255, 255, 255, 0.75)",
-                    backdropFilter: "blur(10px)",
-                    WebkitBackdropFilter: "blur(10px)",
-                    borderTopLeftRadius: "16px",
-                    borderTopRightRadius: "16px",
-                    boxShadow: "0 -8px 30px rgba(0,0,0,0.15)",
-                    padding: "24px 24px 32px 24px",
+                    background: theme === "black" ? "rgba(20, 20, 20, 0.9)" : "rgba(255, 255, 255, 0.9)",
+                    backdropFilter: "blur(12px)",
+                    WebkitBackdropFilter: "blur(12px)",
+                    borderTopLeftRadius: "24px",
+                    borderTopRightRadius: "24px",
+                    padding: "32px 24px 40px 24px",
                     maxHeight: "60vh",
                     overflowY: "auto",
+                    transition: "transform 0.4s ease-out, opacity 0.3s ease",
                     transform: showCaption ? "translateY(0)" : "translateY(100%)",
-                    transition: "transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
+                    opacity: showCaption ? 1 : 0,
+                    pointerEvents: showCaption ? "auto" : "none",
                 }}
             >
-                {/* 드래그 핸들 */}
-                <div
-                    style={{
-                        width: "40px",
-                        height: "4px",
-                        background: theme === "black" ? "#555" : "#d0d0d0",
-                        borderRadius: "2px",
-                        margin: "0 auto 20px auto",
-                    }}
-                />
-
-                {/* 작품명 */}
-                <h2
-                    style={{
-                        fontFamily: "'Noto Sans KR', serif",
-                        fontSize: "24px",
-                        fontWeight: 600,
-                        color: titleColor,
-                        marginBottom: "16px",
-                        lineHeight: 1.3,
-                        letterSpacing: "-0.02em",
-                    }}
-                >
-                    {currentArtwork.title}
-                </h2>
-
-                {/* 작품 정보 - 미술관 캡션 형식 */}
-                <div
-                    style={{
-                        fontFamily: "'Noto Sans KR', sans-serif",
-                        fontSize: "15px",
-                        fontWeight: 400,
-                        color: infoColor,
-                        lineHeight: 1.8,
-                    }}
-                >
-                    <p style={{ marginBottom: "4px" }}>
-                        {currentArtwork.medium}
-                    </p>
-                    <p style={{ marginBottom: "4px", color: secondaryColor }}>
-                        {currentArtwork.dimensions}
-                    </p>
-                    <p style={{ marginBottom: "12px", color: secondaryColor }}>
-                        {currentArtwork.year}
-                    </p>
-
-
-                    {/* 가격 */}
-                    {showPrice && currentArtwork.price && (() => {
-                        const priceNum = parseInt(currentArtwork.price.replace(/[^\d]/g, ''));
-                        const usdPrice = convertKRWtoUSD(priceNum, exchangeRate);
-                        return (
-                            <div style={{ marginBottom: "12px" }}>
-                                <p style={{
-                                    color: "#8B7355",
-                                    fontWeight: 600,
-                                    fontSize: "17px",
-                                }}>
-                                    ₩{priceNum.toLocaleString()}
-                                </p>
-                                <p style={{
-                                    color: "#9a8a7a",
-                                    fontWeight: 500,
-                                    fontSize: "14px",
-                                    marginTop: "2px",
-                                }}>
-                                    (${usdPrice.toLocaleString()} USD)
-                                </p>
-                            </div>
-                        );
-                    })()}
-
-                    {/* 작가 노트 / 작품 설명 - 200자 제한 */}
-                    {currentArtwork.description && (() => {
-                        const MAX_LENGTH = 200;
-                        const desc = currentArtwork.description;
-                        const isLong = desc.length > MAX_LENGTH;
-                        const displayText = showFullDescription || !isLong
-                            ? desc
-                            : desc.slice(0, MAX_LENGTH) + "...";
-
-                        return (
-                            <div style={{ marginTop: "16px", paddingTop: "16px", borderTop: `1px solid ${theme === "black" ? "#3a3a3a" : "#e8e8e5"}` }}>
-                                <p style={{
-                                    color: infoColor,
-                                    fontSize: "15px",
-                                    fontWeight: 400,
-                                    lineHeight: 1.9,
-                                }}>
-                                    {displayText}
-                                </p>
-                                {isLong && (
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setShowFullDescription(!showFullDescription);
-                                        }}
-                                        style={{
-                                            marginTop: "12px",
-                                            padding: "8px 16px",
-                                            background: "transparent",
-                                            border: `1px solid ${theme === "black" ? "#555" : "#d0d0d0"}`,
-                                            borderRadius: "6px",
-                                            color: secondaryColor,
-                                            fontSize: "14px",
-                                            fontWeight: 500,
-                                            cursor: "pointer",
-                                            fontFamily: "'Noto Sans KR', sans-serif",
-                                        }}
-                                    >
-                                        {showFullDescription ? "접기" : "더 보기"}
-                                    </button>
-                                )}
-                            </div>
-                        );
-                    })()}
-                </div>
-
-                {/* 하단 액션 버튼 */}
-                <div
-                    style={{
-                        marginTop: "24px",
-                        paddingTop: "20px",
-                        borderTop: `1px solid ${theme === "black" ? "#3a3a3a" : "#e8e8e5"}`,
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                    }}
-                >
-                    <span
+                <div onClick={(e) => e.stopPropagation()}>
+                    {/* 드래그 핸들 (모바일/데스크톱 공통) */}
+                    <div
                         style={{
-                            fontFamily: "'Noto Sans KR', sans-serif",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                            color: secondaryColor,
+                            width: "40px",
+                            height: "4px",
+                            background: theme === "black" ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.1)",
+                            borderRadius: "2px",
+                            margin: "0 auto 24px auto",
                         }}
-                    >
-                        {currentIndex + 1} / {artworks.length}
-                    </span>
+                    />
 
-                    {isLoggedIn && (
-                        <button
-                            onClick={() => setShowDeleteConfirm(true)}
+                    {/* 작품 정보 */}
+                    <div style={{ maxWidth: "600px", margin: "0 auto" }}>
+                        <h2
                             style={{
-                                padding: "10px 18px",
-                                background: "transparent",
-                                border: `1px solid rgba(200, 50, 50, 0.4)`,
-                                borderRadius: "8px",
-                                color: "#c83232",
-                                fontFamily: "'Noto Sans KR', sans-serif",
-                                fontSize: "14px",
-                                fontWeight: 500,
-                                cursor: "pointer",
+                                fontSize: "22px",
+                                fontWeight: 700,
+                                color: titleColor,
+                                marginBottom: "12px",
                             }}
                         >
-                            삭제
-                        </button>
-                    )}
+                            {currentArtwork.title}
+                        </h2>
+
+                        <div
+                            style={{
+                                fontSize: "15px",
+                                color: infoColor,
+                                lineHeight: 1.6,
+                            }}
+                        >
+                            <p style={{ marginBottom: "4px" }}>{currentArtwork.medium}</p>
+                            <p style={{ marginBottom: "4px", opacity: 0.7 }}>{currentArtwork.dimensions}</p>
+                            <p style={{ marginBottom: "16px", opacity: 0.7 }}>{currentArtwork.year}</p>
+
+                            {/* 가격 정보 */}
+                            {showPrice && currentArtwork.price && (() => {
+                                const priceNum = parseInt(currentArtwork.price.replace(/[^\d]/g, ''));
+                                const usdPrice = convertKRWtoUSD(priceNum, exchangeRate);
+                                return (
+                                    <div style={{ marginBottom: "16px", fontWeight: 600 }}>
+                                        <p style={{ color: "#8B7355" }}>{priceNum.toLocaleString()} KRW</p>
+                                        <p style={{ fontSize: "13px", opacity: 0.6 }}>({usdPrice.toLocaleString()} USD)</p>
+                                    </div>
+                                );
+                            })()}
+
+                            {/* 상세 설명 */}
+                            {currentArtwork.description && (
+                                <div style={{ marginTop: "16px", paddingTop: "16px", borderTop: `1px solid ${theme === "black" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)"}` }}>
+                                    <p style={{ whiteSpace: "pre-wrap", opacity: 0.9 }}>{currentArtwork.description}</p>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* 삭제 버튼 (로그인 시) */}
+                        {isLoggedIn && (
+                            <div style={{ marginTop: "32px", display: "flex", justifyContent: "flex-end" }}>
+                                <button
+                                    onClick={() => setShowDeleteConfirm(true)}
+                                    style={{
+                                        color: "#dc2626",
+                                        fontSize: "14px",
+                                        fontWeight: 500,
+                                        background: "transparent",
+                                        border: "none",
+                                        cursor: "pointer",
+                                    }}
+                                >
+                                    작품 삭제
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 
             {/* 삭제 확인 모달 */}
             {showDeleteConfirm && (
                 <div
-                    className="absolute inset-0 z-60 flex items-center justify-center"
+                    className="absolute inset-0 z-[100] flex items-center justify-center p-6"
                     style={{ background: "rgba(0,0,0,0.85)" }}
                 >
                     <div
@@ -589,32 +527,15 @@ export default function ArtworkViewer({
                             background: "#fff",
                             borderRadius: "16px",
                             maxWidth: "360px",
-                            margin: "0 24px",
+                            width: "100%",
                             padding: "32px 28px",
                             textAlign: "center",
                         }}
                     >
-                        <p
-                            style={{
-                                fontFamily: "'Noto Sans KR', sans-serif",
-                                fontSize: "20px",
-                                fontWeight: 600,
-                                color: "#1a1a1a",
-                                marginBottom: "12px",
-                            }}
-                        >
+                        <p style={{ fontSize: "20px", fontWeight: 600, color: "#1a1a1a", marginBottom: "12px" }}>
                             작품을 삭제할까요?
                         </p>
-                        <p
-                            style={{
-                                fontFamily: "'Noto Sans KR', sans-serif",
-                                fontSize: "15px",
-                                fontWeight: 400,
-                                color: "#666",
-                                marginBottom: "28px",
-                                lineHeight: 1.5,
-                            }}
-                        >
+                        <p style={{ fontSize: "15px", color: "#666", marginBottom: "28px", lineHeight: 1.5 }}>
                             "{currentArtwork.title}"을(를) 삭제하면<br />복구할 수 없습니다.
                         </p>
 
@@ -625,14 +546,10 @@ export default function ArtworkViewer({
                                 style={{
                                     flex: 1,
                                     height: "52px",
-                                    fontFamily: "'Noto Sans KR', sans-serif",
-                                    fontSize: "16px",
-                                    fontWeight: 500,
-                                    color: "#333",
                                     background: "#f3f4f6",
                                     border: "none",
                                     borderRadius: "10px",
-                                    cursor: isDeleting ? "not-allowed" : "pointer",
+                                    cursor: "pointer",
                                 }}
                             >
                                 취소
@@ -643,15 +560,11 @@ export default function ArtworkViewer({
                                 style={{
                                     flex: 1,
                                     height: "52px",
-                                    fontFamily: "'Noto Sans KR', sans-serif",
-                                    fontSize: "16px",
-                                    fontWeight: 600,
                                     background: "#dc2626",
                                     color: "white",
                                     border: "none",
                                     borderRadius: "10px",
-                                    cursor: isDeleting ? "not-allowed" : "pointer",
-                                    opacity: isDeleting ? 0.7 : 1,
+                                    cursor: "pointer",
                                 }}
                             >
                                 {isDeleting ? "삭제 중..." : "삭제"}
@@ -663,3 +576,4 @@ export default function ArtworkViewer({
         </div>
     );
 }
+

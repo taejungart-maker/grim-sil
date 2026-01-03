@@ -7,7 +7,7 @@ const VIP_ID = "vip-gallery-05";
 export async function generateMetadata() {
     try {
         const settings = await loadSettingsById(VIP_ID);
-        const title = settings.siteTitle || `${settings.artistName} 작가님의 온라인 화첩 [VIP]`;
+        const title = settings.siteTitle || `${settings.artistName} 작가님의 온라인 Gallery [VIP]`;
         const description = settings.siteDescription || `${settings.artistName} 작가의 작품세계를 담은 공간입니다.`;
 
         const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ||
@@ -30,7 +30,7 @@ export async function generateMetadata() {
                 title,
                 description,
                 url: `${baseUrl}/gallery-vip-05`,
-                siteName: `${settings.artistName} 작가님의 온라인 화첩`,
+                siteName: `${settings.artistName} 작가님의 온라인 Gallery`,
                 images: [
                     {
                         url: finalImageUrl,
@@ -51,7 +51,7 @@ export async function generateMetadata() {
         };
     } catch (error) {
         return {
-            title: "VIP 온라인 화첩",
+            title: "VIP 온라인 Gallery",
             description: "작가님의 작품세계를 담은 VIP 공간입니다.",
         };
     }

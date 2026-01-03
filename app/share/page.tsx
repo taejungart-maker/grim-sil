@@ -35,8 +35,8 @@ export default function SharePage() {
         },
         {
             icon: "🪪",
-            title: "작가 프로필 카드",
-            description: "멋진 디지털 명함을 만들어 공유하세요",
+            title: "초대장 만들기",
+            description: "전시 소식을 담은 예쁜 초대장을 만들어 공유하세요",
             href: "/share/profile",
             color: "#9c27b0",
         },

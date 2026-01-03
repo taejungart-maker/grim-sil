@@ -15,10 +15,10 @@ export const defaultSiteConfig = {
     artistName: "작가님",
 
     // 사이트 타이틀 (브라우저 탭에 표시)
-    siteTitle: "작가님의 온라인 화첩",
+    siteTitle: "작가님의 온라인 Gallery",
 
     // 사이트 설명 (SEO용)
-    siteDescription: "작가님의 작품세계를 담은 온라인 화첩입니다.",
+    siteDescription: "작가님의 작품세계를 담은 온라인 Gallery입니다.",
 
     // 테마 색상: "white" 또는 "black"
     theme: "white" as "white" | "black",
@@ -42,8 +42,14 @@ export const defaultSiteConfig = {
     aboutmeHistory: "" as string,
     aboutmeImage: "" as string,
 
-    // 동료 작가 추천 (Artist's Pick)
-    artistPicks: [] as { name: string; archiveUrl: string; imageUrl?: string }[],
+    // 동행 작가 추천 (Artist's Pick)
+    artistPicks: [
+        {
+            name: "문혜경 작가",
+            archiveUrl: "http://localhost:3000/gallery-vip-02",
+            imageUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop"
+        }
+    ] as { name: string; archiveUrl: string; imageUrl?: string }[],
 
     // 실시간 뉴스 문구
     newsText: "🎨 작가님의 새로운 소식과 전시 일정을 전해드립니다. 방문해 주신 모든 분들을 환영합니다. ✨" as string,

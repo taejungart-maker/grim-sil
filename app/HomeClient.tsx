@@ -137,7 +137,7 @@ export default function HomeClient({ injectedArtistId }: HomeClientProps) {
                 </div>
 
                 {settings.showArtistNote && <EncouragementSection theme={settings.theme} />}
-                <ArtistPicksSection theme={settings.theme} picks={settings.artistPicks} />
+                <ArtistPicksSection theme={settings.theme} picks={settings.artistPicks} isAuthenticated={isLoggedIn} />
             </main>
 
             {/* 나도 갤러리 만들기 CTA */}
@@ -167,7 +167,7 @@ export default function HomeClient({ injectedArtistId }: HomeClientProps) {
                 onClose={() => setShowShareModal(false)}
                 shareUrl={typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.host}${window.location.pathname}?artist=${injectedArtistId}&v=${settings.updatedAt ? new Date(settings.updatedAt).getTime() : Date.now()}` : ""}
                 title={`${settings.galleryNameKo} 초대`}
-                description={`${settings.artistName} 작가님의 온라인 화첩에 초대합니다.`}
+                description={`${settings.artistName} 작가님의 온라인 Gallery에 초대합니다.`}
                 theme={settings.theme}
             />
 

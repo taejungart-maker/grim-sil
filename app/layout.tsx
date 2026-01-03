@@ -17,7 +17,7 @@ export async function generateMetadata() {
 
     const settings = await loadSettingsById(artistId);
 
-    const title = settings.siteTitle || `${settings.artistName} 작가님의 온라인 화첩`;
+    const title = settings.siteTitle || `${settings.artistName} 작가님의 온라인 Gallery`;
     const description = settings.siteDescription || `${settings.artistName} 작가의 작품세계를 담은 공간입니다.`;
 
     const { headers } = require('next/headers');
@@ -62,7 +62,7 @@ export async function generateMetadata() {
     console.error("Metadata generation failed [CRITICAL]:", error);
     // [V11_SECURITY] 식별 실패 시 빈 객체나 최소한의 정보만 반환하여 데이터 혼입 차단
     return {
-      title: "작가 온라인 화첩",
+      title: "작가 온라인 Gallery",
       description: "로딩 중이거나 접근이 거부되었습니다."
     };
   }

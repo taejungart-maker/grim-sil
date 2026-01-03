@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { getYearMonths, getGroupedArtworksByYearMonth, Artwork, YearMonthKey, createYearMonthKey } from "../data/artworks";
+import { getYearMonths, getArtworksByYearMonth, Artwork, YearMonthKey, createYearMonthKey } from "../data/artworks";
 import { loadDemoDataIfEmpty } from "../utils/demoData";
 import { useSyncedArtworks, useSyncedSettings } from "../hooks/useSyncedArtworks";
 import { useAuth } from "../contexts/AuthContext";
@@ -60,6 +60,8 @@ export default function VIPPageClient({ VIP_ID, isAlwaysFree = false }: VIPPageC
         isOpen: false,
         policyId: "terms"
     });
+    const [isRecommending, setIsRecommending] = useState(false);
+    const [isRecommended, setIsRecommended] = useState(false);
 
     const [isMounted, setIsMounted] = useState(false);
 
@@ -106,7 +108,7 @@ export default function VIPPageClient({ VIP_ID, isAlwaysFree = false }: VIPPageC
         if (navigator.share) {
             try {
                 await navigator.share({
-                    title: `[VIP] ${settings.artistName} 작가님의 온라인 화첩`,
+                    title: `[VIP] ${settings.artistName} 작가님의 온라인 Gallery`,
                     text: '프리미엄 구독 전용 공간입니다.',
                     url: url,
                 });
@@ -126,11 +128,49 @@ export default function VIPPageClient({ VIP_ID, isAlwaysFree = false }: VIPPageC
         });
     };
 
+    const handleRecommendArtist = async () => {
+        if (isRecommending || isRecommended) return;
+
+        setIsRecommending(true);
+        try {
+            const response = await fetch('/api/add-artist-pick', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    artistName: settings.artistName,
+                    artistUrl: typeof window !== 'undefined' ? window.location.href : '',
+                    imageUrl: settings.aboutmeImage || undefined
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setIsRecommended(true);
+                alert(`${settings.artistName} 작가님을 내 갤러리에 추천했습니다!`);
+            } else if (response.status === 409) {
+                setIsRecommended(true);
+                alert('이미 추천한 작가입니다.');
+            } else if (response.status === 401) {
+                alert('로그인이 필요합니다.');
+            } else {
+                alert('추천에 실패했습니다. 다시 시도해 주세요.');
+            }
+        } catch (error) {
+            console.error('Recommendation error:', error);
+            alert('네트워크 오류가 발생했습니다.');
+        } finally {
+            setIsRecommending(false);
+        }
+    };
+
     const isLoading = artworksLoading || settingsLoading;
     const yearMonths = getYearMonths(artworks);
 
     // Group artworks by year/month
-    const groupedArtworks = useMemo(() => getGroupedArtworksByYearMonth(artworks), [artworks]);
+    const groupedArtworks = useMemo(() => getArtworksByYearMonth(artworks), [artworks]);
     const currentYearMonthArtworks = selectedYearMonth ? (groupedArtworks.get(selectedYearMonth) || []) : [];
 
     // [디자인 복구] 작품 순서 랜덤 셔플 로직
@@ -173,6 +213,37 @@ export default function VIPPageClient({ VIP_ID, isAlwaysFree = false }: VIPPageC
             />
 
             {/* [PG_SCREENING_FIX] 상단 배너 제거 (Header의 '구독버튼'으로 일원화하여 콘텐츠 가시성 확보) */}
+
+            {/* 동행 작가 추천 버튼 (로그인 시에만 표시) */}
+            {isLoggedIn && !policyModal.isOpen && (
+                <div
+                    style={{
+                        padding: "12px 24px",
+                        textAlign: "center",
+                        borderBottom: `1px solid ${borderColor}`,
+                        background: bgColor
+                    }}
+                >
+                    <button
+                        onClick={handleRecommendArtist}
+                        disabled={isRecommending || isRecommended}
+                        style={{
+                            padding: "10px 24px",
+                            borderRadius: "24px",
+                            border: isRecommended ? `2px solid ${SIGNATURE_COLORS.sandGray}` : `2px solid ${SIGNATURE_COLORS.royalIndigo}`,
+                            background: isRecommended ? "transparent" : SIGNATURE_COLORS.royalIndigo,
+                            color: isRecommended ? SIGNATURE_COLORS.sandGray : "#fff",
+                            fontSize: "14px",
+                            fontWeight: 600,
+                            cursor: isRecommending || isRecommended ? "not-allowed" : "pointer",
+                            transition: "all 0.2s ease",
+                            opacity: isRecommending || isRecommended ? 0.6 : 1,
+                        }}
+                    >
+                        {isRecommending ? "추천 중..." : isRecommended ? "✓ 추천 완료" : "⭐ 동행 작가로 추천하기"}
+                    </button>
+                </div>
+            )}
 
             <PaymentGate forcedMode={isAlwaysFree ? "always_free" : "commercial"}>
 
@@ -274,7 +345,7 @@ export default function VIPPageClient({ VIP_ID, isAlwaysFree = false }: VIPPageC
                         fontFamily: "'Noto Sans KR', sans-serif",
                     }}
                 >
-                    작가님만의 온라인 화첩을 만들어보세요
+                    작가님만의 온라인 Gallery를 만들어보세요
                 </p>
 
                 {/* 사업자 정보 및 정책 (PG 심사 필수) */}
@@ -427,7 +498,7 @@ export default function VIPPageClient({ VIP_ID, isAlwaysFree = false }: VIPPageC
                 isOpen={showShareModal}
                 onClose={() => setShowShareModal(false)}
                 shareUrl={typeof window !== 'undefined' ? window.location.href : ''}
-                title={`[VIP] ${settings.artistName} 작가님의 온라인 화첩`}
+                title={`[VIP] ${settings.artistName} 작가님의 온라인 Gallery`}
                 description={`프리미엄 구독 전용 공간입니다.`}
                 theme={settings.theme}
             />

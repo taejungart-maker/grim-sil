@@ -293,7 +293,7 @@ export default function ApplyPage() {
                             type="text"
                             value={galleryName}
                             onChange={(e) => setGalleryName(e.target.value)}
-                            placeholder="예: 길동이의 화첩"
+                            placeholder="예: 길동이의 Gallery"
                             style={{
                                 width: "100%",
                                 padding: "14px 16px",

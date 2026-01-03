@@ -159,33 +159,6 @@ export default function AboutPage() {
                         </p>
                     </div>
 
-                    {/* 작가노트 */}
-                    {settings.showArtistNote && settings.aboutmeNote && (
-                        <section>
-                            <h2 style={{
-                                fontSize: "14px",
-                                fontWeight: 600,
-                                letterSpacing: "0.2em",
-                                color: mutedColor,
-                                marginBottom: "32px",
-                                textAlign: "center",
-                                borderBottom: `1px solid ${borderColor}`,
-                                paddingBottom: "12px"
-                            }}>
-                                ARTIST NOTE
-                            </h2>
-                            <div style={{
-                                fontSize: "17px",
-                                lineHeight: "2.2",
-                                whiteSpace: "pre-wrap",
-                                textAlign: "justify",
-                                wordBreak: "keep-all"
-                            }}>
-                                {settings.aboutmeNote}
-                            </div>
-                        </section>
-                    )}
-
                     {/* 평론 */}
                     {settings.showCritique && settings.aboutmeCritique && (
                         <section>
@@ -209,6 +182,33 @@ export default function AboutPage() {
                                 wordBreak: "keep-all"
                             }}>
                                 {settings.aboutmeCritique}
+                            </div>
+                        </section>
+                    )}
+
+                    {/* 작가노트 */}
+                    {settings.showArtistNote && settings.aboutmeNote && (
+                        <section>
+                            <h2 style={{
+                                fontSize: "14px",
+                                fontWeight: 600,
+                                letterSpacing: "0.2em",
+                                color: mutedColor,
+                                marginBottom: "32px",
+                                textAlign: "center",
+                                borderBottom: `1px solid ${borderColor}`,
+                                paddingBottom: "12px"
+                            }}>
+                                ARTIST NOTE
+                            </h2>
+                            <div style={{
+                                fontSize: "17px",
+                                lineHeight: "2.2",
+                                whiteSpace: "pre-wrap",
+                                textAlign: "justify",
+                                wordBreak: "keep-all"
+                            }}>
+                                {settings.aboutmeNote}
                             </div>
                         </section>
                     )}
