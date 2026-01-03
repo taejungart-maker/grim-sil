@@ -345,8 +345,8 @@ export default function AdminClient({ injectedArtistId }: AdminClientProps) {
                                     className="w-full p-3 md:p-4 border-2 rounded-xl bg-transparent font-serif text-sm md:text-base"
                                     style={{ borderColor }}
                                     rows={6}
-                                    value={settings.history}
-                                    onChange={e => setSettings({ ...settings, history: e.target.value })}
+                                    value={settings.aboutmeHistory}
+                                    onChange={e => setSettings({ ...settings, aboutmeHistory: e.target.value })}
                                     placeholder="작가 프로필 (학력, 경력, 수상 이력 등)을 입력하세요."
                                 />
                             </div>
