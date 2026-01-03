@@ -161,18 +161,26 @@ function HomeContent() {
       url: typeof window !== 'undefined' ? window.location.origin : ''
     };
 
+    console.log('=== Share Debug ===');
+    console.log('navigator.share 존재?', !!navigator.share);
+    console.log('shareData:', shareData);
+
     if (navigator.share) {
       try {
+        console.log('navigator.share() 호출 시도...');
         await navigator.share(shareData);
+        console.log('공유 성공!');
       } catch (err: any) {
+        console.log('공유 에러:', err.name, err.message);
         // 사용자가 취소한 경우는 조용히 무시
         if (err.name !== 'AbortError') {
-          console.log('Share failed:', err);
+          console.log('Fallback으로 전환');
           // 실패 시 클립보드 복사
           fallbackCopyToClipboard(shareData);
         }
       }
     } else {
+      console.log('navigator.share 미지원 - 즉시 fallback');
       // 네이티브 공유 미지원 시 클립보드 복사
       fallbackCopyToClipboard(shareData);
     }
