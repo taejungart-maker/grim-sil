@@ -59,24 +59,8 @@ function HomeContent() {
   const [quickAdded, setQuickAdded] = useState(false);
   const [showQuickAdd, setShowQuickAdd] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showChromeGuide, setShowChromeGuide] = useState(false);
 
   const [isMounted, setIsMounted] = useState(false);
-
-  // 카카오톡 인앱 브라우저 감지
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const userAgent = navigator.userAgent || '';
-      const isKakaoTalk = /KAKAOTALK/i.test(userAgent);
-      if (isKakaoTalk) {
-        // 한번만 표시 (세션 스토리지 사용)
-        const hasSeenGuide = sessionStorage.getItem('chrome_guide_seen');
-        if (!hasSeenGuide) {
-          setTimeout(() => setShowChromeGuide(true), 2000); // 2초 후 표시
-        }
-      }
-    }
-  }, []);
 
   useEffect(() => {
     setIsMounted(true);
@@ -603,113 +587,6 @@ function HomeContent() {
         description={`${settings.artistName} 작가의 작품세계를 담은 공간입니다.`}
         theme={settings.theme}
       />
-
-      {/* Chrome 브라우저 안내 (카톡 인앱용) */}
-      {showChromeGuide && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 10000,
-            padding: '20px',
-          }}
-          onClick={() => {
-            setShowChromeGuide(false);
-            sessionStorage.setItem('chrome_guide_seen', 'true');
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: '#fff',
-              borderRadius: '24px',
-              padding: '32px 24px',
-              maxWidth: '400px',
-              width: '100%',
-              boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* 아이콘 */}
-            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-              <div style={{
-                width: '80px',
-                height: '80px',
-                margin: '0 auto',
-                backgroundColor: '#f0f9ff',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '40px',
-              }}>
-                💡
-              </div>
-            </div>
-
-            {/* 제목 */}
-            <h3 style={{
-              fontSize: '22px',
-              fontWeight: 800,
-              color: '#1a1a1a',
-              textAlign: 'center',
-              marginBottom: '16px',
-              lineHeight: 1.3,
-            }}>
-              더 편하게 공유하세요!
-            </h3>
-
-            {/* 설명 */}
-            <p style={{
-              fontSize: '16px',
-              color: '#666',
-              textAlign: 'center',
-              lineHeight: 1.6,
-              marginBottom: '24px',
-            }}>
-              Chrome 브라우저에서 열면<br />
-              <strong style={{ color: '#1a1a1a' }}>버튼 하나로 간편하게 공유</strong>할 수 있어요
-            </p>
-
-            {/* 버튼 */}
-            <button
-              onClick={() => {
-                setShowChromeGuide(false);
-                sessionStorage.setItem('chrome_guide_seen', 'true');
-              }}
-              style={{
-                width: '100%',
-                padding: '18px',
-                backgroundColor: '#4285f4',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '12px',
-                fontSize: '17px',
-                fontWeight: 700,
-                cursor: 'pointer',
-                marginBottom: '12px',
-              }}
-            >
-              알겠어요
-            </button>
-
-            <p style={{
-              fontSize: '13px',
-              color: '#999',
-              textAlign: 'center',
-              margin: 0,
-            }}>
-              우측 상단 ⋮ 메뉴에서<br />"Chrome에서 열기"를 선택하세요
-            </p>
-          </div>
-        </div>
-      )}
     </div >
   );
 }
