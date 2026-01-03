@@ -105,10 +105,10 @@ export default function ProfileCardPage() {
             // 가운데 작품만 20px 아래로
             const y = i === 1 ? topY + 20 : topY;
 
-            // 은은한 그림자
-            ctx.shadowColor = "rgba(0, 0, 0, 0.12)";
-            ctx.shadowBlur = 15;
-            ctx.shadowOffsetY = 8;
+            // 부드럽게 바닥에 밀착된 그림자 (Guardian's precision)
+            ctx.shadowColor = "rgba(0, 0, 0, 0.08)";
+            ctx.shadowBlur = 12;
+            ctx.shadowOffsetY = 5;
 
             ctx.drawImage(img, x, y, imgWidth, imgHeight);
 
@@ -118,14 +118,16 @@ export default function ProfileCardPage() {
             ctx.shadowOffsetY = 0;
         }
 
-        let yPos = topY + imgHeight + 80;
+        // 작품과 타이틀 사이 충분한 여백 (100px+)
+        let yPos = 630;
 
-        // === 2. 갤러리명 (Serif + 자간) ===
+        // === 2. 갤러리명 (작가님 GALLERY - 명품 브랜딩) ===
         ctx.font = "400 42px 'Playfair Display', 'Noto Serif KR', serif";
         ctx.fillStyle = "#B5924F"; // 뮤트 골드
-        ctx.letterSpacing = "0.15em";
+        ctx.letterSpacing = "10px"; // 명품 브랜드 자간
         ctx.textAlign = "center";
-        ctx.fillText(settings.galleryNameEn || settings.galleryNameKo, canvas.width / 2, yPos);
+        const galleryTitle = `${settings.artistName.toUpperCase()} GALLERY`;
+        ctx.fillText(galleryTitle, canvas.width / 2, yPos);
         yPos += 60;
 
         // === 3. 작가명 (딥 차콜) ===
@@ -143,21 +145,24 @@ export default function ProfileCardPage() {
             ctx.fillText(exhibitionTitle, canvas.width / 2, yPos);
             yPos += 60;
 
-            // 날짜
+            // 날짜 (고딕체 - 깔끔함)
             if (exhibitionDate) {
                 ctx.font = "400 32px 'Noto Sans KR', sans-serif";
                 ctx.fillStyle = "#5a5a5a";
+                ctx.letterSpacing = "0px"; // 고딕은 자간 정상
                 ctx.fillText(exhibitionDate, canvas.width / 2, yPos);
                 yPos += 50;
             }
 
-            // 장소
+            // 장소 (고딕체)
             if (exhibitionPlace) {
+                ctx.font = "500 32px 'Noto Sans KR', sans-serif";
+                ctx.fillStyle = "#4a4a4a";
                 ctx.fillText(exhibitionPlace, canvas.width / 2, yPos);
                 yPos += 50;
             }
 
-            // 상세 주소
+            // 상세 주소 (어르신 가독성 - 고딕체)
             if (exhibitionAddress) {
                 ctx.font = "400 28px 'Noto Sans KR', sans-serif";
                 ctx.fillStyle = "#7a7a7a";
