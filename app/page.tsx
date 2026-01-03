@@ -1,6 +1,8 @@
 "use client";
-// [DESIGN_LOCKED_DEC25] Restored approved December 25th grid pattern
-// Timestamp: 2026-01-03 15:58:00 (KST) - Fixed pattern: 0th=2x2, 5th=1x2, 6th=2x1, 7th=1x2
+// ⚠️⚠️⚠️ [DESIGN_LOCKED_DEC25] 12월 25일 승인된 디자인 - 절대 변경 금지 ⚠️⚠️⚠️
+// 이 파일의 그리드 레이아웃은 12월 25일에 최종 승인된 디자인입니다.
+// 변경 시 반드시 사용자 승인 필요! (270-295번 라인 특히 주의)
+// Timestamp: 2026-01-03 17:05:00 (KST) - Fixed pattern: 0th=2x2, 5th=1x2, 6th=2x1, 7th=1x2
 import { useState, useEffect, useMemo, useCallback, Suspense, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -269,6 +271,9 @@ function HomeContent() {
               {currentYearMonthArtworks.map((artwork: Artwork, index: number) => {
                 let gridStyle: React.CSSProperties = {};
 
+                // ⚠️⚠️⚠️ [CRITICAL] 12월 25일 승인된 디자인 패턴 - 절대 수정 금지 ⚠️⚠️⚠️
+                // 이 코드를 변경하면 사용자 승인된 레이아웃이 깨집니다!
+                // 문의: DESIGN_LOCKED.md 파일 참조
                 if (settings.gridColumns >= 3 && currentYearMonthArtworks.length > 1) {
                   // 시네마틱 패턴: 첫 작품 2배 중심으로, 프로모션 작품도
                   if (index === 0) {
