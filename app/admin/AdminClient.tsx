@@ -132,7 +132,10 @@ export default function AdminClient({ injectedArtistId }: AdminClientProps) {
             setSaveSuccess(true);
             setShowCacheModal(true); // 카톡 캐시 모달 자동 표시
             setTimeout(() => setSaveSuccess(false), 3000);
-            if (!vipId) router.push("/");
+
+            // VIP 갤러리가 아닐 때만 리다이렉트 (모달을 보여주기 위해)
+            // 메인 갤러리는 모달이 닫힐 때 리다이렉트 처리
+            // if (!vipId) router.push("/"); // ← 주석 처리: 모달이 즉시 사라지는 문제
         } catch (error) {
             alert("설정 저장 중 오류가 발생했습니다.");
         } finally {
