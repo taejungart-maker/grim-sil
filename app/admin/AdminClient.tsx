@@ -16,6 +16,7 @@ import { SIGNATURE_COLORS } from "../utils/themeColors";
 
 import Link from "next/link";
 import VipManagement from "../components/VipManagement";
+import KakaoCacheModal from "../components/KakaoCacheModal";
 
 interface AdminClientProps {
     injectedArtistId: string;
@@ -37,6 +38,7 @@ export default function AdminClient({ injectedArtistId }: AdminClientProps) {
     const [settings, setSettings] = useState<SiteConfig>(defaultSiteConfig);
     const [isSaving, setIsSaving] = useState(false);
     const [saveSuccess, setSaveSuccess] = useState(false);
+    const [showCacheModal, setShowCacheModal] = useState(false);
 
     // 비밀번호 변경 상태
     const [newPassword, setNewPassword] = useState("");
@@ -128,6 +130,7 @@ export default function AdminClient({ injectedArtistId }: AdminClientProps) {
             setSettings(updatedSettings);
 
             setSaveSuccess(true);
+            setShowCacheModal(true); // 카톡 캐시 모달 자동 표시
             setTimeout(() => setSaveSuccess(false), 3000);
             if (!vipId) router.push("/");
         } catch (error) {
@@ -387,6 +390,13 @@ export default function AdminClient({ injectedArtistId }: AdminClientProps) {
                     </div>
                 </div>
             </main>
+
+            {/* 카카오톡 캐시 모달 */}
+            <KakaoCacheModal
+                isOpen={showCacheModal}
+                onClose={() => setShowCacheModal(false)}
+                siteUrl={typeof window !== 'undefined' ? window.location.origin : ''}
+            />
         </div>
     );
 }
