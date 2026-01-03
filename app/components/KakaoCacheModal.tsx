@@ -22,12 +22,6 @@ export default function KakaoCacheModal({ isOpen, onClose, siteUrl }: KakaoCache
 
     if (!isOpen) return null;
 
-    const handleOpenKakaoCache = () => {
-        // 카카오 캐시 삭제 페이지를 새 창으로 열기
-        const kakaoUrl = `https://developers.kakao.com/tool/clear/og?url=${encodeURIComponent(siteUrl)}`;
-        window.open(kakaoUrl, "_blank", "width=800,height=600");
-    };
-
     return (
         <>
             {/* 배경 오버레이 */}
@@ -54,8 +48,8 @@ export default function KakaoCacheModal({ isOpen, onClose, siteUrl }: KakaoCache
                     transform: "translate(-50%, -50%)",
                     backgroundColor: "#ffffff",
                     borderRadius: "24px",
-                    padding: "40px",
-                    maxWidth: "500px",
+                    padding: "48px",
+                    maxWidth: "480px",
                     width: "90%",
                     zIndex: 9999,
                     boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
@@ -63,111 +57,103 @@ export default function KakaoCacheModal({ isOpen, onClose, siteUrl }: KakaoCache
             >
                 {/* 헤더 */}
                 <div style={{ textAlign: "center", marginBottom: "32px" }}>
-                    <div style={{ fontSize: "48px", marginBottom: "16px" }}>✅</div>
+                    <div style={{ fontSize: "64px", marginBottom: "20px" }}>✅</div>
                     <h2
                         style={{
-                            fontSize: "28px",
+                            fontSize: "32px",
                             fontWeight: "bold",
                             color: "#1a1a1a",
-                            marginBottom: "12px",
+                            marginBottom: "16px",
+                            lineHeight: "1.3",
                         }}
                     >
                         저장 완료!
                     </h2>
                     <p
                         style={{
-                            fontSize: "16px",
+                            fontSize: "18px",
                             color: "#666",
                             lineHeight: "1.6",
+                            marginBottom: "8px",
                         }}
                     >
-                        🖼️ 프로필 사진이 변경되었습니다
+                        프로필 사진이 변경되었습니다
                     </p>
                 </div>
 
                 {/* 메인 안내 */}
                 <div
                     style={{
-                        backgroundColor: "#FFF9E6",
+                        backgroundColor: "#F0F9FF",
                         borderRadius: "16px",
-                        padding: "24px",
-                        marginBottom: "24px",
-                        border: "2px solid #FFE066",
+                        padding: "28px",
+                        marginBottom: "28px",
+                        border: "2px solid #BFDBFE",
                     }}
                 >
                     <p
                         style={{
-                            fontSize: "18px",
+                            fontSize: "20px",
                             fontWeight: "600",
                             color: "#1a1a1a",
                             marginBottom: "16px",
                             textAlign: "center",
+                            lineHeight: "1.5",
                         }}
                     >
-                        카카오톡에서 새 사진을 보려면?
+                        📱 카카오톡에서는
                     </p>
                     <p
                         style={{
-                            fontSize: "14px",
+                            fontSize: "24px",
+                            fontWeight: "bold",
+                            color: "#2563EB",
+                            textAlign: "center",
+                            marginBottom: "12px",
+                        }}
+                    >
+                        24시간 후
+                    </p>
+                    <p
+                        style={{
+                            fontSize: "18px",
                             color: "#666",
                             lineHeight: "1.6",
                             textAlign: "center",
                         }}
                     >
-                        카톡이 이전 이미지를 캐시하고 있어서
-                        <br />
-                        한 번만 캐시를 삭제하면 새 이미지가 바로 보여요!
+                        새 사진이 자동으로 보입니다
                     </p>
                 </div>
 
-                {/* 큰 버튼 */}
-                <button
-                    onClick={handleOpenKakaoCache}
-                    style={{
-                        width: "100%",
-                        padding: "20px",
-                        fontSize: "20px",
-                        fontWeight: "bold",
-                        backgroundColor: "#FFE500",
-                        color: "#000000",
-                        border: "none",
-                        borderRadius: "16px",
-                        cursor: "pointer",
-                        marginBottom: "12px",
-                        transition: "all 0.2s",
-                        boxShadow: "0 4px 12px rgba(255, 229, 0, 0.4)",
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = "translateY(-2px)";
-                        e.currentTarget.style.boxShadow = "0 6px 20px rgba(255, 229, 0, 0.6)";
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = "translateY(0)";
-                        e.currentTarget.style.boxShadow = "0 4px 12px rgba(255, 229, 0, 0.4)";
-                    }}
-                >
-                    📱 카톡 캐시 삭제하기
-                    <br />
-                    <span style={{ fontSize: "14px", fontWeight: "normal", opacity: 0.8 }}>
-                        (10초면 끝!)
-                    </span>
-                </button>
-
-                {/* 나중에 버튼 */}
+                {/* 확인 버튼 */}
                 <button
                     onClick={onClose}
                     style={{
                         width: "100%",
-                        padding: "12px",
-                        fontSize: "14px",
-                        color: "#999",
-                        backgroundColor: "transparent",
+                        padding: "18px",
+                        fontSize: "20px",
+                        fontWeight: "bold",
+                        backgroundColor: "#3B82F6",
+                        color: "#ffffff",
                         border: "none",
+                        borderRadius: "12px",
                         cursor: "pointer",
-                        textDecoration: "underline",
+                        transition: "all 0.2s",
+                        boxShadow: "0 4px 12px rgba(59, 130, 246, 0.3)",
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = "#2563EB";
+                        e.currentTarget.style.transform = "translateY(-2px)";
+                        e.currentTarget.style.boxShadow = "0 6px 20px rgba(59, 130, 246, 0.4)";
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = "#3B82F6";
+                        e.currentTarget.style.transform = "translateY(0)";
+                        e.currentTarget.style.boxShadow = "0 4px 12px rgba(59, 130, 246, 0.3)";
                     }}
                 >
-                    나중에 (24시간 후 자동 반영)
+                    확인
                 </button>
 
                 {/* 안내 메시지 */}
@@ -175,20 +161,19 @@ export default function KakaoCacheModal({ isOpen, onClose, siteUrl }: KakaoCache
                     style={{
                         marginTop: "24px",
                         padding: "16px",
-                        backgroundColor: "#f5f5f5",
+                        backgroundColor: "#F9FAFB",
                         borderRadius: "12px",
-                        fontSize: "13px",
-                        color: "#666",
+                        fontSize: "14px",
+                        color: "#6B7280",
                         lineHeight: "1.6",
+                        textAlign: "center",
                     }}
                 >
-                    <p style={{ marginBottom: "8px", fontWeight: "600", color: "#333" }}>
-                        💡 버튼을 누르면:
+                    <p style={{ margin: "0" }}>
+                        💡 카카오톡이 이미지를 캐시하고 있어
+                        <br />
+                        하루 정도 지나면 자동으로 새 사진이 반영돼요
                     </p>
-                    <p style={{ margin: "4px 0" }}>1️⃣ 새 창이 열립니다</p>
-                    <p style={{ margin: "4px 0" }}>2️⃣ 카카오 로그인 (간편 로그인 가능)</p>
-                    <p style={{ margin: "4px 0" }}>3️⃣ "초기화" 버튼 클릭</p>
-                    <p style={{ margin: "4px 0" }}>4️⃣ 완료! 🎉</p>
                 </div>
             </div>
         </>
