@@ -1,6 +1,6 @@
 "use client";
-// [MASONRY_GRID_CONFIRMED] Deploy verified Masonry layout with user approval
-// Timestamp: 2026-01-02 11:17:00 (KST) - Force rebuild to clear Vercel cache
+// [DESIGN_LOCKED_DEC25] Restored approved December 25th grid pattern
+// Timestamp: 2026-01-03 15:58:00 (KST) - Fixed pattern: 0th=2x2, 5th=1x2, 6th=2x1, 7th=1x2
 import { useState, useEffect, useMemo, useCallback, Suspense, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -268,20 +268,31 @@ function HomeContent() {
             }}>
               {currentYearMonthArtworks.map((artwork: Artwork, index: number) => {
                 let gridStyle: React.CSSProperties = {};
+
                 if (settings.gridColumns >= 3 && currentYearMonthArtworks.length > 1) {
-                  // 랜덤한 Masonry 패턴
-                  const patterns = [
-                    { gridColumn: "span 2", gridRow: "span 3" }, // 2x3
-                    { gridColumn: "span 1", gridRow: "span 3" }, // 1x3
-                    { gridColumn: "span 2", gridRow: "span 2" }, // 2x2
-                    { gridColumn: "span 2", gridRow: "span 1" }, // 2x1
-                    { gridColumn: "span 1", gridRow: "span 2" }, // 1x2
-                    { gridColumn: "span 1", gridRow: "span 1" }, // 1x1
-                    { gridColumn: "span 1", gridRow: "span 1" }, // 1x1
-                  ];
-                  // 작품 ID를 기반으로 일관된 패턴 선택 (새로고침해도 같은 패턴)
-                  const patternIndex = parseInt(artwork.id.slice(-3), 36) % patterns.length;
-                  gridStyle = patterns[patternIndex];
+                  // 시네마틱 패턴: 첫 작품 2배 중심으로, 프로모션 작품도
+                  if (index === 0) {
+                    // 첫 번째 작품: 왼쪽 상단 크게 (2배 차지)
+                    gridStyle = {
+                      gridColumn: "span 2",
+                      gridRow: "span 2",
+                    };
+                  } else if (index === 5) {
+                    // 5번째 작품: 세로로 길게 (2배)
+                    gridStyle = {
+                      gridRow: "span 2",
+                    };
+                  } else if (index === 6) {
+                    // 6번째 작품 (갤러리: 가로로 넓게 (2배)
+                    gridStyle = {
+                      gridColumn: "span 2",
+                    };
+                  } else if (index === 7) {
+                    // 7번째 작품: 세로로 길게 (2배)
+                    gridStyle = {
+                      gridRow: "span 2",
+                    };
+                  }
                 } else if (settings.gridColumns === 1) {
                   gridStyle = { aspectRatio: "16/10" };
                 }
