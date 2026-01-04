@@ -12,6 +12,7 @@ import { ARTIST_ID } from "./utils/supabase";
 import { getThemeColors, SIGNATURE_COLORS } from "./utils/themeColors";
 import type { SiteConfig } from "./config/site";
 import { loadDemoDataIfEmpty } from "./utils/demoData";
+import { getLastCapturedColor } from "./utils/colorExtractor";
 import { useSyncedArtworks, useSyncedSettings } from "./hooks/useSyncedArtworks";
 import { useAuth } from "./contexts/AuthContext";
 import YearMonthTabs from "./components/YearMonthTabs";
@@ -61,12 +62,18 @@ function HomeContent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [isMounted, setIsMounted] = useState(false);
+  const [capturedColor, setCapturedColor] = useState<string | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
     if (typeof window !== 'undefined') {
       if (searchParams.get("showPayment") === "true") {
         setShowPaymentModal(true);
+      }
+      // Visual Continuity: 영감 채집 페이지에서 가져온 색상 로드
+      const lastColor = getLastCapturedColor();
+      if (lastColor) {
+        setCapturedColor(lastColor);
       }
     }
   }, [searchParams]);
@@ -228,7 +235,8 @@ function HomeContent() {
             style={{
               width: "100%",
               padding: "20px",
-              background: quickAdded ? "#22c55e" : (isSubmitting ? "#4a5568" : SIGNATURE_COLORS.antiqueBurgundy),
+              // Visual Continuity: 채집된 색상을 미묘하게 적용 (인사이트 브릿지)
+              background: quickAdded ? "#22c55e" : (isSubmitting ? "#4a5568" : (capturedColor || SIGNATURE_COLORS.antiqueBurgundy)),
               color: "#fff",
               border: "none",
               borderRadius: "50px",
@@ -520,7 +528,8 @@ function HomeContent() {
                 width: "46px",
                 height: "46px",
                 borderRadius: "50%",
-                background: settings.theme === "black" ? "#4f46e5" : SIGNATURE_COLORS.royalIndigo,
+                // Visual Continuity: 채집된 색상을 공유 버튼에 미묘하게 적용
+                background: settings.theme === "black" ? "#4f46e5" : (capturedColor || SIGNATURE_COLORS.royalIndigo),
                 color: "#fff",
                 textDecoration: "none",
                 display: "flex",
