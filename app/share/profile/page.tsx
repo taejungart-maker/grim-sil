@@ -80,8 +80,8 @@ export default function ProfileCardPage() {
         canvas.width = 1200;
         canvas.height = 1500;
 
-        // 아이보리 크림 배경 (레퍼런스 디자인)
-        ctx.fillStyle = "#F8F6F0";
+        // 프리미엄 미색 배경 (디자인 가이드라인)
+        ctx.fillStyle = "#FDFDFB";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         // === 1. 작품 3개 수평 배치 (레퍼런스 스타일) ===
@@ -112,19 +112,19 @@ export default function ProfileCardPage() {
         // 작품과 타이틀 사이 여백 (레퍼런스 분석)
         let yPos = 480;
 
-        // === 2. 갤러리명 (이탤릭, 골드 - 레퍼런스 스타일) ===
+        // === 2. 갤러리명 (이탤릭, Deep Gold - 고대비 표준) ===
         ctx.font = "italic 36px 'Playfair Display', 'Noto Serif KR', serif";
-        ctx.fillStyle = "#C9A961"; // 골드/베이지 (레퍼런스)
-        ctx.letterSpacing = "6px";
+        ctx.fillStyle = "#9A6F00"; // Deep Gold (WCAG 2.1 AA)
+        ctx.letterSpacing = "18px"; // 0.5em ≈ 18px at 36px font
         ctx.textAlign = "center";
         const galleryTitle = `${settings.artistName} GALLERY`;
         ctx.fillText(galleryTitle, canvas.width / 2, yPos);
         yPos += 80;
 
-        // === 3. 작가명 (매우 크고 볼드 - 레퍼런스) ===
-        ctx.font = "700 90px 'Noto Serif KR', serif";
+        // === 3. 작가명 (68px - 절제의 미학) ===
+        ctx.font = "700 68px 'Noto Serif KR', serif";
         ctx.fillStyle = "#2a2a2a";
-        ctx.letterSpacing = "8px";
+        ctx.letterSpacing = "1.36px"; // 0.02em = 68px * 0.02
         ctx.fillText(settings.artistName, canvas.width / 2, yPos);
         yPos += 30;
 
@@ -222,10 +222,10 @@ export default function ProfileCardPage() {
         setIsGenerating(false);
     };
 
-    const bgColor = "#F8F6F0"; // 아이보리 크림 (레퍼런스)
+    const bgColor = "#FDFDFB"; // 프리미엄 미색 (디자인 가이드라인)
     const textColor = "#2a2a2a";
     const cardBg = "#ffffff";
-    const mutedGold = "#C9A961"; // 레퍼런스 골드
+    const deepGold = "#9A6F00"; // Deep Gold (WCAG 2.1 AA 준수)
     const borderColor = "#e8e6e3";
 
     return (
@@ -281,7 +281,7 @@ export default function ProfileCardPage() {
                         fontSize: "14px",
                         fontWeight: 600,
                         letterSpacing: "0.1em",
-                        color: mutedGold,
+                        color: deepGold,
                         marginBottom: "24px",
                     }}>
                         PREVIEW
@@ -340,30 +340,31 @@ export default function ProfileCardPage() {
                             ))}
                         </div>
 
-                        {/* 갤러리명 (이탤릭, 골드 - 레퍼런스) */}
+                        {/* 갤러리명 (이탤릭, Deep Gold - 고대비 표준) */}
                         <p
                             style={{
                                 fontFamily: "'Playfair Display', serif",
                                 fontSize: "16px",
-                                letterSpacing: "3px",
+                                letterSpacing: "0.5em", // 정밀 자간 조정
                                 fontStyle: "italic",
-                                color: mutedGold,
+                                color: deepGold,
                                 marginBottom: "12px",
-                                textAlign: "center", // 중앙 정렬
+                                textAlign: "center",
                             }}
                         >
                             {settings.artistName} GALLERY
                         </p>
 
-                        {/* 작가명 + 언더라인 */}
+                        {/* 작가명 + 언더라인 (68px 비율 유지) */}
                         <div style={{ marginBottom: "24px", textAlign: "center" }}>
                             <h3
                                 style={{
-                                    fontSize: "32px",
+                                    fontSize: "32px", // 68px의 비율 유지 (미리보기용)
                                     fontWeight: 700,
                                     marginBottom: "8px",
                                     color: textColor,
-                                    textAlign: "center", // 중앙 정렬
+                                    letterSpacing: "0.02em", // 정밀 자간 조정
+                                    textAlign: "center",
                                 }}
                             >
                                 {settings.artistName}
@@ -384,7 +385,7 @@ export default function ProfileCardPage() {
                                 {exhibitionDate && <p style={{ fontSize: "13px", color: "#666" }}>{exhibitionDate}</p>}
                                 {exhibitionPlace && <p style={{ fontSize: "13px", color: "#666" }}>{exhibitionPlace}</p>}
                                 {exhibitionAddress && <p style={{ fontSize: "11px", color: "#999" }}>{exhibitionAddress}</p>}
-                                {exhibitionMessage && <p style={{ fontSize: "12px", color: mutedGold, fontStyle: "italic", marginTop: "8px" }}>"{exhibitionMessage}"</p>}
+                                {exhibitionMessage && <p style={{ fontSize: "12px", color: deepGold, fontStyle: "italic", marginTop: "8px" }}>"{exhibitionMessage}"</p>}
                             </div>
                         )}
 
@@ -392,8 +393,8 @@ export default function ProfileCardPage() {
                         <div style={{ textAlign: "center", color: "#888", fontSize: "11px", lineHeight: 1.8 }}>
                             {phone && <p>📞 {phone}</p>}
                             {email && <p>✉️ {email}</p>}
-                            {youtubeHandle && <p style={{ color: mutedGold }}>🎬 {formatHandle(youtubeHandle)}</p>}
-                            {instagramHandle && <p style={{ color: mutedGold }}>📷 {formatHandle(instagramHandle)}</p>}
+                            {youtubeHandle && <p style={{ color: deepGold }}>🎬 {formatHandle(youtubeHandle)}</p>}
+                            {instagramHandle && <p style={{ color: deepGold }}>📷 {formatHandle(instagramHandle)}</p>}
                         </div>
                     </div>
                 </section>
@@ -637,7 +638,7 @@ export default function ProfileCardPage() {
                         padding: "22px",
                         fontSize: "17px",
                         fontWeight: 700,
-                        background: `linear-gradient(135deg, ${mutedGold} 0%, #9d7a3f 100%)`,
+                        background: `linear-gradient(135deg, ${deepGold} 0%, #7a5600 100%)`,
                         color: "#ffffff",
                         border: "none",
                         borderRadius: "12px",
