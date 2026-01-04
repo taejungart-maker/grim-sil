@@ -275,52 +275,49 @@ export default function ProfileCardPage() {
                 className="max-w-2xl mx-auto"
                 style={{ padding: "32px 24px 48px" }}
             >
-                {/* 미리보기 */}
+                {/* 미리보기 - Full-bleed Editorial */}
                 <section style={{ marginBottom: "48px" }}>
                     <p style={{
                         fontSize: "14px",
                         fontWeight: 600,
                         letterSpacing: "0.1em",
                         color: deepGold,
-                        marginBottom: "24px",
+                        marginBottom: "40px",
+                        textAlign: "center",
                     }}>
                         PREVIEW
                     </p>
 
+                    {/* Full-bleed Editorial Layout - 화면 전체 활용 */}
                     <div
                         style={{
-                            maxWidth: "400px",
-                            margin: "0 auto",
-                            borderRadius: "8px",
-                            overflow: "hidden",
-                            background: cardBg,
-                            boxShadow: "0 25px 50px -12px rgba(0,0,0,0.15)",
-                            padding: "40px 32px",
+                            width: "100%",
+                            padding: "60px 24px",
                         }}
                     >
                         {/* Masonry 작품 3개 */}
                         <div
                             style={{
                                 display: "flex",
-                                gap: "10px",
-                                marginBottom: "32px",
+                                gap: "12px",
+                                marginBottom: "48px",
                                 justifyContent: "center",
+                                maxWidth: "600px",
+                                margin: "0 auto 48px",
                             }}
                         >
                             {[0, 1, 2].map((i) => (
                                 <div
                                     key={i}
                                     style={{
-                                        width: "90px",
-                                        height: "90px",
-                                        borderRadius: "4px",
+                                        flex: 1,
+                                        aspectRatio: "3/4",
+                                        borderRadius: "2px",
                                         overflow: "hidden",
                                         background: "#f5f5f5",
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
-                                        marginTop: "0", // 모두 같은 높이 (레퍼런스)
-                                        boxShadow: uploadedArtworks[i] ? "0 4px 12px rgba(0,0,0,0.1)" : "none",
                                     }}
                                 >
                                     {uploadedArtworks[i] ? (
@@ -334,7 +331,7 @@ export default function ProfileCardPage() {
                                             }}
                                         />
                                     ) : (
-                                        <span style={{ fontSize: "24px", color: "#ddd" }}>🖼️</span>
+                                        <span style={{ fontSize: "32px", color: "#ddd" }}>🖼️</span>
                                     )}
                                 </div>
                             ))}
@@ -344,11 +341,11 @@ export default function ProfileCardPage() {
                         <p
                             style={{
                                 fontFamily: "'Playfair Display', serif",
-                                fontSize: "16px",
-                                letterSpacing: "0.5em", // 정밀 자간 조정
+                                fontSize: "18px",
+                                letterSpacing: "0.5em",
                                 fontStyle: "italic",
                                 color: deepGold,
-                                marginBottom: "12px",
+                                marginBottom: "16px",
                                 textAlign: "center",
                             }}
                         >
@@ -356,14 +353,14 @@ export default function ProfileCardPage() {
                         </p>
 
                         {/* 작가명 + 언더라인 (68px 비율 유지) */}
-                        <div style={{ marginBottom: "24px", textAlign: "center" }}>
+                        <div style={{ marginBottom: "32px", textAlign: "center" }}>
                             <h3
                                 style={{
-                                    fontSize: "32px", // 68px의 비율 유지 (미리보기용)
+                                    fontSize: "40px",
                                     fontWeight: 700,
-                                    marginBottom: "8px",
+                                    marginBottom: "12px",
                                     color: textColor,
-                                    letterSpacing: "0.02em", // 정밀 자간 조정
+                                    letterSpacing: "0.02em",
                                     textAlign: "center",
                                 }}
                             >
@@ -371,7 +368,7 @@ export default function ProfileCardPage() {
                             </h3>
                             {/* 언더라인 */}
                             <div style={{
-                                width: "40px",
+                                width: "60px",
                                 height: "2px",
                                 backgroundColor: textColor,
                                 margin: "0 auto",
@@ -380,17 +377,17 @@ export default function ProfileCardPage() {
 
                         {/* 전시 정보 */}
                         {exhibitionTitle && (
-                            <div style={{ marginBottom: "20px", textAlign: "center" }}>
-                                <p style={{ fontSize: "18px", fontWeight: 600, marginBottom: "8px" }}>{exhibitionTitle}</p>
-                                {exhibitionDate && <p style={{ fontSize: "13px", color: "#666" }}>{exhibitionDate}</p>}
-                                {exhibitionPlace && <p style={{ fontSize: "13px", color: "#666" }}>{exhibitionPlace}</p>}
-                                {exhibitionAddress && <p style={{ fontSize: "11px", color: "#999" }}>{exhibitionAddress}</p>}
-                                {exhibitionMessage && <p style={{ fontSize: "12px", color: deepGold, fontStyle: "italic", marginTop: "8px" }}>"{exhibitionMessage}"</p>}
+                            <div style={{ marginBottom: "32px", textAlign: "center" }}>
+                                <p style={{ fontSize: "22px", fontWeight: 600, marginBottom: "12px", letterSpacing: "0.02em" }}>{exhibitionTitle}</p>
+                                {exhibitionDate && <p style={{ fontSize: "15px", color: "#666", marginBottom: "8px" }}>{exhibitionDate}</p>}
+                                {exhibitionPlace && <p style={{ fontSize: "15px", color: "#666", marginBottom: "8px" }}>{exhibitionPlace}</p>}
+                                {exhibitionAddress && <p style={{ fontSize: "13px", color: "#999", marginBottom: "12px" }}>{exhibitionAddress}</p>}
+                                {exhibitionMessage && <p style={{ fontSize: "14px", color: deepGold, fontStyle: "italic", marginTop: "16px" }}>"{exhibitionMessage}"</p>}
                             </div>
                         )}
 
                         {/* 연락처/SNS */}
-                        <div style={{ textAlign: "center", color: "#888", fontSize: "11px", lineHeight: 1.8 }}>
+                        <div style={{ textAlign: "center", color: "#888", fontSize: "13px", lineHeight: 2 }}>
                             {phone && <p>📞 {phone}</p>}
                             {email && <p>✉️ {email}</p>}
                             {youtubeHandle && <p style={{ color: deepGold }}>🎬 {formatHandle(youtubeHandle)}</p>}
