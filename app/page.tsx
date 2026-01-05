@@ -18,6 +18,18 @@ import { useAuth } from "./contexts/AuthContext";
 import GalleryFeed from "./components/GalleryFeed";
 import BusinessFooter from "./components/BusinessFooter";
 import ExpiredOverlay from "./components/ExpiredOverlay";
+import Header from "./components/Header";
+import NewsTicker from "./components/NewsTicker";
+import PaymentGate from "./components/PaymentGate";
+import YearMonthTabs from "./components/YearMonthTabs";
+import ArtistPicksSection from "./components/ArtistPicksSection";
+import EncouragementSection from "./components/EncouragementSection";
+import ArtworkViewer from "./components/ArtworkViewer";
+import LoginModal from "./components/LoginModal";
+import PaymentModal from "./components/PaymentModal";
+import ShareModal from "./components/ShareModal";
+import { usePayment } from "./contexts/PaymentContext";
+import { isPaymentRequired } from "./utils/deploymentMode";
 
 
 
