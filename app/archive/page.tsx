@@ -29,6 +29,10 @@ import NewsTicker from "../components/NewsTicker";
 import EncouragementSection from "../components/EncouragementSection";
 import ArtistPicksSection from "../components/ArtistPicksSection";
 import ExpiredOverlay from "../components/ExpiredOverlay";
+import { useSyncedInspirations } from "../hooks/useSyncedInspirations";
+import InspirationCard from "../components/InspirationCard";
+import InspirationViewer from "../components/InspirationViewer";
+import { InspirationData } from "../utils/indexedDbStorage";
 
 
 function HomeContent() {
@@ -36,10 +40,12 @@ function HomeContent() {
   const yearMonthParam = searchParams.get("yearMonth");
   const visitorId = searchParams.get("visitor");
   const visitorName = searchParams.get("visitorName");
+  const latestInspirationId = searchParams.get("latest");
   const router = useRouter();
 
   const { artworks, isLoading: artworksLoading, refresh: refreshArtworks } = useSyncedArtworks();
   const { settings, isLoading: settingsLoading } = useSyncedSettings();
+  const { inspirations, isLoading: inspirationsLoading, refresh: refreshInspirations } = useSyncedInspirations();
   const { isAuthenticated: isLoggedIn, ownerId, logout } = useAuth();
   const { isPaid, isLoading: paymentLoading } = usePayment();
   const needsPayment = isPaymentRequired();
@@ -63,6 +69,7 @@ function HomeContent() {
 
   const [isMounted, setIsMounted] = useState(false);
   const [capturedColor, setCapturedColor] = useState<string | null>(null);
+  const [selectedInspiration, setSelectedInspiration] = useState<InspirationData | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -86,6 +93,22 @@ function HomeContent() {
       });
     }
   }, [demoLoaded, artworksLoading, artworks.length, refreshArtworks]);
+
+  // 🔄 아카이브 자동 새로고침: 페이지가 다시 표시될 때 영감 갱신
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        console.log('🔄 Page visible, refreshing inspirations...');
+        refreshInspirations();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [refreshInspirations]);
 
   useEffect(() => {
     if (artworks.length > 0) {
@@ -284,6 +307,121 @@ function HomeContent() {
       </PaymentGate>
 
       <main className="max-w-6xl mx-auto" style={{ padding: "32px 24px" }}>
+        {/* 영감 채집 섹션 */}
+        {inspirationsLoading ? (
+          <div style={{ marginBottom: "64px" }}>
+            <div style={{ marginBottom: "24px" }}>
+              <h2
+                style={{
+                  fontSize: "24px",
+                  fontWeight: 700,
+                  color: textColor,
+                  marginBottom: "8px",
+                }}
+              >
+                ✨ 영감 채집
+              </h2>
+              <p style={{ fontSize: "14px", color: "#888" }}>
+                데이터를 불러오는 중...
+              </p>
+            </div>
+            {/* 로딩 스켈레톤 UI */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+                gap: "32px",
+              }}
+            >
+              {[1, 2, 3, 4].map((i) => (
+                <div
+                  key={i}
+                  style={{
+                    background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)",
+                    backgroundSize: "200% 100%",
+                    animation: `shimmer 1.5s infinite`,
+                    borderRadius: "16px",
+                    aspectRatio: "4 / 3",
+                  }}
+                />
+              ))}
+            </div>
+            <style jsx>{`
+              @keyframes shimmer {
+                0% {
+                  background-position: -200% 0;
+                }
+                100% {
+                  background-position: 200% 0;
+                }
+              }
+            `}</style>
+          </div>
+        ) : inspirations.length > 0 ? (
+          <div style={{ marginBottom: "64px" }}>
+            <div style={{ marginBottom: "24px" }}>
+              <h2
+                style={{
+                  fontSize: "24px",
+                  fontWeight: 700,
+                  color: textColor,
+                  marginBottom: "8px",
+                }}
+              >
+                ✨ 영감 채집
+              </h2>
+              <p style={{ fontSize: "14px", color: "#888" }}>
+                카메라로 포착한 순간의 영감들
+              </p>
+            </div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
+                gap: "20px",
+              }}
+            >
+              {inspirations.map((inspiration) => (
+                <InspirationCard
+                  key={inspiration.id}
+                  inspiration={inspiration}
+                  onClick={() => setSelectedInspiration(inspiration)}
+                  isNew={latestInspirationId === inspiration.id}
+                />
+              ))}
+            </div>
+          </div>
+        ) : !inspirationsLoading && (
+          <div style={{ marginBottom: "64px", textAlign: "center", padding: "60px 24px" }}>
+            <div style={{ fontSize: "64px", marginBottom: "16px", opacity: 0.3 }}>✨</div>
+            <h3 style={{ fontSize: "20px", fontWeight: 700, color: textColor, marginBottom: "8px" }}>
+              첫 번째 영감을 채집해보세요
+            </h3>
+            <p style={{ fontSize: "14px", color: "#888", marginBottom: "24px" }}>
+              카메라로 순간의 영감을 포착하면 이곳에 표시됩니다
+            </p>
+            <Link
+              href="/inspire"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "14px 28px",
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                color: "#fff",
+                borderRadius: "12px",
+                textDecoration: "none",
+                fontSize: "14px",
+                fontWeight: 600,
+                boxShadow: "0 4px 16px rgba(102, 126, 234, 0.3)",
+              }}
+            >
+              📸 영감 채집 시작하기
+            </Link>
+          </div>
+        )}
+
+        {/* 기존 작품 그리드 */}
         {isLoading ? (
           <div className="text-center py-20" style={{ color: "#888" }}>
             <p style={{ fontSize: "14px" }}>불러오는 중...</p>
@@ -582,6 +720,16 @@ function HomeContent() {
             onDelete={handleArtworkDeleted}
             showPrice={settings.showPrice}
             theme={settings.theme}
+          />
+        )
+      }
+
+      {/* 영감 상세 보기 */}
+      {
+        selectedInspiration && (
+          <InspirationViewer
+            inspiration={selectedInspiration}
+            onClose={() => setSelectedInspiration(null)}
           />
         )
       }

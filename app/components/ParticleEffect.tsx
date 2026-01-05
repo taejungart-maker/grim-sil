@@ -9,20 +9,25 @@ interface Particle {
     targetX: number;
     targetY: number;
     delay: number;
+    color: string;
 }
 
 interface ParticleEffectProps {
     trigger: boolean;
     onComplete?: () => void;
-    originX?: number; // 시작 위치 X (% 단위)
-    originY?: number; // 시작 위치 Y (% 단위)
+    originX?: number;
+    originY?: number;
+    colors?: string[];
+    direction?: 'corners' | 'bottomRight';
 }
 
 export default function ParticleEffect({
     trigger,
     onComplete,
     originX = 50,
-    originY = 50
+    originY = 50,
+    colors = ['rgba(255, 255, 255, 0.9)'],
+    direction = 'corners'
 }: ParticleEffectProps) {
     const [particles, setParticles] = useState<Particle[]>([]);
     const [isAnimating, setIsAnimating] = useState(false);
@@ -31,38 +36,50 @@ export default function ParticleEffect({
         if (trigger && !isAnimating) {
             setIsAnimating(true);
 
-            // 8개의 입자를 4개 구석으로 분산
-            const corners = [
-                { x: 10, y: 10 },    // 왼쪽 상단
-                { x: 90, y: 10 },    // 오른쪽 상단
-                { x: 10, y: 90 },    // 왼쪽 하단
-                { x: 90, y: 90 },    // 오른쪽 하단
-            ];
+            let targets: { x: number; y: number }[] = [];
+
+            if (direction === 'bottomRight') {
+                // 우측 하단으로 집중
+                targets = [
+                    { x: 85, y: 80 },
+                    { x: 90, y: 85 },
+                    { x: 88, y: 82 },
+                    { x: 92, y: 88 },
+                ];
+            } else {
+                // 4개 구석으로 분산
+                targets = [
+                    { x: 10, y: 10 },
+                    { x: 90, y: 10 },
+                    { x: 10, y: 90 },
+                    { x: 90, y: 90 },
+                ];
+            }
 
             const newParticles: Particle[] = [];
 
             for (let i = 0; i < 8; i++) {
-                const corner = corners[i % 4];
+                const target = targets[i % targets.length];
                 newParticles.push({
                     id: i,
                     x: originX,
                     y: originY,
-                    targetX: corner.x + (Math.random() - 0.5) * 10, // 약간의 랜덤성
-                    targetY: corner.y + (Math.random() - 0.5) * 10,
-                    delay: i * 50, // 순차적 발사
+                    targetX: target.x + (Math.random() - 0.5) * 5,
+                    targetY: target.y + (Math.random() - 0.5) * 5,
+                    delay: i * 50,
+                    color: colors[i % colors.length],
                 });
             }
 
             setParticles(newParticles);
 
-            // 애니메이션 완료 후 정리
             setTimeout(() => {
                 setParticles([]);
                 setIsAnimating(false);
                 onComplete?.();
             }, 1000);
         }
-    }, [trigger, isAnimating, onComplete, originX, originY]);
+    }, [trigger, isAnimating, onComplete, originX, originY, direction, colors]);
 
     if (particles.length === 0) return null;
 
@@ -88,8 +105,8 @@ export default function ParticleEffect({
                         width: "12px",
                         height: "12px",
                         borderRadius: "50%",
-                        background: "rgba(255, 255, 255, 0.9)",
-                        boxShadow: "0 0 10px rgba(255, 255, 255, 0.5)",
+                        background: particle.color,
+                        boxShadow: `0 0 10px ${particle.color}`,
                         transform: "translate(-50%, -50%)",
                         animation: `particleFly-${particle.id} 800ms cubic-bezier(0.4, 0, 0.2, 1) ${particle.delay}ms forwards`,
                     }}
