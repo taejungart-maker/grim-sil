@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { applyGaussianBlur } from './gaussianBlur';
 import { extractDominantColors } from './colorExtraction';
 import { saveToIndexedDB, InspirationData } from './indexedDbStorage';
+import { InspirationRow } from './supabase';
 
 export interface SaveInspirationResult {
     success: boolean;
