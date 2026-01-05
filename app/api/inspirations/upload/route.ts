@@ -112,58 +112,50 @@ export async function POST(request: NextRequest) {
         }
 
         // ========================================
-        // Step 4: Storage 업로드
+        // Step 4: Storage 업로드 (단일 버킷: inspiration-images)
         // ========================================
-        console.log('\n📸 [STEP 4/6] Uploading to storage...');
-        const fileName = `${artistId}/${inspirationId}_blur.jpg`;
-        console.log('  - Path:', fileName);
+        const BUCKET_NAME = 'inspiration-images'; // ✅ 사용자 요청에 따른 버킷명 통합
 
+        console.log(`\n📸 [STEP 4/6] Uploading to storage (${BUCKET_NAME})...`);
+        const blurPath = `${artistId}/${inspirationId}_blur.jpg`;
+        const originalPath = `${artistId}/${inspirationId}_original.jpg`;
+
+        // 1. 블러 이미지 업로드
         const arrayBuffer = await blurImage.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
 
-        const { data: uploadData, error: uploadError } = await supabase.storage
-            .from('inspirations-blur')
-            .upload(fileName, buffer, {
+        const { error: uploadError } = await supabase.storage
+            .from(BUCKET_NAME)
+            .upload(blurPath, buffer, {
                 contentType: 'image/jpeg',
                 upsert: true,
             });
 
         if (uploadError) {
-            console.error('\n❌ Storage upload failed!');
-            console.error('  Message:', uploadError.message);
-            console.error('  Error:', JSON.stringify(uploadError, null, 2));
-
-            let hint = 'Check storage permissions';
-            if (uploadError.message.includes('Bucket')) {
-                hint = 'Create "inspirations-blur" bucket in Supabase Storage (set as Public)';
-            }
-
+            console.error('\n❌ Blur upload failed:', uploadError.message);
             return NextResponse.json(
                 {
                     error: 'Failed to upload image to storage',
                     details: uploadError.message,
-                    hint
+                    hint: `Supabase Storage에 "${BUCKET_NAME}" 버킷이 생성되어 있고 Public으로 설정되어 있는지 확인하세요.`
                 },
                 { status: 500 }
             );
         }
 
-        console.log('✅ Blur upload success');
+        const { data: blurUrlData } = supabase.storage.from(BUCKET_NAME).getPublicUrl(blurPath);
+        const blurImageUrl = blurUrlData.publicUrl;
+        console.log('✅ Blur upload success:', blurImageUrl);
 
-        // ========================================
-        // Step 5: Original Image Storage 업로드
-        // ========================================
+        // 2. 원본 이미지 업로드 (있을 경우)
         let originalImageUrl = '';
         if (originalImage) {
-            console.log('\n📸 [STEP 5/7] Uploading original to storage...');
-            const originalFileName = `${artistId}/${inspirationId}_original.jpg`;
-
             const originalArrayBuffer = await originalImage.arrayBuffer();
             const originalBuffer = Buffer.from(originalArrayBuffer);
 
-            const { data: originalUploadData, error: originalUploadError } = await supabase.storage
-                .from('inspirations-original')
-                .upload(originalFileName, originalBuffer, {
+            const { error: originalUploadError } = await supabase.storage
+                .from(BUCKET_NAME)
+                .upload(originalPath, originalBuffer, {
                     contentType: 'image/jpeg',
                     upsert: true,
                 });
@@ -171,44 +163,39 @@ export async function POST(request: NextRequest) {
             if (originalUploadError) {
                 console.error('⚠️ Original upload failed (non-critical):', originalUploadError.message);
             } else {
-                const { data: originalUrlData } = supabase.storage
-                    .from('inspirations-original')
-                    .getPublicUrl(originalFileName);
+                const { data: originalUrlData } = supabase.storage.from(BUCKET_NAME).getPublicUrl(originalPath);
                 originalImageUrl = originalUrlData.publicUrl;
                 console.log('✅ Original upload success:', originalImageUrl);
             }
         }
 
         // ========================================
-        // Step 6: Blur 공개 URL 및 메타데이터 강화
+        // Step 6: 메타데이터 강화 및 image_url 결정
         // ========================================
-        console.log('\n🔗 [STEP 6/7] Getting blur public URL...');
-        const { data: urlData } = supabase.storage
-            .from('inspirations-blur')
-            .getPublicUrl(fileName);
+        console.log('\n🔗 [STEP 6/7] Finalizing metadata and image_url...');
 
-        const blurImageUrl = urlData.publicUrl;
-        console.log('  - Blur URL:', blurImageUrl);
+        // 대표 이미지(image_url)는 원본이 있으면 원본, 없으면 블러를 사용
+        const mainImageUrl = originalImageUrl || blurImageUrl;
 
-        // 메타데이터에 원본 URL 추가
         if (originalImageUrl) {
             metadata.original_image_url = originalImageUrl;
         }
 
         // ========================================
-        // Step 7: DB 저장
+        // Step 7: DB 저장 (image_url 필드 포함)
         // ========================================
         console.log('\n💾 [STEP 7/7] Saving to database...');
 
         const insertData = {
             id: inspirationId,
             artist_id: artistId,
+            image_url: mainImageUrl, // ✅ 새로운 통합 이미지 필드
             blur_image_url: blurImageUrl,
             color_palette: colorPalette,
             metadata: metadata,
         };
 
-        console.log('  - Data:', insertData);
+        console.log('  - Insert Data:', insertData);
 
         const { data: insertedData, error: dbError } = await supabase
             .from('inspirations')
@@ -271,6 +258,7 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({
             success: true,
+            imageUrl: mainImageUrl, // ✅ 추가
             blurImageUrl,
             inspirationId,
             message: '✅ 서버 저장 성공!',

@@ -6,6 +6,7 @@ const DB_VERSION = 1;
 export interface InspirationData {
     id: string;
     originalFileName: string;
+    imageUrl?: string; // ✅ 추가: 고화질 또는 대표 이미지 URL
     blurImageUrl: string;
     colorPalette: string[];
     metadata: {

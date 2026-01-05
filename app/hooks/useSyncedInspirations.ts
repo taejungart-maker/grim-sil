@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { getSupabaseClient, InspirationRow } from '../utils/supabase';
 import { getAllInspirations, InspirationData } from '../utils/indexedDbStorage';
 
-export interface SyncedInspiration extends InspirationData { }
+export type SyncedInspiration = InspirationData;
 
 export function useSyncedInspirations() {
     const [inspirations, setInspirations] = useState<SyncedInspiration[]>([]);
@@ -93,7 +93,7 @@ export function useSyncedInspirations() {
                         try {
                             // color_palette 파싱 방어 (강화)
                             let colorPalette: string[] = [];
-                            const rawPalette = serverItem.color_palette as any;
+                            const rawPalette = serverItem.color_palette as unknown;
 
                             if (rawPalette) {
                                 if (Array.isArray(rawPalette)) {
@@ -117,7 +117,7 @@ export function useSyncedInspirations() {
                                 timestamp: Date.now(),
                                 original_filename: ''
                             };
-                            const rawMetadata = serverItem.metadata as any;
+                            const rawMetadata = serverItem.metadata as unknown;
 
                             if (rawMetadata) {
                                 if (typeof rawMetadata === 'object') {
@@ -136,6 +136,7 @@ export function useSyncedInspirations() {
                             mergedData.push({
                                 id: serverItem.id || `server-${index}`,
                                 originalFileName: localItem?.originalFileName || metadata?.original_filename || '',
+                                imageUrl: serverItem.image_url || '', // ✅ 추가
                                 blurImageUrl: serverItem.blur_image_url || '',
                                 colorPalette: colorPalette,
                                 metadata: metadata,

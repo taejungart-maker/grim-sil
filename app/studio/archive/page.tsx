@@ -4,10 +4,10 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../../contexts/AuthContext";
-import { getAllInspirations, InspirationData } from "../../utils/indexedDbStorage";
-import { SIGNATURE_COLORS } from "../../utils/themeColors";
+import { InspirationData } from "../../utils/indexedDbStorage";
 
 export interface SyncedInspiration extends InspirationData {
+    imageUrl?: string;
     originalImageUrl?: string;
 }
 
@@ -46,8 +46,9 @@ export default function InspirationArchivePage() {
                         const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata;
                         return {
                             id: row.id,
+                            imageUrl: row.image_url, // ✅ 통합 이미지 필드 사용
                             blurImageUrl: row.blur_image_url,
-                            originalImageUrl: metadata?.original_image_url, // 원본 URL 추출
+                            originalImageUrl: metadata?.original_image_url, // 하위 호환성 유지
                             colorPalette: row.color_palette,
                             metadata: metadata,
                             createdAt: new Date(row.created_at).getTime(),
@@ -109,7 +110,7 @@ export default function InspirationArchivePage() {
                                 {/* 이미지 영역 (Glassmorphism & Blur) */}
                                 <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-sm transition-all duration-500 group-hover:shadow-xl group-hover:-translate-y-1">
                                     <img
-                                        src={item.originalImageUrl || item.blurImageUrl || "/placeholder-inspiration.png"}
+                                        src={item.imageUrl || item.originalImageUrl || item.blurImageUrl || "/placeholder-inspiration.png"}
                                         alt="Inspiration"
                                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                     />

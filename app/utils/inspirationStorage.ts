@@ -80,6 +80,7 @@ export async function saveInspiration(
         const inspirationData: InspirationData = {
             id: inspirationId,
             originalFileName,
+            imageUrl: '', // 서버 업로드 후 업데이트
             blurImageUrl: '', // 서버 업로드 후 업데이트
             colorPalette,
             metadata,
@@ -112,7 +113,7 @@ export async function saveInspiration(
             const response = await fetch(imageData);
             const originalBlob = await response.blob();
 
-            const blurImageUrl = await uploadToSupabase(
+            const { blurImageUrl, imageUrl } = await uploadToSupabase(
                 blurBlob,
                 originalBlob,
                 inspirationId,
@@ -121,10 +122,11 @@ export async function saveInspiration(
                 metadata
             );
 
-            console.log('✅ Server upload success:', blurImageUrl);
+            console.log('✅ Server upload success:', imageUrl);
 
             // 서버 업로드 성공 시 IndexedDB 업데이트
             inspirationData.blurImageUrl = blurImageUrl;
+            inspirationData.imageUrl = imageUrl;
             await saveToIndexedDB(inspirationData);
 
             return {
@@ -181,7 +183,7 @@ async function uploadToSupabase(
     artistId: string,
     colorPalette: string[],
     metadata: InspirationRow['metadata']
-): Promise<string> {
+): Promise<{ blurImageUrl: string; imageUrl: string }> {
     // JSONB 형식 확인: 배열로 깔끔하게 전송
     console.log('📤 Preparing upload data:');
     console.log('  - Blur size:', blurBlob.size);
@@ -226,7 +228,10 @@ async function uploadToSupabase(
         console.log('💬', data.message);
     }
 
-    return data.blurImageUrl;
+    return {
+        blurImageUrl: data.blurImageUrl,
+        imageUrl: data.imageUrl
+    };
 }
 
 // 영감 메타데이터 (메모 등) 업데이트

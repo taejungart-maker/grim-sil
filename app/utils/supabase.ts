@@ -58,6 +58,7 @@ export interface ArtworkRow {
 export interface InspirationRow {
     id: string;
     artist_id: string;
+    image_url: string; // ✅ 추가: 고화질 또는 대표 이미지 URL
     blur_image_url: string;
     color_palette: string[]; // JSONB 배열
     metadata: {
