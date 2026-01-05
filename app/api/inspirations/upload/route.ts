@@ -92,16 +92,12 @@ export async function POST(request: NextRequest) {
             supabase = getServerSupabaseClient();
             console.log('✅ Supabase client ready (using SERVICE_ROLE_KEY)');
         } catch (envError) {
-            console.error('\n❌ CRITICAL: Environment configuration error!');
-            console.error('  Error:', envError instanceof Error ? envError.message : envError);
-            console.error('  → Check .env.local file');
-            console.error('  → Restart dev server after adding SUPABASE_SERVICE_ROLE_KEY\n');
-
+            const errorMessage = envError instanceof Error ? envError.message : 'Unknown';
             return NextResponse.json(
                 {
-                    error: '환경 변수 설정이 필요합니다',
-                    details: envError instanceof Error ? envError.message : 'Unknown',
-                    hint: '.env.local 파일에 SUPABASE_SERVICE_ROLE_KEY를 추가하고 서버를 재시작하세요.'
+                    error: `환경 변수 누락: ${errorMessage}`,
+                    details: errorMessage,
+                    hint: 'Vercel 프로젝트 설정에서 NEXT_PUBLIC_SUPABASE_URL과 SUPABASE_SERVICE_ROLE_KEY가 등록되어 있는지 확인하세요.'
                 },
                 { status: 500 }
             );
