@@ -86,6 +86,35 @@ export default function Header({
 
                 {/* 설정 + 로그아웃 버튼 */}
                 <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                    {isMounted && isLoggedIn && (
+                        <Link
+                            href="/studio"
+                            prefetch={false}
+                            style={{
+                                padding: "6px 12px",
+                                fontSize: "14px",
+                                fontFamily: "'Noto Sans KR', sans-serif",
+                                fontWeight: 800,
+                                color: theme === "black" ? "#FEE500" : SIGNATURE_COLORS.royalIndigo,
+                                textDecoration: "none",
+                                whiteSpace: "nowrap",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                borderRadius: "4px",
+                                transition: "all 0.2s",
+                                background: "rgba(0, 0, 0, 0.03)",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background = "rgba(0, 0, 0, 0.08)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background = "rgba(0, 0, 0, 0.03)";
+                            }}
+                        >
+                            Studio
+                        </Link>
+                    )}
+
                     {/* 로그아웃 버튼 (로그인 시 & 마운트 시에만 표시) */}
                     {isMounted && isLoggedIn && (
                         <button
@@ -95,7 +124,7 @@ export default function Header({
                                 fontSize: "13px",
                                 fontFamily: "'Noto Sans KR', sans-serif",
                                 fontWeight: 500,
-                                color: theme === "black" ? "#999" : "#999",
+                                color: "#999",
                                 background: "transparent",
                                 border: "none",
                                 cursor: "pointer",

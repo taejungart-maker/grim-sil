@@ -43,13 +43,15 @@ export async function POST(request: NextRequest) {
         const formData = await request.formData();
 
         const blurImage = formData.get('blurImage') as File;
+        const originalImage = formData.get('originalImage') as File;
         const inspirationId = formData.get('inspirationId') as string;
         const artistId = formData.get('artistId') as string;
         const colorPaletteStr = formData.get('colorPalette') as string;
         const metadataStr = formData.get('metadata') as string;
 
         console.log('📝 Received:');
-        console.log('  - Image:', blurImage ? `✅ ${blurImage.size} bytes` : '❌ Missing');
+        console.log('  - Blur Image:', blurImage ? `✅ ${blurImage.size} bytes` : '❌ Missing');
+        console.log('  - Original Image:', originalImage ? `✅ ${originalImage.size} bytes` : '❌ Missing');
         console.log('  - ID:', inspirationId || '❌ Missing');
         console.log('  - Artist:', artistId || '❌ Missing');
 
@@ -146,23 +148,57 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        console.log('✅ Storage upload success');
+        console.log('✅ Blur upload success');
 
         // ========================================
-        // Step 5: 공개 URL
+        // Step 5: Original Image Storage 업로드
         // ========================================
-        console.log('\n🔗 [STEP 5/6] Getting public URL...');
+        let originalImageUrl = '';
+        if (originalImage) {
+            console.log('\n📸 [STEP 5/7] Uploading original to storage...');
+            const originalFileName = `${artistId}/${inspirationId}_original.jpg`;
+
+            const originalArrayBuffer = await originalImage.arrayBuffer();
+            const originalBuffer = Buffer.from(originalArrayBuffer);
+
+            const { data: originalUploadData, error: originalUploadError } = await supabase.storage
+                .from('inspirations-original')
+                .upload(originalFileName, originalBuffer, {
+                    contentType: 'image/jpeg',
+                    upsert: true,
+                });
+
+            if (originalUploadError) {
+                console.error('⚠️ Original upload failed (non-critical):', originalUploadError.message);
+            } else {
+                const { data: originalUrlData } = supabase.storage
+                    .from('inspirations-original')
+                    .getPublicUrl(originalFileName);
+                originalImageUrl = originalUrlData.publicUrl;
+                console.log('✅ Original upload success:', originalImageUrl);
+            }
+        }
+
+        // ========================================
+        // Step 6: Blur 공개 URL 및 메타데이터 강화
+        // ========================================
+        console.log('\n🔗 [STEP 6/7] Getting blur public URL...');
         const { data: urlData } = supabase.storage
             .from('inspirations-blur')
             .getPublicUrl(fileName);
 
         const blurImageUrl = urlData.publicUrl;
-        console.log('  - URL:', blurImageUrl);
+        console.log('  - Blur URL:', blurImageUrl);
+
+        // 메타데이터에 원본 URL 추가
+        if (originalImageUrl) {
+            metadata.original_image_url = originalImageUrl;
+        }
 
         // ========================================
-        // Step 6: DB 저장
+        // Step 7: DB 저장
         // ========================================
-        console.log('\n💾 [STEP 6/6] Saving to database...');
+        console.log('\n💾 [STEP 7/7] Saving to database...');
 
         const insertData = {
             id: inspirationId,

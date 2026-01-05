@@ -12,6 +12,7 @@ export interface InspirationData {
         timestamp: number;
         location?: string;
         weather?: string;
+        memo?: string;
     };
     localPath?: string;
     createdAt: number;

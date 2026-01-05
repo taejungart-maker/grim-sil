@@ -8,6 +8,7 @@ const DOMAIN_ARTIST_MAPPING: Record<string, string> = {
     'grim-sil.com': '-vqsk',
     'www.grim-sil.com': '-vqsk',
     'hahyunju-gallery.vercel.app': '-hyunju',
+    'hahyunju-gallery-ten.vercel.app': '-hyunju',
     'hahyunju.com': '-hyunju',
     'www.hahyunju.com': '-hyunju',
     'moonhyekyung-gallery.vercel.app': '-3ibp',
@@ -30,7 +31,6 @@ export async function getServerArtistId(): Promise<string> {
 
     if (artistId) return artistId;
 
-    // [V11_FAILSAFE] 미들웨어 헤더가 없는 경우 직접 호스트 분석
     const host = headerList.get('x-forwarded-host') || headerList.get('host') || "";
     const lowerHost = host.toLowerCase();
 
@@ -40,9 +40,9 @@ export async function getServerArtistId(): Promise<string> {
     if (lowerHost.includes('grim-sil')) return '-vqsk';
     if (lowerHost.includes('localhost')) return '-vqsk';
 
-    // [V11_SECURITY] 기본값 제거: 식별 불가 시 에러를 던져 데이터 혼입 차단
-    console.error(`[CRITICAL] Identification failed for host: ${host}`);
-    throw new Error("Artist identification failed. Access denied to prevent data leakage.");
+    // [V11_FAILSAFE] 식별 불가 시 기본값으로 복구 (빌드 타임 및 미탐지 호스트 대응)
+    console.warn(`[FAILSAFE] Identification failed for host: "${host}". Falling back to default '-vqsk'.`);
+    return '-vqsk';
 }
 
 /**

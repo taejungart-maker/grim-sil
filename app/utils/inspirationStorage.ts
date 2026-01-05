@@ -72,6 +72,7 @@ export async function saveInspiration(
             location: await getLocation().catch(() => undefined),
             weather: undefined,
             original_filename: originalFileName,
+            memo: "", // 초기 메모는 비어있음
         };
         console.log('📝 Metadata:', metadata);
 
@@ -107,8 +108,13 @@ export async function saveInspiration(
                 throw new Error('Invalid blob for upload');
             }
 
+            // 📊 원본 이미지 Blob 생성
+            const response = await fetch(imageData);
+            const originalBlob = await response.blob();
+
             const blurImageUrl = await uploadToSupabase(
                 blurBlob,
+                originalBlob,
                 inspirationId,
                 artistId,
                 colorPalette,
@@ -170,6 +176,7 @@ async function getLocation(): Promise<string> {
 // Supabase에 업로드 (상세 로깅)
 async function uploadToSupabase(
     blurBlob: Blob,
+    originalBlob: Blob,
     inspirationId: string,
     artistId: string,
     colorPalette: string[],
@@ -177,13 +184,15 @@ async function uploadToSupabase(
 ): Promise<string> {
     // JSONB 형식 확인: 배열로 깔끔하게 전송
     console.log('📤 Preparing upload data:');
-    console.log('  - Blob size:', blurBlob.size);
+    console.log('  - Blur size:', blurBlob.size);
+    console.log('  - Original size:', originalBlob.size);
     console.log('  - Color palette (array):', colorPalette);
     console.log('  - Metadata:', metadata);
 
     // FormData 생성
     const formData = new FormData();
     formData.append('blurImage', blurBlob, `${inspirationId}_blur.jpg`);
+    formData.append('originalImage', originalBlob, `${inspirationId}_original.jpg`);
     formData.append('inspirationId', inspirationId);
     formData.append('artistId', artistId);
     formData.append('colorPalette', JSON.stringify(colorPalette)); // 배열을 JSON 문자열로
@@ -218,4 +227,64 @@ async function uploadToSupabase(
     }
 
     return data.blurImageUrl;
+}
+
+// 영감 메타데이터 (메모 등) 업데이트
+export async function updateInspirationMetadata(
+    inspirationId: string,
+    artistId: string,
+    memo: string
+): Promise<SaveInspirationResult> {
+    console.log('📝 Updating metadata for:', inspirationId);
+
+    try {
+        // 1. IndexedDB 업데이트
+        const { getFromIndexedDB, saveToIndexedDB } = await import('./indexedDbStorage');
+        const existing = await getFromIndexedDB(inspirationId);
+
+        if (!existing) {
+            throw new Error('데이터를 찾을 수 없습니다.');
+        }
+
+        const updatedData = {
+            ...existing,
+            metadata: {
+                ...existing.metadata,
+                memo
+            }
+        };
+
+        await saveToIndexedDB(updatedData);
+        console.log('✅ Local IndexedDB updated');
+
+        // 2. 서버 업데이트 (PATCH)
+        try {
+            const response = await fetch('/api/inspirations/update', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    inspirationId,
+                    artistId,
+                    metadata: updatedData.metadata
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                console.warn('⚠️ Server metadata update failed:', errorData);
+            } else {
+                console.log('✅ Server metadata update success');
+            }
+        } catch (serverError) {
+            console.warn('⚠️ Server update failed (network):', serverError);
+        }
+
+        return { success: true };
+    } catch (error) {
+        console.error('❌ Failed to update metadata:', error);
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : '메모 저장 실패'
+        };
+    }
 }

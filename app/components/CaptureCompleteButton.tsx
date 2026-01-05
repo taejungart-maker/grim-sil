@@ -43,7 +43,7 @@ export default function CaptureCompleteButton({ inspirationId }: CaptureComplete
 
     const handleClick = (e: React.MouseEvent) => {
         e.stopPropagation();
-        router.push(`/archive?latest=${inspirationId}`);
+        router.push(`/studio/archive?latest=${inspirationId}`);
     };
 
     return (

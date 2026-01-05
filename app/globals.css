@@ -15,6 +15,11 @@
   --border: #e5e7eb;
   --text-muted: #444444;
 
+  /* Tailwind 4 컬러 매핑 (표준 변수 방식) */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+
   /* 시니어 친화적 폰트 크기 (더 크게 조정) */
   --font-size-sm: 18px;
   --font-size-base: 22px;
@@ -22,6 +27,9 @@
   --font-size-xl: 30px;
   --font-size-2xl: 38px;
   --font-size-3xl: 50px;
+
+  /* 폰트 패밀리 */
+  --font-sans: "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   /* 버튼 크기 (엄지손가락 터치 영역) */
   --button-min-height: 60px;
@@ -32,13 +40,6 @@
   --spacing-md: 24px;
   --spacing-lg: 36px;
   --spacing-xl: 52px;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-primary: var(--primary);
-  --font-sans: "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 /* 다크 모드 비활성화 - 시니어에게 밝은 화면이 더 적합 */
@@ -389,7 +390,7 @@ img {
   -khtml-user-drag: none;
   -moz-user-drag: none;
   -o-user-drag: none;
-  user-drag: none;
+  user-select: none;
 }
 
 /* 작품 카드 및 뷰어 보호 */
