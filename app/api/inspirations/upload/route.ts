@@ -3,23 +3,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 // 서버사이드 전용 Supabase 클라이언트 (RLS 우회)
+export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
+
 function getServerSupabaseClient() {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    console.log('\n🔑 [ENV CHECK] Supabase configuration:');
-    console.log('  - NEXT_PUBLIC_SUPABASE_URL:', supabaseUrl ? '✅ Set' : '❌ MISSING');
-    console.log('  - SUPABASE_SERVICE_ROLE_KEY:', supabaseServiceKey ? '✅ Set' : '❌ MISSING');
-
-    if (!supabaseUrl) {
-        throw new Error('❌ 환경 변수 설정이 필요합니다: NEXT_PUBLIC_SUPABASE_URL이 없습니다.');
+    if (!supabaseUrl || !supabaseServiceKey) {
+        throw new Error('Supabase environment variables missing');
     }
-
-    if (!supabaseServiceKey) {
-        throw new Error('❌ 환경 변수 설정이 필요합니다: SUPABASE_SERVICE_ROLE_KEY가 없습니다. .env.local 파일을 확인하세요.');
-    }
-
-    console.log('✅ Creating Supabase client with SERVICE_ROLE_KEY (RLS bypass enabled)');
 
     return createClient(supabaseUrl, supabaseServiceKey, {
         auth: {
@@ -28,7 +21,6 @@ function getServerSupabaseClient() {
         }
     });
 }
-
 export async function POST(request: NextRequest) {
     console.log('\n==========================================');
     console.log('📤 [API START] Upload request received');

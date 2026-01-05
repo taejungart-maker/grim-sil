@@ -134,15 +134,14 @@ export async function saveInspiration(
                 inspirationId,
             };
         } catch (serverError: unknown) {
-            console.error('⚠️ Server upload failed:', serverError);
-            console.error('Error details:', serverError instanceof Error ? serverError.message : String(serverError));
+            console.error('❌ Server upload failed:', serverError);
+            const errorMessage = serverError instanceof Error ? serverError.message : String(serverError);
 
-            // 서버 업로드 실패해도 로컬 저장은 성공
-            // 🔥 강제 성공 처리: 로컬에 저장되었으므로 무조건 성공
+            // 🔥 강제 성공 처리 제거: 사용자에게 실패를 알려야 함
             return {
-                success: true,
+                success: false,
                 inspirationId,
-                error: '서버 저장에 실패했습니다. 원본은 로컬에 안전하게 저장되었습니다.',
+                error: `서버 저장 실패: ${errorMessage}`
             };
         }
     } catch (error) {
@@ -291,5 +290,58 @@ export async function updateInspirationMetadata(
             success: false,
             error: error instanceof Error ? error.message : '메모 저장 실패'
         };
+    }
+}
+// 영감 삭제 (서버 + 로컬)
+export async function deleteInspiration(
+    inspirationId: string,
+    artistId: string
+): Promise<{ success: boolean; error?: string }> {
+    console.log('🗑️ Deleting inspiration:', inspirationId);
+
+    try {
+        // 1. 서버 삭제 API 호출
+        const response = await fetch('/api/inspirations/delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ inspirationId, artistId })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || '서버 삭제 실패');
+        }
+
+        // 2. 로컬 IndexedDB 삭제
+        const { deleteFromIndexedDB } = await import('./indexedDbStorage');
+        await deleteFromIndexedDB(inspirationId);
+
+        return { success: true };
+    } catch (error) {
+        console.error('❌ Failed to delete inspiration:', error);
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : '삭제 중 오류 발생'
+        };
+    }
+}
+
+// 이미지 휴대폰 저장 (다운로드)
+export async function downloadInspirationImage(url: string, filename: string): Promise<void> {
+    try {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = filename || 'Inspiration.jpg';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+        console.error('❌ Download failed:', error);
+        alert('이미지를 저장할 수 없습니다.');
     }
 }

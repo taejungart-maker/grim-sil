@@ -108,12 +108,13 @@ export default function InspirationArchivePage() {
                         {inspirations.map((item) => (
                             <div key={item.id} className="group flex flex-col gap-6">
                                 {/* 이미지 영역 (Glassmorphism & Blur) */}
-                                <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-sm transition-all duration-500 group-hover:shadow-xl group-hover:-translate-y-1">
+                                <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-sm transition-all duration-500 group-hover:shadow-xl group-hover:-translate-y-1 bg-white">
                                     <img
                                         src={item.imageUrl || item.originalImageUrl || item.blurImageUrl || "/placeholder-inspiration.png"}
                                         alt="Inspiration"
                                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                     />
+
                                     {/* 컬러 팔레트 배지 */}
                                     <div className="absolute bottom-4 left-4 flex gap-1.5 p-1.5 bg-white/20 backdrop-blur-lg rounded-full border border-white/30">
                                         {item.colorPalette.slice(0, 3).map((color, i) => (
@@ -126,12 +127,47 @@ export default function InspirationArchivePage() {
                                     </div>
                                 </div>
 
-                                {/* 메모 및 시간 */}
+                                {/* 메모 및 시간 + 액션 버튼 */}
                                 <div className="px-1">
                                     <div className="flex items-center justify-between mb-3">
                                         <span className="text-[10px] font-bold uppercase tracking-widest text-[#bbb]">
                                             {new Date(item.createdAt).toLocaleDateString()}
                                         </span>
+
+                                        {/* 액션 버튼 (항시 노출) */}
+                                        <div className="flex items-center gap-3">
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    const { downloadInspirationImage } = require("../../utils/inspirationStorage");
+                                                    const url = item.imageUrl || item.originalImageUrl || item.blurImageUrl;
+                                                    if (url) downloadInspirationImage(url, item.originalFileName || `Inspiration_${item.id}.jpg`);
+                                                }}
+                                                className="flex items-center gap-1.5 text-[11px] font-bold text-[#6366f1] hover:text-[#4f46e5] transition-colors"
+                                            >
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+                                                저장
+                                            </button>
+                                            <button
+                                                onClick={async (e) => {
+                                                    e.stopPropagation();
+                                                    if (confirm("정말로 이 영감을 삭제하시겠습니까?")) {
+                                                        const { deleteInspiration } = require("../../utils/inspirationStorage");
+                                                        const { ARTIST_ID } = require("../../utils/supabase");
+                                                        const result = await deleteInspiration(item.id, ARTIST_ID);
+                                                        if (result.success) {
+                                                            setInspirations(prev => prev.filter(p => p.id !== item.id));
+                                                        } else {
+                                                            alert("삭제 실패: " + result.error);
+                                                        }
+                                                    }
+                                                }}
+                                                className="flex items-center gap-1.5 text-[11px] font-bold text-[#ff4d4f] hover:text-[#d9363e] transition-colors"
+                                            >
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /><line x1="10" y1="11" x2="10" y2="17" /><line x1="14" y1="11" x2="14" y2="17" /></svg>
+                                                삭제
+                                            </button>
+                                        </div>
                                     </div>
                                     <p className="text-[#333] text-[15px] leading-relaxed font-medium" style={{ fontFamily: "'Noto Sans KR', sans-serif" }}>
                                         {item.metadata.memo || "기록된 생각이 없습니다."}
