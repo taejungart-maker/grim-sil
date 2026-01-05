@@ -132,7 +132,7 @@ export default function InspirationArchivePage() {
                                 {/* 메모 및 시간 + 액션 버튼 */}
                                 <div className="px-1">
                                     <div className="flex items-center justify-between mb-3">
-                                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#bbb]">
+                                        <span className="text-[12px] font-bold uppercase tracking-widest text-[#bbb]">
                                             {new Date(item.createdAt).toLocaleDateString()}
                                         </span>
 
@@ -144,7 +144,7 @@ export default function InspirationArchivePage() {
                                                     const url = item.imageUrl || item.originalImageUrl || item.blurImageUrl;
                                                     if (url) downloadInspirationImage(url, item.originalFileName || `Inspiration_${item.id}.jpg`);
                                                 }}
-                                                className="flex items-center gap-1.5 text-[11px] font-bold text-[#6366f1] hover:text-[#4f46e5] transition-colors"
+                                                className="flex items-center gap-1.5 text-[13px] font-bold text-[#6366f1] hover:text-[#4f46e5] transition-colors"
                                             >
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
                                                 저장
@@ -161,14 +161,14 @@ export default function InspirationArchivePage() {
                                                         }
                                                     }
                                                 }}
-                                                className="flex items-center gap-1.5 text-[11px] font-bold text-[#ff4d4f] hover:text-[#d9363e] transition-colors"
+                                                className="flex items-center gap-1.5 text-[13px] font-bold text-[#ff4d4f] hover:text-[#d9363e] transition-colors"
                                             >
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /><line x1="10" y1="11" x2="10" y2="17" /><line x1="14" y1="11" x2="14" y2="17" /></svg>
                                                 삭제
                                             </button>
                                         </div>
                                     </div>
-                                    <p className="text-[#333] text-[15px] leading-relaxed font-medium" style={{ fontFamily: "'Noto Sans KR', sans-serif" }}>
+                                    <p className="text-[#333] text-[17px] leading-relaxed font-medium" style={{ fontFamily: "'Noto Sans KR', sans-serif" }}>
                                         {item.metadata.memo || "기록된 생각이 없습니다."}
                                     </p>
                                 </div>
