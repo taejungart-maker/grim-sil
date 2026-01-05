@@ -18,11 +18,10 @@ function getServerSupabaseClient() {
 
 export async function POST(request: NextRequest) {
     try {
-        const { inspirationId, artistId } = await request.json();
+        const body = await request.json();
+        const { inspirationId, artistId } = body;
 
-        if (!inspirationId || !artistId) {
-            return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-        }
+        console.log('\n🗑️ [DELETE API] Request received:', body);
 
         const supabase = getServerSupabaseClient();
         const BUCKET_NAME = 'inspiration-images';

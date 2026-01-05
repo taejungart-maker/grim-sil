@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../../contexts/AuthContext";
 import { InspirationData } from "../../utils/indexedDbStorage";
+import { deleteInspiration, downloadInspirationImage } from "../../utils/inspirationStorage";
+import { ARTIST_ID } from "../../utils/supabase";
 
 export interface SyncedInspiration extends InspirationData {
     imageUrl?: string;
@@ -139,7 +141,6 @@ export default function InspirationArchivePage() {
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    const { downloadInspirationImage } = require("../../utils/inspirationStorage");
                                                     const url = item.imageUrl || item.originalImageUrl || item.blurImageUrl;
                                                     if (url) downloadInspirationImage(url, item.originalFileName || `Inspiration_${item.id}.jpg`);
                                                 }}
@@ -152,13 +153,11 @@ export default function InspirationArchivePage() {
                                                 onClick={async (e) => {
                                                     e.stopPropagation();
                                                     if (confirm("정말로 이 영감을 삭제하시겠습니까?")) {
-                                                        const { deleteInspiration } = require("../../utils/inspirationStorage");
-                                                        const { ARTIST_ID } = require("../../utils/supabase");
                                                         const result = await deleteInspiration(item.id, ARTIST_ID);
                                                         if (result.success) {
                                                             setInspirations(prev => prev.filter(p => p.id !== item.id));
                                                         } else {
-                                                            alert("삭제 실패: " + result.error);
+                                                            alert("삭제 실패: " + (result.error || "알 수 없는 오류"));
                                                         }
                                                     }
                                                 }}
