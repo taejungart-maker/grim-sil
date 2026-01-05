@@ -7,11 +7,15 @@ export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
 function getServerSupabaseClient() {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/"/g, '').trim();
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.replace(/"/g, '').trim();
 
     if (!supabaseUrl || !supabaseServiceKey) {
-        throw new Error('Supabase environment variables missing');
+        console.error('❌ [CONFIG ERROR] Missing env vars:', {
+            url: supabaseUrl ? '✅' : '❌ (NEXT_PUBLIC_SUPABASE_URL)',
+            key: supabaseServiceKey ? '✅' : '❌ (SUPABASE_SERVICE_ROLE_KEY)'
+        });
+        throw new Error(`환경 변수가 누락되었습니다: ${!supabaseUrl ? 'URL ' : ''}${!supabaseServiceKey ? 'Key' : ''}`);
     }
 
     return createClient(supabaseUrl, supabaseServiceKey, {

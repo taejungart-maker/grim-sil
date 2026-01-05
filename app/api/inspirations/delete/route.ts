@@ -4,10 +4,14 @@ import { createClient } from '@supabase/supabase-js';
 export const dynamic = 'force-dynamic';
 
 function getServerSupabaseClient() {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/"/g, '').trim();
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.replace(/"/g, '').trim();
 
     if (!supabaseUrl || !supabaseServiceKey) {
+        console.error('❌ [CONFIG ERROR] Missing env vars in Delete API:', {
+            url: supabaseUrl ? '✅' : '❌',
+            key: supabaseServiceKey ? '✅' : '❌'
+        });
         throw new Error('Supabase environment variables missing');
     }
 
