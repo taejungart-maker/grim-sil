@@ -74,6 +74,8 @@ export function getClientArtistId(): string {
 
 export function debugArtistId() {
     const artistId = getClientArtistId();
-    console.log(`[ArtistId Audit] ID: ${artistId}`);
+    if (typeof window !== 'undefined') {
+        console.log(`[ArtistId Audit] Host: ${window.location.hostname}, ID: ${artistId}`);
+    }
     return artistId;
 }
