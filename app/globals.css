@@ -62,8 +62,8 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-serif) !important;
-  /* 기본 서체를 명조체로 강력 고정 */
+  font-family: 'Noto Serif KR', serif !important;
+  /* [ULTRA_LOCK] 명조체 서체 절대 보호 */
   line-height: 1.8;
   -webkit-font-smoothing: antialiased;
   letter-spacing: -0.02em;
@@ -122,8 +122,8 @@ a:active,
   padding: 16px 32px;
   font-size: var(--font-size-lg);
   font-weight: 600;
-  border-radius: 40px !important;
-  /* 원형 버튼 강제 고정 */
+  border-radius: 9999px !important;
+  /* [ULTRA_LOCK] 완벽한 원형 강제 고정 */
   border: none;
   touch-action: manipulation;
 }
@@ -195,10 +195,8 @@ a:active,
   justify-content: center;
   min-width: 80px;
   min-height: var(--button-min-height);
-  padding: 12px 24px;
-  font-size: var(--font-size-lg);
-  font-weight: 600;
-  border-radius: 40px !important;
+  border-radius: 9999px !important;
+  /* [ULTRA_LOCK] 연도 탭 원형 고정 */
   background: transparent;
   color: var(--text-muted);
   border: 2px solid transparent;

@@ -15,7 +15,9 @@ export default function YearMonthTabs({ yearMonths, selectedYearMonth, onYearMon
     const colors = getThemeColors(theme);
     const activeTextColor = theme === "black" ? "#ffffff" : "#ffffff";
     const inactiveTextColor = theme === "black" ? "#6B7280" : SIGNATURE_COLORS.sandGray;
-    const activeBgColor = theme === "black" ? "#6366f1" : SIGNATURE_COLORS.royalIndigo;
+    const activeBgColor = theme === "black" ? "#6366f1" : "rgba(27, 38, 59, 0.05)"; // 도록 느낌의 아주 연한 배경
+    const activeBorderColor = theme === "black" ? "transparent" : SIGNATURE_COLORS.royalIndigo;
+    const activeTextColorFixed = theme === "black" ? "#ffffff" : SIGNATURE_COLORS.royalIndigo;
     const hoverBgColor = theme === "black" ? "rgba(255,255,255,0.08)" : "rgba(194, 188, 178, 0.2)";
 
     return (
@@ -51,8 +53,8 @@ export default function YearMonthTabs({ yearMonths, selectedYearMonth, onYearMon
 
                                 // 배경 및 테두리
                                 background: isSelected ? activeBgColor : "transparent",
-                                border: "none",
-                                borderRadius: "40px !important",
+                                border: isSelected ? `1.5px solid ${activeBorderColor}` : "none",
+                                borderRadius: "9999px !important",
 
                                 // 커서 및 트랜지션
                                 cursor: "pointer",
@@ -80,10 +82,10 @@ export default function YearMonthTabs({ yearMonths, selectedYearMonth, onYearMon
                             {/* 월 (보조 정보, 작고 희미하게) */}
                             <span
                                 style={{
-                                    fontFamily: "'Noto Sans KR', sans-serif",
+                                    fontFamily: "'Noto Serif KR', serif !important",
                                     fontSize: month ? "13px" : "20px", // 월은 작게 13px, 연도만 있으면 20px
-                                    fontWeight: isSelected ? 600 : 400,
-                                    color: isSelected ? activeTextColor : inactiveTextColor,
+                                    fontWeight: isSelected ? 700 : 400,
+                                    color: isSelected ? activeTextColorFixed : inactiveTextColor,
                                     letterSpacing: "0.02em",
                                     lineHeight: 1.2,
                                     order: 2, // 연도 아래에 표시
@@ -96,10 +98,10 @@ export default function YearMonthTabs({ yearMonths, selectedYearMonth, onYearMon
                             {month && (
                                 <span
                                     style={{
-                                        fontFamily: "'Noto Sans KR', sans-serif",
+                                        fontFamily: "'Noto Serif KR', serif !important",
                                         fontSize: "18px", // 연도 크게
-                                        fontWeight: isSelected ? 700 : 400, // 선택 시에만 Bold
-                                        color: isSelected ? activeTextColor : inactiveTextColor,
+                                        fontWeight: isSelected ? 800 : 400, // 선택 시에만 Bold
+                                        color: isSelected ? activeTextColorFixed : inactiveTextColor,
                                         letterSpacing: "0.01em",
                                         lineHeight: 1.2,
                                         order: 1, // 위에 표시
