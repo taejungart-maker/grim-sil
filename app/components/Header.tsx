@@ -98,7 +98,7 @@ export default function Header({
                                 color: "var(--foreground)",
                                 textDecoration: "none",
                                 border: "1px solid var(--border)",
-                                borderRadius: "2px",
+                                borderRadius: "20px",
                                 transition: "all 0.3s",
                             }}
                         >
@@ -255,7 +255,7 @@ export default function Header({
                                         padding: "7px 16px",
                                         background: theme === "black" ? "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)" : SIGNATURE_COLORS.antiqueBurgundy,
                                         color: "#ffffff",
-                                        borderRadius: "6px",
+                                        borderRadius: "24px",
                                         border: "none",
                                         cursor: "pointer",
                                         fontFamily: "'Noto Sans KR', sans-serif",
@@ -281,7 +281,7 @@ export default function Header({
                                     padding: "6px 12px",
                                     background: theme === "black" ? "#FEE500" : SIGNATURE_COLORS.antiqueBurgundy,
                                     color: theme === "black" ? "#2a2a2a" : "#fff",
-                                    borderRadius: "6px",
+                                    borderRadius: "24px",
                                     border: "none",
                                     cursor: "pointer",
                                     fontFamily: "'Noto Sans KR', sans-serif",

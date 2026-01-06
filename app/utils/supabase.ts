@@ -20,13 +20,12 @@ if (!supabaseUrl || !supabaseAnonKey) {
 export const ARTIST_ID = getClientArtistId(); // 🔥 12월 30일 디자인 복구를 위해 재활성화
 
 // [SECURITY_KILL] 전역 싱글톤 사살. "싱글톤 클라이언트를 즉시 사살하라"
-// 파일 최상단에서 supabase를 정의하면 Vercel Lambda가 메모리에 구형 ID를 보관하므로 절대 금지.
 export function getSupabaseClient() {
     if (!supabaseUrl || !supabaseAnonKey) {
         throw new Error("❌ Supabase configuration is missing. Check your environment variables.");
     }
 
-    const { getClientArtistId } = require("./getArtistId");
+    // [STABILITY_FIX] Top-level import 대신 내부 호출로 하되 require 제거
     const artistId = getClientArtistId();
 
     // 매번 새로운 인스턴스 생성 (createServerClient 개념의 동적 생성)

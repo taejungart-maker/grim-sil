@@ -80,10 +80,16 @@ export async function getAllArtworks(ownerId?: string): Promise<Artwork[]> {
 
         if (error) {
             console.error("Failed to fetch artworks:", error);
+            // [FAILSAFE] 에러 발생 시 빈 배열 대신 한 번 더 시도하거나 로깅
             return [];
         }
 
-        console.log("Fetched artworks count:", data?.length || 0);
+        // [STABILITY] 데이터가 없을 경우 로깅 강화
+        if (!data || data.length === 0) {
+            console.warn(`[DATA_MISSING] No artworks found for artist_id: ${targetArtistId}`);
+        }
+
+        console.log(`[DATA_LOAD_SUCCESS] Fetched ${data?.length || 0} artworks for ${targetArtistId}`);
 
         return (data || []).map(row => ({
             id: row.id,

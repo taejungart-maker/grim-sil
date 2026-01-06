@@ -344,43 +344,44 @@ export default function ArtworkViewer({
                         className="flex items-center gap-4 py-2 px-4"
                         style={{
                             pointerEvents: "auto",
-                            background: "rgba(245, 242, 237, 0.4)", // 은은한 배경
-                            backdropFilter: "blur(8px)",
-                            borderRadius: "2px",
+                            background: "rgba(245, 242, 237, 0.7)", // 조금 더 선명하게
+                            backdropFilter: "blur(12px)",
+                            WebkitBackdropFilter: "blur(12px)",
+                            borderRadius: "30px", // 원형 느낌
                         }}
                     >
                         <button
                             onClick={() => setShowCaption(!showCaption)}
                             style={{
-                                height: "40px",
-                                padding: "0 16px",
+                                height: "44px",
+                                padding: "0 22px",
                                 background: "var(--primary)",
                                 color: "#fff",
                                 border: "none",
-                                borderRadius: "2px",
+                                borderRadius: "22px", // 원형
                                 fontFamily: "var(--font-serif)",
-                                fontSize: "13px",
+                                fontSize: "14px",
                                 fontWeight: 500,
                                 cursor: "pointer",
-                                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                                boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
                                 transition: "all 0.3s ease",
                             }}
                         >
-                            {showCaption ? "정보닫기" : "작품정보클릭"}
+                            {showCaption ? "정보닫기" : "작품정보보기"}
                         </button>
 
                         {isLoggedIn && showCaption && (
                             <button
                                 onClick={() => setShowDeleteConfirm(true)}
                                 style={{
-                                    height: "40px",
-                                    padding: "0 16px",
+                                    height: "44px",
+                                    padding: "0 20px",
                                     background: "transparent",
                                     color: "#dc2626",
-                                    border: "1px solid rgba(220, 38, 38, 0.2)",
-                                    borderRadius: "2px",
+                                    border: "1.5px solid rgba(220, 38, 38, 0.4)",
+                                    borderRadius: "22px", // 원형
                                     fontFamily: "var(--font-serif)",
-                                    fontSize: "13px",
+                                    fontSize: "14px",
                                     fontWeight: 500,
                                     cursor: "pointer",
                                 }}
