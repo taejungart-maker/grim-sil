@@ -4,7 +4,7 @@ import { loadSettings, loadSettingsById } from "./utils/settingsDb";
 import { getClientArtistId } from "./utils/getArtistId";
 import { unstable_noStore as noStore } from "next/cache";
 
-export const revalidate = 0;
+// [CACHE_BUST] 2026-01-06 23:05:00
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata() {

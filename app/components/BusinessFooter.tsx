@@ -161,9 +161,9 @@ export default function BusinessFooter({ theme = "light", borderColor = "rgba(0,
                     color: isBlack ? "#555" : "#aaa",
                 }}>
                 </div>
-                {/* [RECOVERY_TAG] Ver. 1.1.4 (Ultra Aesthetic Lock) */}
+                {/* [RECOVERY_TAG] Ver. 1.1.5 (Aesthetic Final Stability) */}
                 <div style={{ marginTop: "12px", opacity: 0.3, fontSize: "10px" }}>
-                    v1.1.4 (Ultra Aesthetic Lock)
+                    v1.1.5 (Aesthetic Final Stability)
                 </div>
             </div>
         </footer>

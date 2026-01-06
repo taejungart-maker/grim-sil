@@ -113,9 +113,9 @@ export default function VIPBusinessFooter({ theme, galleryNameKo, borderColor, s
                 <div style={{ fontSize: "12px", opacity: 0.5 }}>
                     &copy; 2024-{new Date().getFullYear()} {galleryNameKo}. All rights reserved.
                 </div>
-                {/* [RECOVERY_TAG] Ver. 1.1.4 (Ultra Aesthetic Lock) */}
+                {/* [RECOVERY_TAG] Ver. 1.1.5 (Aesthetic Final Stability) */}
                 <div style={{ marginTop: "12px", opacity: 0.3, fontSize: "10px" }}>
-                    v1.1.4 (Ultra Aesthetic Lock)
+                    v1.1.5 (Aesthetic Final Stability)
                 </div>
             </div>
 

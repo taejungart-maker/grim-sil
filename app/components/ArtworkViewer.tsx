@@ -357,7 +357,7 @@ export default function ArtworkViewer({
                                 background: "var(--primary)",
                                 color: "#fff",
                                 border: "none",
-                                borderRadius: "24px !important", // 강제 원형
+                                borderRadius: "9999px !important", // 울트라 원형 고정
                                 fontFamily: "var(--font-serif)",
                                 fontSize: "15px",
                                 fontWeight: 600,
