@@ -18,7 +18,7 @@ export default function ArtworkCard({
     onClick,
     priority = false,
     minimal = false,
-    showInfo = false // 도록 스타일: 컬렉터 감상 방해 방지를 위해 기본적으로 숨김 (hover시에만 표시)
+    showInfo = true // 도록 스타일에서는 정보를 기본적으로 표시하는 것이 더 정중함
 }: ArtworkCardProps) {
     const [imageUrl, setImageUrl] = useState(artwork.imageUrl);
     const [imageLoading, setImageLoading] = useState(false); // 이미지 로딩 비활성화
@@ -83,7 +83,7 @@ export default function ArtworkCard({
                         <span style={{ color: "#999" }}>이미지 없음</span>
                     </div>
                 )}
-                {/* 정보 오버레이 - [REVISION] 1월 6일 요청: 기본적으로 숨김, hover 시에만 노출 */}
+                {/* 정보 오버레이 - 잡지 레이아웃처럼 정갈하게 */}
                 <div
                     className={showInfo ? "opacity-100" : "opacity-0 group-hover:opacity-100"}
                     style={{
