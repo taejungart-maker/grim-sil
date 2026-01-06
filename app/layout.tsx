@@ -4,7 +4,10 @@ import { loadSettings, loadSettingsById } from "./utils/settingsDb";
 import { getClientArtistId } from "./utils/getArtistId";
 import { unstable_noStore as noStore } from "next/cache";
 
-// [CACHE_BUST] 2026-01-06 23:05:00
+// [CACHE_BUST] 2026-01-06 23:40:00
+if (typeof window !== 'undefined') {
+  console.log("Grim-Sil Version: v1.1.7 (Infinite Design Lock)");
+}
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata() {

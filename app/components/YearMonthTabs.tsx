@@ -11,6 +11,11 @@ interface YearMonthTabsProps {
 }
 
 export default function YearMonthTabs({ yearMonths, selectedYearMonth, onYearMonthSelect, theme = "white" }: YearMonthTabsProps) {
+    // [V1.1.7_DEBUG] 브라우저 콘솔에서 확인 가능
+    if (typeof window !== 'undefined') {
+        console.log("Round Button Style Applied (YearTabs)!");
+    }
+
     // 연도 탭 색상 - 사용자 요구사항에 맞춘 색상
     const colors = getThemeColors(theme);
     const activeTextColor = theme === "black" ? "#ffffff" : "#ffffff";
@@ -45,16 +50,16 @@ export default function YearMonthTabs({ yearMonths, selectedYearMonth, onYearMon
                         <button
                             key={ym}
                             onClick={() => onYearMonthSelect(ym)}
+                            className="force-circle"
                             style={{
                                 // 최소 48dp x 48dp 터치 영역 확보
                                 minWidth: "52px",
                                 minHeight: "52px",
                                 padding: "10px 16px",
 
-                                // 배경 및 테두리
                                 background: isSelected ? activeBgColor : "transparent",
-                                border: isSelected ? `1.5px solid ${activeBorderColor}` : "none",
-                                borderRadius: "9999px !important",
+                                border: isSelected ? `1.5px solid ${activeBorderColor}` : "1px solid #ddd",
+                                borderRadius: "9999px", // [BRUTE_FORCE] 인라인 스타일 주입
 
                                 // 커서 및 트랜지션
                                 cursor: "pointer",

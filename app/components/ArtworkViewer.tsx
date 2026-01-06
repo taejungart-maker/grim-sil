@@ -26,6 +26,9 @@ export default function ArtworkViewer({
     showPrice = false,
     theme = "white",
 }: ArtworkViewerProps) {
+    if (typeof window !== 'undefined') {
+        console.log("Round Button Style Applied (ArtworkViewer)!");
+    }
     const { isAuthenticated: isLoggedIn } = useAuth();
     const [currentIndex, setCurrentIndex] = useState(initialIndex);
     const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);

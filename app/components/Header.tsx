@@ -31,6 +31,9 @@ export default function Header({
     vipId,
     isAlwaysFree = false
 }: HeaderProps) {
+    if (typeof window !== 'undefined') {
+        console.log("Round Button Style Applied (Header)!");
+    }
     const searchParams = useSearchParams();
     const isScreeningMode = searchParams.get('screening') === 'true';
     const [isMounted, setIsMounted] = useState(false);
@@ -97,10 +100,10 @@ export default function Header({
                                 fontWeight: 600,
                                 color: "var(--foreground)",
                                 textDecoration: "none",
-                                border: "1px solid var(--border)",
-                                borderRadius: "9999px !important",
+                                borderRadius: "9999px", // [BRUTE_FORCE]
                                 transition: "all 0.3s",
                             }}
+                            className="force-circle"
                         >
                             Studio
                         </Link>
@@ -137,7 +140,7 @@ export default function Header({
                                     padding: "3px 6px",
                                     background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
                                     color: "#fff",
-                                    borderRadius: "9999px !important",
+                                    borderRadius: "9999px", // [BRUTE_FORCE]
                                     fontSize: "10px",
                                     fontWeight: 800,
                                     letterSpacing: "0.05em",
@@ -255,7 +258,7 @@ export default function Header({
                                         padding: "7px 16px",
                                         background: theme === "black" ? "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)" : SIGNATURE_COLORS.antiqueBurgundy,
                                         color: "#ffffff",
-                                        borderRadius: "9999px !important",
+                                        borderRadius: "9999px", // [BRUTE_FORCE]
                                         border: "none",
                                         cursor: "pointer",
                                         fontFamily: "'Noto Sans KR', sans-serif",
@@ -281,7 +284,7 @@ export default function Header({
                                     padding: "6px 12px",
                                     background: theme === "black" ? "#FEE500" : SIGNATURE_COLORS.antiqueBurgundy,
                                     color: theme === "black" ? "#2a2a2a" : "#fff",
-                                    borderRadius: "9999px !important",
+                                    borderRadius: "9999px", // [BRUTE_FORCE]
                                     border: "none",
                                     cursor: "pointer",
                                     fontFamily: "'Noto Sans KR', sans-serif",
