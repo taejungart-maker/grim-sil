@@ -9,7 +9,6 @@ import AdminLogin from "../components/admin/AdminLogin";
 import AdminHeader from "../components/admin/AdminHeader";
 import AdminSettingsSection from "../components/admin/AdminSettingsSection";
 import AdminContentSection from "../components/admin/AdminContentSection";
-import AdminVipSection from "../components/admin/AdminVipSection";
 import AdminSecuritySection from "../components/admin/AdminSecuritySection";
 import KakaoCacheModal from "../components/KakaoCacheModal";
 
@@ -94,15 +93,7 @@ export default function AdminClient({ injectedArtistId }: AdminClientProps) {
                         borderColor={themeColors.border}
                     />
 
-                    {/* 2. 사용자 승인 및 VIP 관리 */}
-                    <AdminVipSection
-                        bgColor={themeColors.bg}
-                        textColor={themeColors.text}
-                        borderColor={themeColors.border}
-                        mutedColor={themeColors.muted}
-                    />
-
-                    {/* 3. 콘텐츠 관리 (작가 소개, 뉴스) */}
+                    {/* 2. 콘텐츠 관리 (작가 소개, 뉴스) */}
                     <AdminContentSection
                         settings={settings}
                         setSettings={setSettings}

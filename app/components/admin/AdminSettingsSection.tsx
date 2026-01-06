@@ -42,24 +42,6 @@ export default function AdminSettingsSection({
                         <label className="block text-xs md:text-sm font-semibold mb-2 opacity-70">사이트 설명</label>
                         <textarea className="w-full p-3 md:p-4 border-2 rounded-xl bg-transparent text-sm md:text-base" style={{ borderColor }} rows={3} value={settings.siteDescription} onChange={e => setSettings({ ...settings, siteDescription: e.target.value })} />
                     </div>
-                    <div className="pt-2">
-                        <button
-                            onClick={() => {
-                                const siteUrl = typeof window !== 'undefined' ? window.location.origin : "";
-                                const kakaoToolUrl = `https://developers.kakao.com/tool/clear/og?url=${encodeURIComponent(siteUrl)}`;
-                                window.open(kakaoToolUrl, '_blank');
-                            }}
-                            className="text-sm text-indigo-600 font-semibold hover:underline flex items-center gap-1"
-                        >
-                            <span>✨ 카카오톡 미리보기 강제 갱신 (캐시 삭제)</span>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                                <polyline points="15 3 21 3 21 9"></polyline>
-                                <line x1="10" y1="14" x2="21" y2="3"></line>
-                            </svg>
-                        </button>
-                        <p className="mt-2 text-[11px] opacity-50">프로필 사진이나 제목 변경 후 카카오톡에 예전 정보가 뜰 때 사용하세요.</p>
-                    </div>
                 </div>
             </section>
 
