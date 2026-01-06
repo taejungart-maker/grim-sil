@@ -113,6 +113,10 @@ export default function VIPBusinessFooter({ theme, galleryNameKo, borderColor, s
                 <div style={{ fontSize: "12px", opacity: 0.5 }}>
                     &copy; 2024-{new Date().getFullYear()} {galleryNameKo}. All rights reserved.
                 </div>
+                {/* [RECOVERY_TAG] Ver. 1.0.1 (Recovery) */}
+                <div style={{ marginTop: "12px", opacity: 0.3, fontSize: "10px" }}>
+                    v1.0.1 (Recovery)
+                </div>
             </div>
 
             {/* 결제 및 구매 안내 */}

@@ -160,7 +160,10 @@ export default function BusinessFooter({ theme = "light", borderColor = "rgba(0,
                     fontSize: "12px",
                     color: isBlack ? "#555" : "#aaa",
                 }}>
-                    © 2024-2025 그림실 (Grim-Sil). All rights reserved.
+                </div>
+                {/* [RECOVERY_TAG] Ver. 1.0.1 (Recovery) */}
+                <div style={{ marginTop: "12px", opacity: 0.3, fontSize: "10px" }}>
+                    v1.0.1 (Recovery)
                 </div>
             </div>
         </footer>
