@@ -1,5 +1,7 @@
 /**
- * Port One V1 결제 처리 (IMP SDK)
+ * 토스페이먼츠 통합 결제 처리
+ * - PortOne(아임포트) V1 SDK를 통한 토스페이먼츠 연동
+ * - 신용카드, 계좌이체, 카카오페이, 네이버페이 등 모든 결제수단 지원
  */
 
 // IMP 타입 정의
@@ -22,7 +24,9 @@ function getPaymentStorageKey(): string {
     return `payment_status__${artistId}`;
 }
 
-// PortOne V1 스크립트 로드
+/**
+ * PortOne V1 스크립트 로드
+ */
 function loadPortOneScript(): Promise<void> {
     return new Promise((resolve, reject) => {
         if (window.IMP) {
@@ -38,6 +42,11 @@ function loadPortOneScript(): Promise<void> {
     });
 }
 
+/**
+ * 토스페이먼츠 통합 결제 시작
+ * - 결제수단: 신용카드, 계좌이체, 카카오페이, 토스페이, 네이버페이 등
+ * - 사용자가 결제창에서 직접 선택
+ */
 export async function startSubscription(): Promise<boolean> {
     try {
         // 브라우저 환경 체크
@@ -46,7 +55,7 @@ export async function startSubscription(): Promise<boolean> {
             return false;
         }
 
-        console.log('Starting V1 payment process...');
+        console.log('🚀 토스페이먼츠 통합 결제 시작...');
 
         // PortOne V1 스크립트 로드
         await loadPortOneScript();
@@ -59,34 +68,43 @@ export async function startSubscription(): Promise<boolean> {
         const IMP = window.IMP;
         IMP.init('imp51454837'); // 실제 가맹점 식별코드
 
-        console.log('IMP initialized');
+        console.log('✅ IMP 초기화 완료');
 
         // 고유 주문번호 생성
         const merchant_uid = `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
         return new Promise((resolve) => {
-            // 결제 요청
+            // 토스페이먼츠 통합 결제 요청
             IMP.request_pay({
-                pg: 'kakaopay.TC0ONETIME', // 카카오페이 테스트
-                pay_method: 'card',
+                pg: 'tosspayments', // 토스페이먼츠 PG사
+                pay_method: '', // 빈값 = 결제창에서 사용자가 결제수단 선택
                 merchant_uid: merchant_uid,
-                name: 'VIP 프리미엄 구독',
-                amount: 29000,
-                buyer_email: 'test@example.com',
-                buyer_name: '테스트',
+                name: 'VIP 프리미엄 구독 (월간)',
+                amount: 29000, // 29,000원
+                buyer_email: 'customer@example.com',
+                buyer_name: '고객',
                 buyer_tel: '010-0000-0000',
-                m_redirect_url: window.location.origin + '/subscription', // 모바일 결제 후 리디렉션 URL
+                m_redirect_url: window.location.origin + '/payment/complete', // 모바일 결제 후 리디렉션
+                // 테스트 모드에서는 실결제 되지 않음
 
             }, (response: any) => {
-                console.log('Payment response:', response);
+                console.log('💳 결제 응답:', response);
 
                 if (response.success) {
-                    console.log('Payment successful!', response);
+                    // 결제 성공
+                    console.log('🎉 결제 성공!', response);
+                    console.log('   - 결제 ID:', response.imp_uid);
+                    console.log('   - 주문번호:', response.merchant_uid);
+                    console.log('   - 결제수단:', response.pay_method);
+
+                    // 로컬 결제 상태 저장
                     const paymentKey = getPaymentStorageKey();
                     localStorage.setItem(paymentKey, 'paid');
+
                     resolve(true);
                 } else {
-                    console.error('Payment failed:', response.error_msg);
+                    // 결제 실패 또는 취소
+                    console.error('❌ 결제 실패:', response.error_msg);
                     if (response.error_msg) {
                         alert(`결제 실패: ${response.error_msg}`);
                     }
@@ -96,7 +114,7 @@ export async function startSubscription(): Promise<boolean> {
         });
 
     } catch (error) {
-        console.error('Payment error:', error);
+        console.error('❌ 결제 처리 오류:', error);
         alert('결제 처리 중 오류가 발생했습니다. 다시 시도해주세요.');
         return false;
     }
@@ -105,17 +123,21 @@ export async function startSubscription(): Promise<boolean> {
 // 하위 호환성을 위한 alias
 export const processPayment = startSubscription;
 
-// 결제 상태 확인
+/**
+ * 결제 상태 확인
+ */
 export function checkPaymentStatus(): boolean {
     if (typeof window === 'undefined') return false;
     const paymentKey = getPaymentStorageKey();
     return localStorage.getItem(paymentKey) === 'paid';
 }
 
-// 결제 상태 초기화
+/**
+ * 결제 상태 초기화 (구독 취소 시 사용)
+ */
 export function resetPaymentStatus(): void {
     if (typeof window === 'undefined') return;
     const paymentKey = getPaymentStorageKey();
     localStorage.removeItem(paymentKey);
+    console.log('🔄 결제 상태 초기화 완료');
 }
-
