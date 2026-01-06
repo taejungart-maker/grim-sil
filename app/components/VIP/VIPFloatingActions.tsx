@@ -26,7 +26,7 @@ export default function VIPFloatingActions({ theme, vipId, onShareClick }: VIPFl
                 style={{
                     width: "46px",
                     height: "46px",
-                    borderRadius: "50%",
+                    borderRadius: "50% !important",
                     background: theme === "black" ? "#4f46e5" : SIGNATURE_COLORS.royalIndigo,
                     color: "#fff",
                     display: "flex",
@@ -51,7 +51,7 @@ export default function VIPFloatingActions({ theme, vipId, onShareClick }: VIPFl
                 style={{
                     width: "46px",
                     height: "46px",
-                    borderRadius: "50%",
+                    borderRadius: "50% !important",
                     background: theme === "black" ? "#1a1a1a" : SIGNATURE_COLORS.antiqueBurgundy,
                     color: "#fff",
                     textDecoration: "none",

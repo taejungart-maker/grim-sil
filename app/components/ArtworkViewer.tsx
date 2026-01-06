@@ -347,23 +347,23 @@ export default function ArtworkViewer({
                             background: "rgba(245, 242, 237, 0.7)", // 조금 더 선명하게
                             backdropFilter: "blur(12px)",
                             WebkitBackdropFilter: "blur(12px)",
-                            borderRadius: "30px", // 원형 느낌
+                            borderRadius: "40px !important", // 강제 원형 레이아웃
                         }}
                     >
                         <button
                             onClick={() => setShowCaption(!showCaption)}
                             style={{
-                                height: "44px",
-                                padding: "0 22px",
+                                height: "48px",
+                                padding: "0 24px",
                                 background: "var(--primary)",
                                 color: "#fff",
                                 border: "none",
-                                borderRadius: "22px", // 원형
+                                borderRadius: "24px !important", // 강제 원형
                                 fontFamily: "var(--font-serif)",
-                                fontSize: "14px",
-                                fontWeight: 500,
+                                fontSize: "15px",
+                                fontWeight: 600,
                                 cursor: "pointer",
-                                boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                                boxShadow: "0 6px 16px rgba(0,0,0,0.2)",
                                 transition: "all 0.3s ease",
                             }}
                         >
@@ -374,15 +374,15 @@ export default function ArtworkViewer({
                             <button
                                 onClick={() => setShowDeleteConfirm(true)}
                                 style={{
-                                    height: "44px",
+                                    height: "48px",
                                     padding: "0 20px",
                                     background: "transparent",
                                     color: "#dc2626",
                                     border: "1.5px solid rgba(220, 38, 38, 0.4)",
-                                    borderRadius: "22px", // 원형
+                                    borderRadius: "24px !important", // 강제 원형
                                     fontFamily: "var(--font-serif)",
                                     fontSize: "14px",
-                                    fontWeight: 500,
+                                    fontWeight: 600,
                                     cursor: "pointer",
                                 }}
                             >

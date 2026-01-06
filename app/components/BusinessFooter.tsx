@@ -161,9 +161,9 @@ export default function BusinessFooter({ theme = "light", borderColor = "rgba(0,
                     color: isBlack ? "#555" : "#aaa",
                 }}>
                 </div>
-                {/* [RECOVERY_TAG] Ver. 1.0.1 (Recovery) */}
+                {/* [RECOVERY_TAG] Ver. 1.0.2 (Recovery) */}
                 <div style={{ marginTop: "12px", opacity: 0.3, fontSize: "10px" }}>
-                    v1.0.1 (Recovery)
+                    v1.0.2 (Recovery)
                 </div>
             </div>
         </footer>

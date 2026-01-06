@@ -69,10 +69,10 @@ export async function getAllArtworks(ownerId?: string): Promise<Artwork[]> {
         const supabase = getSupabaseClient();
         console.log(`=== [ISOLATION AUDIT] Fetching artworks for ID: ${targetArtistId} ===`);
 
-        // 메타데이터 로드
+        // [STABILITY_RECOVERY] 존재하지 않는 필드(thumbnail_url 등) 요청으로 인한 400 에러 원천 차단
         const { data, error, status } = await supabase
             .from("artworks")
-            .select("id, title, year, month, dimensions, medium, description, price, created_at, image_url, thumbnail_url, artist_name")
+            .select("*")
             .eq("artist_id", targetArtistId)
             .order("created_at", { ascending: false });
 
