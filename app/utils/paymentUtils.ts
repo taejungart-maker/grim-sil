@@ -71,7 +71,7 @@ export async function startSubscription(): Promise<boolean> {
                 pay_method: 'card',
                 merchant_uid: merchant_uid,
                 name: 'VIP 프리미엄 구독',
-                amount: 20000,
+                amount: 29000,
                 buyer_email: 'test@example.com',
                 buyer_name: '테스트',
                 buyer_tel: '010-0000-0000',

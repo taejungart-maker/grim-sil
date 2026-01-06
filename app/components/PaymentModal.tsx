@@ -172,7 +172,7 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }: PaymentModa
                         <div style={{ background: 'linear-gradient(to bottom, #f8fafc, #ffffff)', borderRadius: '24px', padding: '24px', marginBottom: '32px', border: '1px solid #f1f5f9' }}>
                             <div style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '6px', fontWeight: 500 }}>그림실 프리미엄 (월간)</div>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                                <span style={{ fontSize: '32px', fontWeight: 900, color: '#1e293b' }}>20,000 KRW</span>
+                                <span style={{ fontSize: '32px', fontWeight: 900, color: '#1e293b' }}>29,000 KRW</span>
                                 <span style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '-8px' }}>/ 월</span>
                             </div>
                         </div>
@@ -252,7 +252,7 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }: PaymentModa
                                 transition: 'all 0.2s'
                             }}
                         >
-                            {isProcessing ? '승인 처리 중...' : '20,000 KRW 결제 요청'}
+                            {isProcessing ? '승인 처리 중...' : '29,000 KRW 결제 요청'}
                         </button>
 
                         {error && (

@@ -51,7 +51,7 @@ export default function ApplyPage() {
                 channelKey: channelKey,
                 paymentId: `gallery-${Date.now()}`,
                 orderName: `온라인 갤러리 월 구독 - ${galleryName}`,
-                totalAmount: 20000,
+                totalAmount: 29000,
                 currency: "CURRENCY_KRW",
                 payMethod: "EASY_PAY",
                 customer: {
@@ -188,7 +188,7 @@ export default function ApplyPage() {
                     marginBottom: "24px",
                     lineHeight: 1.6,
                 }}>
-                    월 20,000원으로 나만의<br />
+                    월 29,000원으로 나만의<br />
                     온라인 갤러리를 시작하세요!
                 </p>
 
@@ -339,7 +339,7 @@ export default function ApplyPage() {
                             boxShadow: "0 4px 16px rgba(99, 102, 241, 0.3)",
                         }}
                     >
-                        {isProcessing ? "결제 진행 중..." : "💳 20,000원 결제하고 시작하기"}
+                        {isProcessing ? "결제 진행 중..." : "💳 29,000원 결제하고 시작하기"}
                     </button>
                 </form>
 

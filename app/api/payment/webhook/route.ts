@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
             customerName,
             tempPassword,
             false, // 결제형
-            20000  // 구독 가격
+            29000  // 구독 가격
         );
 
         console.log('🎉 VIP 갤러리 자동 생성:', newArtist.link_id);

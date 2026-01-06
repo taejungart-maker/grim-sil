@@ -145,7 +145,7 @@ export default function BusinessFooter({ theme = "light", borderColor = "rgba(0,
                         결제 안내
                     </div>
                     <div style={{ fontSize: "12px", color: isBlack ? "#777" : "#999" }}>
-                        본 서비스는 월 20,000 KRW의 구독 서비스입니다. 결제는 Port One을 통해 안전하게 처리됩니다.
+                        본 서비스는 월 29,000 KRW의 구독 서비스입니다. 결제는 Port One을 통해 안전하게 처리됩니다.
                         <br />
                         구독 취소 시 위약금 없이 즉시 해지 가능하며, 남은 기간에 대한 부분 환불은 이용약관에 따릅니다.
                     </div>

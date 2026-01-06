@@ -181,7 +181,7 @@ export default function PaymentRequiredPage() {
                     <div style={{ background: 'linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%)', borderRadius: '20px', padding: '24px', marginBottom: '28px', border: '1px solid #eef2ff' }}>
                         <div style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '4px', fontWeight: 500 }}>{isTestMode ? '시연용 테스트 결제' : '인디고 멤버십 (월간)'}</div>
                         <div style={{ fontSize: '32px', fontWeight: 900, color: '#1e293b' }}>
-                            {isTestMode ? '100 KRW' : '20,000 KRW'}
+                            {isTestMode ? '100 KRW' : '29,000 KRW'}
                         </div>
                     </div>
 
@@ -209,7 +209,7 @@ export default function PaymentRequiredPage() {
                                 transition: 'all 0.2s ease'
                             }}
                         >
-                            {isProcessing ? '결제 요청 중...' : isTestMode ? '100 KRW 결제 체험하기' : '20,000 KRW 정기 구독 시작'}
+                            {isProcessing ? '결제 요청 중...' : isTestMode ? '100 KRW 결제 체험하기' : '29,000 KRW 정기 구독 시작'}
                         </button>
 
                         <button

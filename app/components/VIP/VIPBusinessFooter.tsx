@@ -125,7 +125,7 @@ export default function VIPBusinessFooter({ theme, galleryNameKo, borderColor, s
                     결제 안내
                 </div>
                 <div style={{ fontSize: "12px", color: theme === "black" ? "#777" : "#999", lineHeight: 1.6 }}>
-                    본 서비스는 월 20,000원의 구독 서비스입니다. 결제는 Port One을 통해 안전하게 처리됩니다.
+                    본 서비스는 월 29,000원의 구독 서비스입니다. 결제는 Port One을 통해 안전하게 처리됩니다.
                     <br />
                     결제 시 <button onClick={() => setPolicyModal({ isOpen: true, policyId: "terms" })} style={{ textDecoration: 'underline', color: 'inherit', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>이용약관</button>, <button onClick={() => setPolicyModal({ isOpen: true, policyId: "privacy" })} style={{ textDecoration: 'underline', color: 'inherit' }}>개인정보방침</button>, <button onClick={() => setPolicyModal({ isOpen: true, policyId: "refund" })} style={{ textDecoration: 'underline', color: 'inherit' }}>환불 정책</button> 및 <button onClick={() => setPolicyModal({ isOpen: true, policyId: "exchange" })} style={{ textDecoration: 'underline', color: 'inherit' }}>교환 정책</button>에 동의한 것으로 간주됩니다.
                     <br />
