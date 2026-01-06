@@ -294,11 +294,10 @@ export default function ArtworkViewer({
                 ref={imageContainerRef}
                 className="absolute inset-0 flex items-center justify-center overflow-hidden"
                 style={{
-                    padding: isZoomed ? "0" : "80px 24px 100px 24px", // 하단 푸터 공간
-                    touchAction: "none",
-                    cursor: isZoomed ? "zoom-out" : "zoom-in",
+                    padding: "80px 24px 100px 24px", // 하단 푸터 공간 확보
+                    touchAction: "none", // 스와이프를 위한 터치 액션 제어
+                    cursor: "default",
                 }}
-                onClick={handleImageClick}
                 onTouchStart={handleImageTouchStart}
                 onTouchEnd={handleImageTouchEnd}
             >
@@ -367,7 +366,7 @@ export default function ArtworkViewer({
                                 transition: "all 0.3s ease",
                             }}
                         >
-                            {showCaption ? "정보닫기" : "작품정보보기"}
+                            {showCaption ? "정보닫기" : "작품정보 클릭"}
                         </button>
 
                         {isLoggedIn && showCaption && (
@@ -393,30 +392,7 @@ export default function ArtworkViewer({
                 </div>
             )}
 
-            {/* 자연스러운 캡션 배경 (중앙) - 닫혀있을 때만 표시 */}
-            {!showCaption && !isZoomed && (
-                <div
-                    className="absolute bottom-24 left-0 right-0 z-40 flex flex-col items-center pointer-events-none"
-                    style={{ animation: "fadeIn 1s ease", opacity: 0.6 }}
-                >
-                    <p style={{
-                        fontFamily: "var(--font-serif)",
-                        fontSize: "16px",
-                        fontWeight: 600,
-                        color: titleColor,
-                        marginBottom: "2px"
-                    }}>
-                        {currentArtwork.title}
-                    </p>
-                    <p style={{
-                        fontFamily: "var(--font-serif)",
-                        fontSize: "12px",
-                        color: "var(--text-muted)",
-                    }}>
-                        {currentIndex + 1} / {artworks.length}
-                    </p>
-                </div>
-            )}
+            {/* 자연스러운 캡션 배경 (중앙) - [REVISION] 컬렉터 감상 방해 방지를 위해 상시 텍스트 제거 */}
 
             {/* 이전/다음 버튼 (데스크톱 전용) */}
             {currentIndex > 0 && !showCaption && (
