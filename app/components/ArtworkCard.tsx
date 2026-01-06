@@ -18,7 +18,7 @@ export default function ArtworkCard({
     onClick,
     priority = false,
     minimal = false,
-    showInfo = true // 도록 스타일에서는 정보를 기본적으로 표시하는 것이 더 정중함
+    showInfo = false // 도록 스타일: 컬렉터 감상 방해를 방지하기 위해 기본적으로 숨김 (Hover 시에만 노출)
 }: ArtworkCardProps) {
     const [imageUrl, setImageUrl] = useState(artwork.imageUrl);
     const [imageLoading, setImageLoading] = useState(false); // 이미지 로딩 비활성화
