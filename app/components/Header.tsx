@@ -98,7 +98,7 @@ export default function Header({
                                 color: "var(--foreground)",
                                 textDecoration: "none",
                                 border: "1px solid var(--border)",
-                                borderRadius: "20px",
+                                borderRadius: "40px !important",
                                 transition: "all 0.3s",
                             }}
                         >
@@ -255,7 +255,7 @@ export default function Header({
                                         padding: "7px 16px",
                                         background: theme === "black" ? "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)" : SIGNATURE_COLORS.antiqueBurgundy,
                                         color: "#ffffff",
-                                        borderRadius: "24px",
+                                        borderRadius: "40px !important",
                                         border: "none",
                                         cursor: "pointer",
                                         fontFamily: "'Noto Sans KR', sans-serif",

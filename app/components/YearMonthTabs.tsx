@@ -52,7 +52,7 @@ export default function YearMonthTabs({ yearMonths, selectedYearMonth, onYearMon
                                 // 배경 및 테두리
                                 background: isSelected ? activeBgColor : "transparent",
                                 border: "none",
-                                borderRadius: "12px",
+                                borderRadius: "40px !important",
 
                                 // 커서 및 트랜지션
                                 cursor: "pointer",
