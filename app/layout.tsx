@@ -4,9 +4,9 @@ import { loadSettings, loadSettingsById } from "./utils/settingsDb";
 import { getClientArtistId } from "./utils/getArtistId";
 import { unstable_noStore as noStore } from "next/cache";
 
-// [CACHE_BUST] 2026-01-06 23:40:00
+// [CACHE_BUST] 2026-01-07 00:21:30 - v1.1.9 Force Deploy
 if (typeof window !== 'undefined') {
-  console.log("Grim-Sil Version: v1.1.7 (Infinite Design Lock)");
+  console.log("Grim-Sil Version: v1.1.9 (Force Deploy Trigger)");
 }
 export const dynamic = "force-dynamic";
 
