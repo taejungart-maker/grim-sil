@@ -1,31 +1,20 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback, Suspense, useRef } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { getYearMonths, getArtworksByYearMonth, Artwork, YearMonthKey } from "./data/artworks";
-import { loadSettingsById, quickAddPick } from "./utils/settingsDb";
 import { getThemeColors, SIGNATURE_COLORS } from "./utils/themeColors";
-import type { SiteConfig } from "./config/site";
-import { loadDemoDataIfEmpty } from "./utils/demoData";
-import { useSyncedArtworks, useSyncedSettings } from "./hooks/useSyncedArtworks";
-import { useAuth } from "./contexts/AuthContext";
-import { getOwnerId } from "./utils/auth";
+import { isPaymentRequired } from "./utils/deploymentMode";
+import { usePayment } from "./contexts/PaymentContext";
+import { useHomeData } from "./hooks/useHomeData";
 import YearMonthTabs from "./components/YearMonthTabs";
 import ArtworkCard from "./components/ArtworkCard";
 import ArtworkViewer from "./components/ArtworkViewer";
-import { isPaymentRequired } from "./utils/deploymentMode";
-import { usePayment } from "./contexts/PaymentContext";
-import PaymentGate from "./components/PaymentGate";
-import PaymentModal from "./components/PaymentModal";
 import Header from "./components/Header";
 import LoginModal from "./components/LoginModal";
 import ShareModal from "./components/ShareModal";
 import NewsTicker from "./components/NewsTicker";
 import EncouragementSection from "./components/EncouragementSection";
 import ArtistPicksSection from "./components/ArtistPicksSection";
-import ExpiredOverlay from "./components/ExpiredOverlay";
-import PolicyModal from "./components/PolicyModal";
 import CTASection from "./components/CTASection";
 import Footer from "./components/Footer";
 
@@ -34,65 +23,30 @@ interface HomeClientProps {
 }
 
 export default function HomeClient({ injectedArtistId }: HomeClientProps) {
-    const searchParams = useSearchParams();
-    const yearMonthParam = searchParams.get("yearMonth");
+    const {
+        settings,
+        isLoggedIn,
+        logout,
+        isLoading,
+        selectedYearMonth,
+        setSelectedYearMonth,
+        selectedArtwork,
+        setSelectedArtwork,
+        filteredArtworks,
+        yearMonths,
+        handleArtworkDeleted
+    } = useHomeData(injectedArtistId);
 
-    // [V8_FIX] 서버에서 주입된 테넌트 ID 사용
-    const { artworks, isLoading: artworksLoading, refresh: refreshArtworks } = useSyncedArtworks(injectedArtistId);
-    const { settings, isLoading: settingsLoading } = useSyncedSettings(injectedArtistId);
-
-    const { isAuthenticated: isLoggedIn, ownerId, logout } = useAuth();
-    const { isPaid, isLoading: paymentLoading } = usePayment();
+    const { isPaid } = usePayment();
     const needsPayment = isPaymentRequired();
 
-    const [selectedYearMonth, setSelectedYearMonth] = useState<YearMonthKey | null>(null);
-    const [selectedArtwork, setSelectedArtwork] = useState<{
-        artwork: Artwork;
-        index: number;
-        yearArtworks: Artwork[];
-    } | null>(null);
-
-    const [demoLoaded, setDemoLoaded] = useState(false);
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [showShareModal, setShowShareModal] = useState(false);
-    const [policyModal, setPolicyModal] = useState<{
-        isOpen: boolean;
-        policyId: "terms" | "privacy" | "refund" | "exchange";
-    }>({
-        isOpen: false,
-        policyId: "terms"
-    });
-
-    // UI 필터링 및 렌더링 로직 (기존 HomeContent와 동일)
-    const artworksByYearMonth = useMemo(() => getArtworksByYearMonth(artworks), [artworks]);
-
-    const filteredArtworks = useMemo(() => {
-        if (!selectedYearMonth) return [];
-        return artworksByYearMonth.get(selectedYearMonth) || [];
-    }, [artworksByYearMonth, selectedYearMonth]);
-
-    const yearMonths = useMemo(() => getYearMonths(artworks), [artworks]);
-
-    useEffect(() => {
-        if (yearMonths.length > 0 && !selectedYearMonth) {
-            setSelectedYearMonth(yearMonths[0]);
-        }
-    }, [yearMonths, selectedYearMonth]);
-
-    // 데모 데이터 로딩
-    useEffect(() => {
-        if (!demoLoaded && !artworksLoading && artworks.length === 0) {
-            loadDemoDataIfEmpty().then(() => {
-                refreshArtworks();
-                setDemoLoaded(true);
-            });
-        }
-    }, [demoLoaded, artworksLoading, artworks.length, refreshArtworks]);
 
     const themeColors = getThemeColors(settings.theme);
 
-    if (settingsLoading || artworksLoading) {
+    if (isLoading) {
         return <div className="min-h-screen flex items-center justify-center"><p>불러오는 중...</p></div>;
     }
 
@@ -142,22 +96,15 @@ export default function HomeClient({ injectedArtistId }: HomeClientProps) {
                 <ArtistPicksSection theme={settings.theme} picks={settings.artistPicks} isAuthenticated={isLoggedIn} />
             </main>
 
-            {/* 나도 갤러리 만들기 CTA */}
             <CTASection theme={settings.theme} />
-
-            {/* 푸터 (사업자 정보 + 정책) */}
             <Footer theme={settings.theme} />
 
-            {/* 모달들 */}
             {selectedArtwork && (
                 <ArtworkViewer
                     artworks={selectedArtwork.yearArtworks}
                     initialIndex={selectedArtwork.index}
                     onClose={() => setSelectedArtwork(null)}
-                    onDelete={() => {
-                        setSelectedArtwork(null);
-                        refreshArtworks();
-                    }}
+                    onDelete={handleArtworkDeleted}
                     showPrice={settings.showPrice}
                     theme={settings.theme}
                 />
@@ -173,15 +120,13 @@ export default function HomeClient({ injectedArtistId }: HomeClientProps) {
                 theme={settings.theme}
             />
 
-            {/* [V15] 플로팅 액션 버튼 (관리자 전용) */}
             {isLoggedIn && (
                 <div className="fixed right-6 bottom-6 flex flex-col gap-3 z-40">
-                    {/* SNS 공유 센터 버튼 */}
                     <Link
                         href="/share"
                         className="flex items-center justify-center w-14 h-14 shadow-2xl hover:scale-110 active:scale-95 transition-all"
                         style={{
-                            backgroundColor: settings.theme === "black" ? "#6366f1" : "#6366f1",
+                            backgroundColor: "#6366f1",
                             borderRadius: "50%",
                             color: "#ffffff"
                         }}
@@ -196,7 +141,6 @@ export default function HomeClient({ injectedArtistId }: HomeClientProps) {
                         </svg>
                     </Link>
 
-                    {/* 작품 등록 버튼 */}
                     <Link
                         href={injectedArtistId.startsWith('vip') ? `/add?vipId=${injectedArtistId}` : "/add"}
                         className="flex items-center justify-center w-14 h-14 text-white shadow-2xl hover:scale-110 active:scale-95 transition-all"

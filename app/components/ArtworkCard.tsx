@@ -18,7 +18,7 @@ export default function ArtworkCard({
     onClick,
     priority = false,
     minimal = false,
-    showInfo = false
+    showInfo = true // 도록 스타일에서는 정보를 기본적으로 표시하는 것이 더 정중함
 }: ArtworkCardProps) {
     const [imageUrl, setImageUrl] = useState(artwork.imageUrl);
     const [imageLoading, setImageLoading] = useState(false); // 이미지 로딩 비활성화
@@ -26,17 +26,24 @@ export default function ArtworkCard({
     // 이미지 로딩 비활성화 (Base64가 너무 커서 타임아웃)
     // TODO: Supabase Storage로 마이그레이션 후 재활성화
     useEffect(() => {
-        // 이미지가 있으면 사용, 없으면 그냥 빈 상태로 둠
-        if (artwork.imageUrl) {
-            setImageUrl(artwork.imageUrl);
+        // 우선적으로 썸네일 사용, 없으면 원본 이미지 사용
+        setImageUrl(artwork.thumbnailUrl || artwork.imageUrl);
+    }, [artwork.imageUrl, artwork.thumbnailUrl]);
+
+    // 원본 이미지 프리패칭 함수
+    const prefetchOriginal = () => {
+        if (artwork.imageUrl && artwork.thumbnailUrl) {
+            const img = new (window as any).Image();
+            img.src = artwork.imageUrl;
         }
-    }, [artwork.imageUrl]);
+    };
 
     if (minimal) {
         // 미니멀 스타일 - PKM Gallery Masonry 레이아웃용 (시니어 친화적 개선)
         return (
             <button
                 onClick={onClick}
+                onMouseEnter={prefetchOriginal}
                 className="group"
                 aria-label={`${artwork.title} 보기`}
                 style={{
@@ -76,7 +83,7 @@ export default function ArtworkCard({
                         <span style={{ color: "#999" }}>이미지 없음</span>
                     </div>
                 )}
-                {/* 정보 오버레이 - showInfo이면 항상 표시, 아니면 호버 시만 */}
+                {/* 정보 오버레이 - 잡지 레이아웃처럼 정갈하게 */}
                 <div
                     className={showInfo ? "opacity-100" : "opacity-0 group-hover:opacity-100"}
                     style={{
@@ -84,31 +91,30 @@ export default function ArtworkCard({
                         bottom: 0,
                         left: 0,
                         right: 0,
-                        padding: showInfo ? "24px" : "20px",
-                        background: "linear-gradient(transparent, rgba(0,0,0,0.85))",
-                        transition: "opacity 0.3s ease",
+                        padding: "32px 24px",
+                        background: "linear-gradient(transparent, rgba(245, 242, 237, 0.95))", // 에이징 페이퍼 색상 반영
+                        transition: "opacity 0.4s ease",
                     }}
                 >
                     <p style={{
-                        fontFamily: "'Noto Sans KR', sans-serif",
-                        color: "#fff",
-                        fontSize: showInfo ? "20px" : "17px",
+                        fontFamily: "var(--font-serif)",
+                        color: "var(--foreground)",
+                        fontSize: "22px",
                         fontWeight: 600,
-                        marginBottom: "6px",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        lineHeight: 1.4,
+                        marginBottom: "8px",
+                        letterSpacing: "-0.02em",
+                        lineHeight: 1.3,
                     }}>
                         {artwork.title}
                     </p>
                     <p style={{
-                        fontFamily: "'Noto Sans KR', sans-serif",
-                        color: "rgba(255,255,255,0.9)",
-                        fontSize: showInfo ? "16px" : "14px",
-                        fontWeight: 500,
+                        fontFamily: "var(--font-serif)",
+                        color: "var(--text-muted)",
+                        fontSize: "16px",
+                        fontWeight: 400,
+                        fontStyle: "italic",
                     }}>
-                        {artwork.year}년
+                        {artwork.year}
                     </p>
                 </div>
             </button>
@@ -120,6 +126,7 @@ export default function ArtworkCard({
         <button
             className="artwork-card"
             onClick={onClick}
+            onMouseEnter={prefetchOriginal}
             aria-label={`${artwork.title} 보기`}
         >
             {imageLoading ? (
@@ -148,16 +155,17 @@ export default function ArtworkCard({
             <div
                 className="absolute bottom-0 left-0 right-0"
                 style={{
-                    background: "linear-gradient(transparent, rgba(0,0,0,0.8))",
-                    padding: "24px 20px",
+                    background: "linear-gradient(transparent, var(--background))",
+                    padding: "32px 24px",
                 }}
             >
                 <p
-                    className="text-white font-semibold truncate"
                     style={{
-                        fontFamily: "'Noto Sans KR', sans-serif",
-                        fontSize: "20px",
-                        fontWeight: 600,
+                        fontFamily: "var(--font-serif)",
+                        color: "var(--foreground)",
+                        fontSize: "24px",
+                        fontWeight: 700,
+                        letterSpacing: "-0.02em",
                         lineHeight: 1.4,
                     }}
                 >
@@ -165,14 +173,14 @@ export default function ArtworkCard({
                 </p>
                 <p
                     style={{
-                        fontFamily: "'Noto Sans KR', sans-serif",
-                        color: "rgba(255,255,255,0.85)",
-                        fontSize: "15px",
-                        fontWeight: 500,
-                        marginTop: "4px",
+                        fontFamily: "var(--font-serif)",
+                        color: "var(--text-muted)",
+                        fontSize: "16px",
+                        fontWeight: 400,
+                        marginTop: "6px",
                     }}
                 >
-                    {artwork.year}년 · {artwork.medium}
+                    {artwork.year} · {artwork.medium}
                 </p>
             </div>
         </button>

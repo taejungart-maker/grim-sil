@@ -57,7 +57,7 @@ function HomeContent() {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
-  const [showNewsTicker, setShowNewsTicker] = useState(true);
+  const [showNewsTicker, setShowNewsTicker] = useState(false); // 도록 스타일에서는 기본적으로 숨김
   const [showEncouragement, setShowEncouragement] = useState(true);
   const [showArtistPicks, setShowArtistPicks] = useState(true);
   const [quickAdded, setQuickAdded] = useState(false);
@@ -248,7 +248,7 @@ function HomeContent() {
               transform: isSubmitting ? "scale(0.98)" : "none"
             }}
           >
-            {quickAdded ? "✅ 내 Gallery에 추천되었습니다!" : (isSubmitting ? "⏳ 등록 중..." : "🤝 내 Gallery에 이 작가 추천하기")}
+            {quickAdded ? "✅ 등록 완료" : (isSubmitting ? "⏳ 처리 중..." : "🤝 컬렉션에 추가하기")}
           </button>
 
           <style jsx>{`
@@ -309,21 +309,19 @@ function HomeContent() {
               href="/share"
               className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
               style={{
-                width: "46px",
-                height: "46px",
-                borderRadius: "50%",
-                background: settings.theme === "black" ? "#4f46e5" : SIGNATURE_COLORS.royalIndigo,
-
+                width: "48px",
+                height: "48px",
+                borderRadius: "2px", // 원형 대신 사각형 혹은 아주 살짝 둥근 모서리로 중후함 부여
+                background: "var(--primary)",
                 color: "#fff",
                 textDecoration: "none",
                 display: "flex",
-                flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
-                fontSize: "12px",
-                fontWeight: 800,
-                lineHeight: 1.1,
+                boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                fontSize: "13px",
+                fontFamily: "var(--font-serif)",
+                fontWeight: 500,
               }}
             >
               <span>공유</span>
@@ -334,23 +332,21 @@ function HomeContent() {
               href="/add"
               className="flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
               style={{
-                width: "46px",
-                height: "46px",
-                borderRadius: "50%",
-                background: settings.theme === "black" ? "#1a1a1a" : SIGNATURE_COLORS.antiqueBurgundy,
+                width: "48px",
+                height: "48px",
+                borderRadius: "2px",
+                background: "var(--accent)",
                 color: "#fff",
                 textDecoration: "none",
                 display: "flex",
-                flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
-                fontSize: "12px",
-                fontWeight: 800,
-                lineHeight: 1.1,
+                boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                fontSize: "13px",
+                fontFamily: "var(--font-serif)",
+                fontWeight: 500,
               }}
             >
-              <span style={{ fontSize: "14px", marginBottom: "-2px" }}>+</span>
               <span>등록</span>
             </Link>
           </div>

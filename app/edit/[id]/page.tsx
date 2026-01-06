@@ -106,8 +106,16 @@ export default function EditArtworkPage({ params }: EditArtworkPageProps) {
         try {
             // 새 이미지가 있으면 Storage에 업로드
             let finalImageUrl = imagePreview || artwork.imageUrl;
+            let finalThumbnailUrl = artwork.thumbnailUrl;
+
             if (imageFile) {
-                finalImageUrl = await uploadImageToStorage(imageFile, vipId || undefined);
+                const uploadResult = await uploadImageToStorage(imageFile, vipId || undefined, true);
+                if (typeof uploadResult === 'object') {
+                    finalImageUrl = uploadResult.imageUrl;
+                    finalThumbnailUrl = uploadResult.thumbnailUrl;
+                } else {
+                    finalImageUrl = uploadResult;
+                }
             }
 
             await updateArtwork({
@@ -118,6 +126,7 @@ export default function EditArtworkPage({ params }: EditArtworkPageProps) {
                 dimensions: dimensions.trim() || "크기 미정",
                 medium: medium.trim() || "재료 미정",
                 imageUrl: finalImageUrl,
+                thumbnailUrl: finalThumbnailUrl,
                 description: description.trim() || undefined,
                 price: price.trim() || undefined,
                 artistName: artwork.artistName, // 기존 정보 유지

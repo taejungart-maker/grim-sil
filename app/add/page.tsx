@@ -83,8 +83,16 @@ export default function AddArtworkPage() {
         try {
             // Supabase Storage에 이미지 업로드
             let imageUrl = imagePreview;
+            let thumbnailUrl = undefined;
+
             if (imageFile) {
-                imageUrl = await uploadImageToStorage(imageFile, vipId || undefined);
+                const uploadResult = await uploadImageToStorage(imageFile, vipId || undefined, true);
+                if (typeof uploadResult === 'object') {
+                    imageUrl = uploadResult.imageUrl;
+                    thumbnailUrl = uploadResult.thumbnailUrl;
+                } else {
+                    imageUrl = uploadResult;
+                }
             }
 
             await addArtwork({
@@ -94,6 +102,7 @@ export default function AddArtworkPage() {
                 dimensions: dimensions.trim() || "크기 미정",
                 medium: medium.trim() || "재료 미정",
                 imageUrl: imageUrl,
+                thumbnailUrl: thumbnailUrl,
                 description: description.trim() || undefined,
                 price: price.trim() || undefined,
                 artistName: artistName,

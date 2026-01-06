@@ -6,7 +6,8 @@ export interface Artwork {
     month?: number;          // 제작 월 (1-12, 선택)
     dimensions: string;      // 크기 (예: "100 x 80 cm")
     medium: string;          // 재료 (예: "캔버스에 유채")
-    imageUrl: string;        // 이미지 경로
+    imageUrl: string;        // 이미지 경로 (원본 또는 최적화 이미지)
+    thumbnailUrl?: string;   // 600px 썸네일 경로
     description?: string;    // 작품 설명 (선택)
     price?: string;          // 가격 (선택, 예: "1,500,000 KRW")
     artistName?: string;     // 작가 이름 (선택)

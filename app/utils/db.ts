@@ -18,6 +18,7 @@ function rowToArtwork(row: ArtworkRow): Artwork & { createdAt?: number } {
         dimensions: row.dimensions,
         medium: row.medium,
         imageUrl: row.image_url,
+        thumbnailUrl: row.thumbnail_url ?? undefined,
         description: row.description ?? undefined,
         price: row.price ?? undefined,
         artistName: row.artist_name ?? undefined,
@@ -52,6 +53,7 @@ function artworkToRow(artwork: Artwork & { createdAt?: number }, ownerId?: strin
         dimensions: artwork.dimensions,
         medium: artwork.medium,
         image_url: artwork.imageUrl,
+        thumbnail_url: artwork.thumbnailUrl ?? null,
         description: artwork.description ?? null,
         price: artwork.price ?? null,
         artist_name: artwork.artistName ?? null,
@@ -70,7 +72,7 @@ export async function getAllArtworks(ownerId?: string): Promise<Artwork[]> {
         // 메타데이터 로드
         const { data, error, status } = await supabase
             .from("artworks")
-            .select("id, title, year, month, dimensions, medium, description, price, created_at, image_url, artist_name")
+            .select("id, title, year, month, dimensions, medium, description, price, created_at, image_url, thumbnail_url, artist_name")
             .eq("artist_id", targetArtistId)
             .order("created_at", { ascending: false });
 
@@ -91,6 +93,7 @@ export async function getAllArtworks(ownerId?: string): Promise<Artwork[]> {
             dimensions: row.dimensions,
             medium: row.medium,
             imageUrl: row.image_url || "",
+            thumbnailUrl: row.thumbnail_url ?? undefined,
             description: row.description ?? undefined,
             price: row.price ?? undefined,
             artistName: row.artist_name ?? undefined,
@@ -190,8 +193,10 @@ export async function getArtwork(id: string, ownerId?: string): Promise<Artwork 
 }
 
 // 이미지를 Base64로 변환 (자동 리사이징 포함) - 레거시 지원용
-const MAX_IMAGE_SIZE = 2400;
+const MAX_IMAGE_SIZE = 3600;
+const THUMBNAIL_SIZE = 600;
 const IMAGE_QUALITY = 0.85;
+const CACHE_CONTROL_LONG = "31536000"; // 1 year
 
 export function imageToBase64(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -246,7 +251,7 @@ export function imageToBase64(file: File): Promise<string> {
 const STORAGE_BUCKET = "artworks";
 
 // 이미지 리사이징 후 Blob 반환
-function resizeImageToBlob(file: File): Promise<Blob> {
+function resizeImageToBlob(file: File, maxSize: number = MAX_IMAGE_SIZE): Promise<Blob> {
     return new Promise((resolve, reject) => {
         const img = new Image();
         const reader = new FileReader();
@@ -256,13 +261,13 @@ function resizeImageToBlob(file: File): Promise<Blob> {
                 let { width, height } = img;
 
                 // 리사이징
-                if (width > MAX_IMAGE_SIZE || height > MAX_IMAGE_SIZE) {
+                if (width > maxSize || height > maxSize) {
                     if (width > height) {
-                        height = Math.round((height / width) * MAX_IMAGE_SIZE);
-                        width = MAX_IMAGE_SIZE;
+                        height = Math.round((height / width) * maxSize);
+                        width = maxSize;
                     } else {
-                        width = Math.round((width / height) * MAX_IMAGE_SIZE);
-                        height = MAX_IMAGE_SIZE;
+                        width = Math.round((width / height) * maxSize);
+                        height = maxSize;
                     }
                 }
 
@@ -302,40 +307,50 @@ function resizeImageToBlob(file: File): Promise<Blob> {
     });
 }
 
-// Supabase Storage에 이미지 업로드
-export async function uploadImageToStorage(file: File, artistId?: string): Promise<string> {
-    // 이미지 리사이징
-    const resizedBlob = await resizeImageToBlob(file);
-
-    // Artist ID 기반 경로 생성 (완전 격리)
+// Supabase Storage에 이미지 업로드 (원본 + 썸네일 지원)
+export async function uploadImageToStorage(file: File, artistId?: string, isArtwork: boolean = false): Promise<string | { imageUrl: string, thumbnailUrl: string }> {
     const effectiveArtistId = artistId || getClientArtistId();
-    const fileExt = "jpg";
-    const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
-    const filePath = `${effectiveArtistId}/images/${fileName}`; // Artist ID별 폴더 분리
-
-    console.log(`[IMAGE_UPLOAD] Uploading to: ${filePath} for Artist ID: ${effectiveArtistId}`);
-
-    // Supabase Storage에 업로드
     const supabase = getSupabaseClient();
-    const { error: uploadError } = await supabase.storage
-        .from(STORAGE_BUCKET)
-        .upload(filePath, resizedBlob, {
-            contentType: "image/jpeg",
-            cacheControl: "3600",
-            upsert: false,
-        });
+    const timestamp = Date.now();
+    const randomStr = Math.random().toString(36).substr(2, 9);
+    const fileExt = "jpg";
 
-    if (uploadError) {
-        console.error("Failed to upload image:", uploadError);
-        throw new Error(`이미지 업로드 실패: ${uploadError.message}`);
+    const uploadFile = async (blob: Blob, path: string) => {
+        const { error } = await supabase.storage
+            .from(STORAGE_BUCKET)
+            .upload(path, blob, {
+                contentType: "image/jpeg",
+                cacheControl: CACHE_CONTROL_LONG,
+                upsert: false,
+            });
+        if (error) throw error;
+        return supabase.storage.from(STORAGE_BUCKET).getPublicUrl(path).data.publicUrl;
+    };
+
+    try {
+        if (isArtwork) {
+            // 원본 리사이즈 업로드
+            const originalBlob = await resizeImageToBlob(file, MAX_IMAGE_SIZE);
+            const originalPath = `${effectiveArtistId}/images/${timestamp}-${randomStr}.${fileExt}`;
+            const imageUrl = await uploadFile(originalBlob, originalPath);
+
+            // 썸네일 업로드
+            const thumbBlob = await resizeImageToBlob(file, THUMBNAIL_SIZE);
+            const thumbPath = `${effectiveArtistId}/thumbnails/${timestamp}-${randomStr}.${fileExt}`;
+            const thumbnailUrl = await uploadFile(thumbBlob, thumbPath);
+
+            return { imageUrl, thumbnailUrl };
+        } else {
+            // 일반 업로드 (프로필 등)
+            const blob = await resizeImageToBlob(file, MAX_IMAGE_SIZE);
+            const path = `${effectiveArtistId}/images/${timestamp}-${randomStr}.${fileExt}`;
+            const imageUrl = await uploadFile(blob, path);
+            return imageUrl;
+        }
+    } catch (error: any) {
+        console.error("Failed to upload image:", error);
+        throw new Error(`이미지 업로드 실패: ${error.message}`);
     }
-
-    // Public URL 가져오기
-    const { data: urlData } = supabase.storage
-        .from(STORAGE_BUCKET)
-        .getPublicUrl(filePath);
-
-    return urlData.publicUrl;
 }
 
 // Storage에서 이미지 삭제

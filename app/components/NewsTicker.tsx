@@ -15,7 +15,7 @@ interface NewsTickerProps {
 }
 
 const MOCK_NEWS: NewsItem[] = [
-    { id: "1", text: "상생 네트워크가 작가님들의 활동을 실시간으로 전해드립니다. ✨" },
+    { id: "1", text: "상생 네트워크가 전하는 최신 전시 소식입니다." },
 ];
 
 export default function NewsTicker({ theme, newsText }: NewsTickerProps) {

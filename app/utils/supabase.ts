@@ -47,6 +47,7 @@ export interface ArtworkRow {
     dimensions: string;
     medium: string;
     image_url: string;
+    thumbnail_url: string | null;
     description: string | null;
     price: string | null;
     artist_name: string | null;

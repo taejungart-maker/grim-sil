@@ -35,11 +35,12 @@ export default function ArtworkViewer({
     const [isAnimating, setIsAnimating] = useState(false);
     const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
     const [showFullDescription, setShowFullDescription] = useState(false);
-    const [showHint, setShowHint] = useState(true); // 진입 시 안내 문구
-    const [hasOpenedCaption, setHasOpenedCaption] = useState(false); // 측션을 한 번이라도 열었는지
-    const [showWiggle, setShowWiggle] = useState(true); // 이미지 움질 효과
-    const [exchangeRate, setExchangeRate] = useState<number>(1400); // 기본값 1400 KRW
+    const [showWiggle, setShowWiggle] = useState(false); // 도록 스타일에서는 과한 움직임 제거
+    const [isZoomed, setIsZoomed] = useState(false);
+    const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
+    const [exchangeRate, setExchangeRate] = useState<number>(1400);
     const captionRef = useRef<HTMLDivElement>(null);
+    const imageContainerRef = useRef<HTMLDivElement>(null);
 
     const currentArtwork = artworks[currentIndex];
 
@@ -55,19 +56,10 @@ export default function ArtworkViewer({
     }, []);
 
     // 안내 문구 표시 및 자동 숨김 (매 작품마다 재표시)
-    // 측션을 열어본 사용자는 시간 절반 (1.2초), 처음은 2초
     useEffect(() => {
-        setShowHint(true);
-        setShowWiggle(true);
         setShowFullDescription(false);
-
-        const hintDuration = hasOpenedCaption ? 1200 : 2000;
-        const timer = setTimeout(() => {
-            setShowHint(false);
-            setShowWiggle(false);
-        }, hintDuration);
-        return () => clearTimeout(timer);
-    }, [currentIndex, hasOpenedCaption]);
+        setIsZoomed(false); // 작품 이동 시 줌 초기화
+    }, [currentIndex]);
 
     // 상세정보 표시 시 핀치 줌 방지
     useEffect(() => {
@@ -109,19 +101,26 @@ export default function ArtworkViewer({
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [currentIndex, artworks.length, onClose, showDeleteConfirm, showCaption]);
 
-    // 작품 이미지 터치 → 캡션이 열려있으면 닫기, 없으면 열기
-    const handleImageClick = () => {
-        if (!showDeleteConfirm) {
-            if (showCaption) {
-                // 캡션이 열려있으면 닫기만
-                setShowCaption(false);
-            } else {
-                // 캡션이 닫혀있으면 열기
-                setShowCaption(true);
-                setShowHint(false);
-                setShowWiggle(false);
-                setHasOpenedCaption(true);
+    // 작품 이미지 터치/클릭 로직
+    const handleImageClick = (e: React.MouseEvent | React.TouchEvent) => {
+        if (showDeleteConfirm) return;
+
+        // 더블 클릭/터치 시 줌 토글
+        if (!isZoomed) {
+            setIsZoomed(true);
+            // 클릭 위치를 줌 중심으로 설정
+            const clientX = 'touches' in e ? (e as React.TouchEvent).touches[0].clientX : (e as React.MouseEvent).clientX;
+            const clientY = 'touches' in e ? (e as React.TouchEvent).touches[0].clientY : (e as React.MouseEvent).clientY;
+
+            if (imageContainerRef.current) {
+                const rect = imageContainerRef.current.getBoundingClientRect();
+                setZoomPos({
+                    x: ((clientX - rect.left) / rect.width) * 100,
+                    y: ((clientY - rect.top) / rect.height) * 100
+                });
             }
+        } else {
+            setIsZoomed(false);
         }
     };
 
@@ -238,68 +237,66 @@ export default function ArtworkViewer({
         >
             {/* 상단 버튼들 - 항상 표시 */}
             <div className="absolute top-4 left-4 right-4 z-50 flex justify-between">
-                {isLoggedIn ? (
-                    <Link
-                        href={`/edit/${currentArtwork.id}`}
-                        className="touch-target flex items-center justify-center gap-2"
-                        style={{
-                            minWidth: "52px",
-                            height: "52px",
-                            padding: "0 14px",
-                            background: buttonBg,
-                            borderRadius: "26px",
-                            textDecoration: "none",
-                            color: iconColor,
-                            fontFamily: "'Noto Sans KR', sans-serif",
-                            fontSize: "15px",
-                            fontWeight: 600,
-                        }}
-                        aria-label="수정하기"
-                    >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth="2">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                        </svg>
-                        <span>수정</span>
-                    </Link>
-                ) : (
-                    <div />
-                )}
+                <div className="flex gap-3">
+                    {isLoggedIn && (
+                        <Link
+                            href={`/edit/${currentArtwork.id}`}
+                            className="touch-target flex items-center justify-center gap-2"
+                            style={{
+                                height: "48px",
+                                padding: "0 18px",
+                                background: buttonBg,
+                                border: "none",
+                                borderRadius: "2px",
+                                textDecoration: "none",
+                                color: iconColor,
+                                fontFamily: "var(--font-serif)",
+                                fontSize: "14px",
+                                fontWeight: 500,
+                            }}
+                            aria-label="수정하기"
+                        >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                            </svg>
+                            <span>수정</span>
+                        </Link>
+                    )}
+                </div>
 
                 <button
                     onClick={onClose}
                     className="touch-target flex items-center justify-center gap-2"
                     style={{
-                        minWidth: "52px",
-                        height: "52px",
-                        padding: "0 14px",
+                        height: "48px",
+                        padding: "0 18px",
                         background: buttonBg,
-                        borderRadius: "26px",
+                        borderRadius: "2px",
                         border: "none",
                         cursor: "pointer",
                         color: iconColor,
-                        fontFamily: "'Noto Sans KR', sans-serif",
-                        fontSize: "15px",
-                        fontWeight: 600,
+                        fontFamily: "var(--font-serif)",
+                        fontSize: "14px",
+                        fontWeight: 500,
                     }}
                     aria-label="닫기"
                 >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth="2">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth="2">
                         <path d="M18 6L6 18M6 6l12 12" />
                     </svg>
                     <span>닫기</span>
                 </button>
             </div>
 
-            {/* 작품 이미지 - 원상 복구된 레이아웃 */}
+            {/* 작품 이미지 - 줌 기능 추가 */}
             <div
-                className="absolute inset-0 flex items-center justify-center"
+                ref={imageContainerRef}
+                className="absolute inset-0 flex items-center justify-center overflow-hidden"
                 style={{
-                    paddingTop: "80px",
-                    paddingBottom: "80px",
-                    paddingLeft: "20px",
-                    paddingRight: "20px",
-                    touchAction: "manipulation",
+                    padding: isZoomed ? "0" : "80px 24px 100px 24px", // 하단 푸터 공간
+                    touchAction: "none",
+                    cursor: isZoomed ? "zoom-out" : "zoom-in",
                 }}
                 onClick={handleImageClick}
                 onTouchStart={handleImageTouchStart}
@@ -310,9 +307,12 @@ export default function ArtworkViewer({
                         position: "relative",
                         width: "100%",
                         height: "100%",
-                        transition: "transform 0.2s ease-out, opacity 0.2s ease-out",
-                        transform: slideDirection === 'left' ? 'translateX(-30px)' :
-                            slideDirection === 'right' ? 'translateX(30px)' : 'translateX(0)',
+                        transition: "transform 0.4s cubic-bezier(0.2, 0, 0.2, 1), opacity 0.3s ease",
+                        transform: isZoomed
+                            ? `scale(2.5) translate(${50 - zoomPos.x}%, ${50 - zoomPos.y}%)`
+                            : slideDirection === 'left' ? 'translateX(-30px)' :
+                                slideDirection === 'right' ? 'translateX(30px)' : 'translateX(0)',
+                        transformOrigin: "center",
                         opacity: slideDirection ? 0.3 : 1,
                     }}
                 >
@@ -321,6 +321,8 @@ export default function ArtworkViewer({
                         alt={currentArtwork.title}
                         fill
                         priority
+                        placeholder={currentArtwork.thumbnailUrl ? "blur" : "empty"}
+                        blurDataURL={currentArtwork.thumbnailUrl || undefined}
                         style={{
                             objectFit: "contain",
                             userSelect: "none"
@@ -332,47 +334,88 @@ export default function ArtworkViewer({
                 </div>
             </div>
 
-            {/* 페이지 인디케이터 및 정보 보기 버튼 - 삭제 버튼과 겹치지 않도록 위로 이동 */}
-            <div
-                className="absolute bottom-24 right-8 z-[70] flex flex-col items-end gap-3"
-                style={{ pointerEvents: "none" }}
-            >
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        setShowCaption(!showCaption);
-                    }}
-                    style={{
-                        pointerEvents: "auto",
-                        background: theme === "black" ? "rgba(255, 255, 255, 0.15)" : "rgba(255, 255, 255, 0.95)",
-                        backdropFilter: "blur(12px)",
-                        WebkitBackdropFilter: "blur(12px)",
-                        border: `1px solid ${theme === "black" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.1)"}`,
-                        borderRadius: "20px",
-                        padding: "10px 22px",
-                        color: titleColor,
-                        fontSize: "14px",
-                        fontWeight: 600,
-                        boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-                        transition: "all 0.3s ease",
-                    }}
+            {/* 하단 고정 푸터: 작품정보클릭/정보닫기 + 작품삭제 (완벽한 위치 일치) */}
+            {!isZoomed && (
+                <div
+                    className="absolute bottom-6 left-0 right-0 z-[60] flex justify-center px-6"
+                    style={{ pointerEvents: "none" }}
                 >
-                    {showCaption ? "정보 닫기" : "작품 정보 보기"}
-                </button>
-
-                {!showCaption && (
-                    <span
+                    <div
+                        className="flex items-center gap-4 py-2 px-4"
                         style={{
-                            fontSize: "12px",
-                            fontWeight: 500,
-                            color: theme === "black" ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.3)",
-                            paddingRight: "10px"
+                            pointerEvents: "auto",
+                            background: "rgba(245, 242, 237, 0.4)", // 은은한 배경
+                            backdropFilter: "blur(8px)",
+                            borderRadius: "2px",
                         }}
                     >
+                        <button
+                            onClick={() => setShowCaption(!showCaption)}
+                            style={{
+                                height: "40px",
+                                padding: "0 16px",
+                                background: "var(--primary)",
+                                color: "#fff",
+                                border: "none",
+                                borderRadius: "2px",
+                                fontFamily: "var(--font-serif)",
+                                fontSize: "13px",
+                                fontWeight: 500,
+                                cursor: "pointer",
+                                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                                transition: "all 0.3s ease",
+                            }}
+                        >
+                            {showCaption ? "정보닫기" : "작품정보클릭"}
+                        </button>
+
+                        {isLoggedIn && showCaption && (
+                            <button
+                                onClick={() => setShowDeleteConfirm(true)}
+                                style={{
+                                    height: "40px",
+                                    padding: "0 16px",
+                                    background: "transparent",
+                                    color: "#dc2626",
+                                    border: "1px solid rgba(220, 38, 38, 0.2)",
+                                    borderRadius: "2px",
+                                    fontFamily: "var(--font-serif)",
+                                    fontSize: "13px",
+                                    fontWeight: 500,
+                                    cursor: "pointer",
+                                }}
+                            >
+                                작품삭제
+                            </button>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* 자연스러운 캡션 배경 (중앙) - 닫혀있을 때만 표시 */}
+            {!showCaption && !isZoomed && (
+                <div
+                    className="absolute bottom-24 left-0 right-0 z-40 flex flex-col items-center pointer-events-none"
+                    style={{ animation: "fadeIn 1s ease", opacity: 0.6 }}
+                >
+                    <p style={{
+                        fontFamily: "var(--font-serif)",
+                        fontSize: "16px",
+                        fontWeight: 600,
+                        color: titleColor,
+                        marginBottom: "2px"
+                    }}>
+                        {currentArtwork.title}
+                    </p>
+                    <p style={{
+                        fontFamily: "var(--font-serif)",
+                        fontSize: "12px",
+                        color: "var(--text-muted)",
+                    }}>
                         {currentIndex + 1} / {artworks.length}
-                    </span>
-                )}
-            </div>
+                    </p>
+                </div>
+            )}
 
             {/* 이전/다음 버튼 (데스크톱 전용) */}
             {currentIndex > 0 && !showCaption && (
@@ -424,13 +467,13 @@ export default function ArtworkViewer({
                     left: 0,
                     right: 0,
                     zIndex: 45,
-                    background: theme === "black" ? "rgba(20, 20, 20, 0.9)" : "rgba(255, 255, 255, 0.9)",
-                    backdropFilter: "blur(12px)",
-                    WebkitBackdropFilter: "blur(12px)",
-                    borderTopLeftRadius: "24px",
-                    borderTopRightRadius: "24px",
-                    padding: "32px 24px 40px 24px",
-                    maxHeight: "60vh",
+                    background: "rgba(245, 242, 237, 0.98)", // SIGNATURE_COLORS.agingPaper
+                    backdropFilter: "blur(20px)",
+                    WebkitBackdropFilter: "blur(20px)",
+                    borderTopLeftRadius: "32px",
+                    borderTopRightRadius: "32px",
+                    padding: "48px 32px 60px 32px",
+                    maxHeight: "75vh",
                     overflowY: "auto",
                     transition: "transform 0.4s ease-out, opacity 0.3s ease",
                     transform: showCaption ? "translateY(0)" : "translateY(100%)",
@@ -454,10 +497,12 @@ export default function ArtworkViewer({
                     <div style={{ maxWidth: "600px", margin: "0 auto" }}>
                         <h2
                             style={{
-                                fontSize: "22px",
+                                fontFamily: "var(--font-serif)",
+                                fontSize: "28px",
                                 fontWeight: 700,
                                 color: titleColor,
-                                marginBottom: "12px",
+                                marginBottom: "16px",
+                                letterSpacing: "-0.03em",
                             }}
                         >
                             {currentArtwork.title}
@@ -465,14 +510,15 @@ export default function ArtworkViewer({
 
                         <div
                             style={{
-                                fontSize: "15px",
+                                fontFamily: "var(--font-serif)",
+                                fontSize: "17px",
                                 color: infoColor,
-                                lineHeight: 1.6,
+                                lineHeight: 1.8,
                             }}
                         >
-                            <p style={{ marginBottom: "4px" }}>{currentArtwork.medium}</p>
-                            <p style={{ marginBottom: "4px", opacity: 0.7 }}>{currentArtwork.dimensions}</p>
-                            <p style={{ marginBottom: "16px", opacity: 0.7 }}>{currentArtwork.year}</p>
+                            <p style={{ marginBottom: "6px" }}>{currentArtwork.medium}</p>
+                            <p style={{ marginBottom: "6px", opacity: 0.8 }}>{currentArtwork.dimensions}</p>
+                            <p style={{ marginBottom: "24px", opacity: 0.8 }}>{currentArtwork.year}</p>
 
                             {/* 가격 정보 */}
                             {showPrice && currentArtwork.price && (() => {
@@ -494,24 +540,8 @@ export default function ArtworkViewer({
                             )}
                         </div>
 
-                        {/* 삭제 버튼 (로그인 시) */}
-                        {isLoggedIn && (
-                            <div style={{ marginTop: "32px", display: "flex", justifyContent: "flex-end" }}>
-                                <button
-                                    onClick={() => setShowDeleteConfirm(true)}
-                                    style={{
-                                        color: "#dc2626",
-                                        fontSize: "14px",
-                                        fontWeight: 500,
-                                        background: "transparent",
-                                        border: "none",
-                                        cursor: "pointer",
-                                    }}
-                                >
-                                    작품 삭제
-                                </button>
-                            </div>
-                        )}
+                        {/* 정보창 내부의 도구 row 제거 (하단 고정 푸터로 이전됨) */}
+                        <div style={{ height: "40px" }} />
                     </div>
                 </div>
             </div>

@@ -6,40 +6,45 @@
    ============================================ */
 
 :root {
-  /* 색상 */
-  --background: #ffffff;
-  --foreground: #1a1a1a;
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
-  --secondary: #f3f4f6;
-  --border: #e5e7eb;
-  --text-muted: #444444;
+  /* 색상 - Private Catalog (Collectors Edition) */
+  --background: #F5F2ED;
+  /* SIGNATURE_COLORS.agingPaper */
+  --foreground: #2D2D2D;
+  /* SIGNATURE_COLORS.inkCharcoal */
+  --primary: #1B263B;
+  /* SIGNATURE_COLORS.royalIndigo */
+  --primary-hover: #0D131F;
+  --secondary: #EAE5DD;
+  --border: #C2BCB2;
+  /* SIGNATURE_COLORS.sandGray */
+  --text-muted: #555555;
+  --accent: #803030;
+  /* SIGNATURE_COLORS.antiqueBurgundy */
 
-  /* Tailwind 4 컬러 매핑 (표준 변수 방식) */
+  /* Tailwind 4 컬러 매핑 */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
 
-  /* 시니어 친화적 폰트 크기 (더 크게 조정) */
-  --font-size-sm: 18px;
-  --font-size-base: 22px;
-  --font-size-lg: 26px;
-  --font-size-xl: 30px;
-  --font-size-2xl: 38px;
-  --font-size-3xl: 50px;
+  /* 도록 스타일 폰트 크기 - 정갈하고 선명하게 */
+  --font-size-sm: 16px;
+  --font-size-base: 20px;
+  --font-size-lg: 24px;
+  --font-size-xl: 32px;
+  --font-size-2xl: 42px;
+  --font-size-3xl: 64px;
 
-  /* 폰트 패밀리 */
-  --font-sans: "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  /* 폰트 패밀리 - 명조체(Serif) 중심의 도록 감성 */
+  --font-serif: "Noto Serif KR", Georgia, serif;
+  --font-sans: "Pretendard", "Noto Sans KR", -apple-system, sans-serif;
 
-  /* 버튼 크기 (엄지손가락 터치 영역) */
-  --button-min-height: 60px;
+  /* 시각적 여백 확대 */
+  --spacing-sm: 16px;
+  --spacing-md: 32px;
+  --spacing-lg: 64px;
+  --spacing-xl: 96px;
+
   --touch-target: 52px;
-
-  /* 간격 */
-  --spacing-sm: 14px;
-  --spacing-md: 24px;
-  --spacing-lg: 36px;
-  --spacing-xl: 52px;
 }
 
 /* 다크 모드 비활성화 - 시니어에게 밝은 화면이 더 적합 */
@@ -56,13 +61,13 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans);
-  line-height: 1.7;
+  font-family: var(--font-serif);
+  /* 기본 서체를 명조체로 변경 */
+  line-height: 1.8;
   -webkit-font-smoothing: antialiased;
-  letter-spacing: -0.01em;
-  /* 깜빡임 방지 - 부드러운 렌더링 */
+  letter-spacing: -0.02em;
   opacity: 1;
-  transition: opacity 0s;
+  transition: opacity 0.5s ease-in-out;
 }
 
 /* 페이지 전환 시 깜빡임 방지 */
@@ -87,31 +92,24 @@ input[type="submit"] {
   cursor: pointer !important;
 }
 
-/* 마우스를 올렸을 때 (Hover) - 확실한 피드백 부여 */
+/* 마우스를 올렸을 때 (Hover) - 잡지처럼 정갈한 피드백 */
 button:hover,
 a:hover:not(.no-hover),
 .btn:hover,
-[role="button"]:hover,
-input[type="button"]:hover,
-input[type="submit"]:hover {
-  transform: translateY(-6px) scale(1.04) !important;
-  box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.25) !important;
-  filter: brightness(1.15) contrast(1.1) !important;
-  z-index: 10 !important;
-  /* 다른 요소보다 위로 뜸 */
+[role="button"]:hover {
+  transform: translateY(-2px);
+  /* 과한 효과 제거 */
+  opacity: 0.85;
+  transition: all 0.3s ease;
 }
 
 /* 클릭했을 때 (Active) */
 button:active,
 a:active,
-.btn:active,
-[role="button"]:active,
-input[type="button"]:active,
-input[type="submit"]:active {
-  transform: translateY(-1px) scale(0.94) !important;
-  filter: brightness(0.85) !important;
-  box-shadow: 0 5px 10px -2px rgba(0, 0, 0, 0.1) !important;
-  transition: all 0.1s ease !important;
+.btn:active {
+  transform: translateY(0);
+  opacity: 1;
+  transition: all 0.1s ease;
 }
 
 /* 시니어 친화적 버튼 기본 스타일 */

@@ -73,10 +73,10 @@ export default function Header({
                     <span
                         className="text-xl sm:text-2xl"
                         style={{
-                            fontFamily: "'Noto Sans KR', sans-serif",
-                            fontWeight: 600,
-                            letterSpacing: "0.03em",
-                            color: theme === "black" ? "#ffffff" : SIGNATURE_COLORS.royalIndigo,
+                            fontFamily: "var(--font-serif)",
+                            fontWeight: 700,
+                            letterSpacing: "-0.02em",
+                            color: theme === "black" ? "#ffffff" : "var(--primary)",
                             whiteSpace: "nowrap",
                         }}
                     >
@@ -91,24 +91,15 @@ export default function Header({
                             href="/studio"
                             prefetch={false}
                             style={{
-                                padding: "6px 12px",
+                                padding: "6px 14px",
                                 fontSize: "14px",
-                                fontFamily: "'Noto Sans KR', sans-serif",
-                                fontWeight: 800,
-                                color: theme === "black" ? "#FEE500" : SIGNATURE_COLORS.royalIndigo,
+                                fontFamily: "var(--font-serif)",
+                                fontWeight: 600,
+                                color: "var(--foreground)",
                                 textDecoration: "none",
-                                whiteSpace: "nowrap",
-                                display: "inline-flex",
-                                alignItems: "center",
-                                borderRadius: "4px",
-                                transition: "all 0.2s",
-                                background: "rgba(0, 0, 0, 0.03)",
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.background = "rgba(0, 0, 0, 0.08)";
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.background = "rgba(0, 0, 0, 0.03)";
+                                border: "1px solid var(--border)",
+                                borderRadius: "2px",
+                                transition: "all 0.3s",
                             }}
                         >
                             Studio
@@ -201,11 +192,12 @@ export default function Header({
                             className="text-sm sm:text-base"
                             style={{
                                 textDecoration: "none",
-                                fontFamily: "'Noto Sans KR', sans-serif",
-                                color: theme === "black" ? "#ffffff" : "#2a2a2a",
+                                fontFamily: "var(--font-serif)",
+                                color: "var(--foreground)",
                                 fontWeight: 500,
-                                letterSpacing: "0.02em",
-                                whiteSpace: "nowrap"
+                                letterSpacing: "-0.01em",
+                                whiteSpace: "nowrap",
+                                padding: "4px 0"
                             }}
                         >
                             작가소개
@@ -217,11 +209,12 @@ export default function Header({
                             className="text-sm sm:text-base"
                             style={{
                                 textDecoration: "none",
-                                fontFamily: "'Noto Sans KR', sans-serif",
-                                color: theme === "black" ? "#ffffff" : "#2a2a2a",
+                                fontFamily: "var(--font-serif)",
+                                color: "var(--foreground)",
                                 fontWeight: 500,
-                                letterSpacing: "0.02em",
-                                whiteSpace: "nowrap"
+                                letterSpacing: "-0.01em",
+                                whiteSpace: "nowrap",
+                                padding: "4px 0"
                             }}
                         >
                             ART NEWS
