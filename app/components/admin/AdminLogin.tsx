@@ -35,7 +35,19 @@ export default function AdminLogin({
                 />
                 {passwordError && <p className="text-red-500 text-sm text-center mb-4">비밀번호가 틀렸습니다</p>}
                 <button onClick={handleLogin} className="w-full p-4 bg-black text-white rounded-xl font-bold text-lg hover:bg-gray-800 transition">로그인</button>
-                <button onClick={() => router.push("/")} className="w-full mt-4 text-gray-500 text-sm underline">메인으로 돌아가기</button>
+
+                {/* 비밀번호 찾기 - SMS 문자 연결 */}
+                <button
+                    onClick={() => {
+                        const contactMessage = encodeURIComponent("안녕하세요, 관리자 비밀번호를 잊어버려서 연락드립니다.");
+                        window.location.href = `sms:01012345678?body=${contactMessage}`;
+                    }}
+                    className="w-full mt-4 text-indigo-600 text-sm font-semibold hover:underline"
+                >
+                    💬 비밀번호를 잊으셨나요? (문자로 문의)
+                </button>
+
+                <button onClick={() => router.push("/")} className="w-full mt-2 text-gray-400 text-sm hover:underline">메인으로 돌아가기</button>
             </div>
         </div>
     );
