@@ -274,6 +274,27 @@ export default function Header({
                                 </button>
                             )}
 
+                        {/* 구독중 뱃지 - 로그인 + 구독 완료 상태에서 표시 */}
+                        {isMounted && isLoggedIn && isPaid && !isScreeningMode && (
+                            <div
+                                className="flex items-center gap-1.5"
+                                style={{
+                                    padding: "7px 16px",
+                                    background: "linear-gradient(135deg, #10b981 0%, #059669 100%)", // 세련된 에메랄드 그라데이션
+                                    color: "#ffffff",
+                                    borderRadius: "9999px",
+                                    fontFamily: "'Noto Sans KR', sans-serif",
+                                    fontWeight: 600,
+                                    fontSize: "13px",
+                                    letterSpacing: "0.01em",
+                                    whiteSpace: "nowrap",
+                                    boxShadow: "0 2px 8px rgba(16, 185, 129, 0.3)",
+                                }}
+                            >
+                                <span>✨ 구독중</span>
+                            </div>
+                        )}
+
                         {/* Gallery 공유 버튼 (로그인한 경우에만 노출) */}
                         {isLoggedIn && (
                             <button
