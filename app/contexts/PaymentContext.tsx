@@ -31,7 +31,11 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
         // 클라이언트에서만 localStorage 확인
         if (typeof window !== 'undefined') {
             try {
-                const paymentStatus = localStorage.getItem('payment_status');
+                // Artist ID 기반 키 사용 (paymentUtils.ts와 동일)
+                const { getClientArtistId } = await import('../utils/getArtistId');
+                const artistId = getClientArtistId();
+                const paymentKey = `payment_status__${artistId}`;
+                const paymentStatus = localStorage.getItem(paymentKey);
                 setIsPaid(paymentStatus === 'paid');
             } catch (error) {
                 console.error('Failed to check payment status:', error);

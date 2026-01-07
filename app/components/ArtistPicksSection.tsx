@@ -231,11 +231,11 @@ export default function ArtistPicksSection({ theme, picks = [], isAuthenticated 
                                     </div>
                                 </div>
                                 {/* 컴팩트한 텍스트 영역 */}
-                                <div style={{ padding: "8px 12px 16px 12px", textAlign: "center" }}>
+                                <div style={{ padding: "12px 16px 20px 16px", textAlign: "center" }}>
                                     <h3 style={{
-                                        fontSize: "13px",
-                                        fontWeight: 600,
-                                        marginBottom: "4px",
+                                        fontSize: "16px",
+                                        fontWeight: 700,
+                                        marginBottom: "6px",
                                         color: textColor,
                                         whiteSpace: "nowrap",
                                         overflow: "hidden",
@@ -244,10 +244,10 @@ export default function ArtistPicksSection({ theme, picks = [], isAuthenticated 
                                         {pick.name}
                                     </h3>
                                     <div style={{
-                                        fontSize: "11px",
-                                        fontWeight: 500,
+                                        fontSize: "14px",
+                                        fontWeight: 600,
                                         color: SIGNATURE_COLORS.royalIndigo,
-                                        opacity: 0.8
+                                        opacity: 0.9
                                     }}>
                                         방문 →
                                     </div>

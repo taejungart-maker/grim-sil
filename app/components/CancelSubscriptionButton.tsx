@@ -32,8 +32,8 @@ export default function CancelSubscriptionButton({ theme = "white" }: CancelSubs
             setTimeout(() => {
                 setIsConfirmOpen(false);
                 setIsSuccess(false);
-                // 페이지 새로고침으로 상태 반영
-                window.location.reload();
+                // 메인 페이지로 이동하여 헤더에서 구독 버튼 확인 가능
+                window.location.href = '/';
             }, 2000);
 
         } catch (error) {

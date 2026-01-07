@@ -101,7 +101,7 @@ export default function AdminClient({ injectedArtistId }: AdminClientProps) {
                         borderColor={themeColors.border}
                     />
 
-                    {/* 4. 보안 설정 */}
+                    {/* 4. 보안 설정 + 구독 관리 */}
                     <AdminSecuritySection
                         passwordChangeSuccess={passwordChangeSuccess}
                         passwordChangeError={passwordChangeError}
@@ -110,6 +110,7 @@ export default function AdminClient({ injectedArtistId }: AdminClientProps) {
                         confirmPassword={confirmPassword}
                         setConfirmPassword={setConfirmPassword}
                         handlePasswordChange={handlePasswordChange}
+                        theme={settings.theme}
                     />
 
                     {/* 하단 로그아웃 */}
