@@ -46,8 +46,8 @@ export function getDeploymentMode(): DeploymentMode {
         return mode;
     }
 
-    // 기본값: 안전하게 무료 모드
-    return 'always_free';
+    // 기본값: 심사용으로 showroom 모드 (구독 버튼 표시)
+    return 'showroom';
 }
 
 /**
