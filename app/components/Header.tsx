@@ -244,8 +244,8 @@ export default function Header({
 
                     {/* [ZERO_CACHE_FORCE] 구조 변경으로 캐시 무력화 */}
                     <div id="nav-actions-container-v2" className="flex items-center gap-2 sm:gap-3 sm:ml-auto">
-                        {/* 구독하기 버튼 - 호스트네임 하드 가드 (V2) + 심사 모드(?screening=true) 대응 */}
-                        {isMounted && (!isPaid || isScreeningMode) && (
+                        {/* 구독하기 버튼 - 로그아웃 상태에서만 표시 (로그인 시 PRO 뱃지 표시) */}
+                        {isMounted && !isLoggedIn && (!isPaid || isScreeningMode) && (
                             (vipId && !isAlwaysFree) ||
                             (!vipId && !isAlwaysFreeMode() && !isFreeArtistHost) ||
                             isScreeningMode
