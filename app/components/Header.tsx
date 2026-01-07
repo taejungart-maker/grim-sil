@@ -274,24 +274,24 @@ export default function Header({
                                 </button>
                             )}
 
-                        {/* 구독중 뱃지 - 로그인 + 구독 완료 상태에서 표시 */}
-                        {isMounted && isLoggedIn && isPaid && !isScreeningMode && (
+                        {/* PRO 뱃지 - 로그인 상태에서 표시 (로그인 = 구독 완료) */}
+                        {isMounted && isLoggedIn && !isScreeningMode && (
                             <div
-                                className="flex items-center gap-1.5"
+                                className="flex items-center gap-1"
                                 style={{
-                                    padding: "7px 16px",
-                                    background: "linear-gradient(135deg, #10b981 0%, #059669 100%)", // 세련된 에메랄드 그라데이션
+                                    padding: "5px 12px",
+                                    background: "linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)", // 세련된 퍼플 그라데이션
                                     color: "#ffffff",
                                     borderRadius: "9999px",
                                     fontFamily: "'Noto Sans KR', sans-serif",
-                                    fontWeight: 600,
-                                    fontSize: "13px",
-                                    letterSpacing: "0.01em",
+                                    fontWeight: 700,
+                                    fontSize: "11px",
+                                    letterSpacing: "0.05em",
                                     whiteSpace: "nowrap",
-                                    boxShadow: "0 2px 8px rgba(16, 185, 129, 0.3)",
+                                    boxShadow: "0 2px 8px rgba(99, 102, 241, 0.4)",
                                 }}
                             >
-                                <span>✨ 구독중</span>
+                                <span>✨ PRO</span>
                             </div>
                         )}
 
