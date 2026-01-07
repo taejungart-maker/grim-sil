@@ -95,10 +95,10 @@ export default function Header({
                             prefetch={false}
                             style={{
                                 padding: "6px 14px",
-                                fontSize: "14px",
+                                fontSize: "20px",
                                 fontFamily: "var(--font-serif)",
                                 fontWeight: 600,
-                                color: "var(--foreground)",
+                                color: "#ea4c89",
                                 textDecoration: "none",
                                 borderRadius: "9999px", // [BRUTE_FORCE]
                                 transition: "all 0.3s",
@@ -174,18 +174,27 @@ export default function Header({
                 </div>
             </div>
 
-            {/* 하단: 작가소개 + ART NEWS + 구독하기 + Gallery 공유 */}
+            {/* 하단: 작가소개 + ART NEWS + 구독하기 + Gallery 공유 - 가로 스크롤 */}
             <div
-                className="max-w-6xl mx-auto px-4 sm:px-6"
+                className="max-w-6xl mx-auto"
                 style={{
                     paddingTop: "12px",
                     paddingBottom: "12px",
                     borderTop: `1px solid ${borderColor}`,
+                    overflowX: "auto",
+                    scrollbarWidth: "none",
+                    msOverflowStyle: "none",
+                    WebkitOverflowScrolling: "touch",
                 }}
             >
                 <div
-                    className="flex items-center justify-between sm:justify-start"
-                    style={{ gap: "12px" }}
+                    className="flex items-center"
+                    style={{
+                        gap: "12px",
+                        minWidth: "max-content",
+                        paddingLeft: "16px",
+                        paddingRight: "16px",
+                    }}
                 >
                     {/* 왼쪽 그룹: 작가소개 + ART NEWS */}
                     <div className="flex items-center gap-3 sm:gap-4">
@@ -196,7 +205,7 @@ export default function Header({
                             style={{
                                 textDecoration: "none",
                                 fontFamily: "var(--font-serif)",
-                                color: "var(--foreground)",
+                                color: "#ea4c89",
                                 fontWeight: 500,
                                 letterSpacing: "-0.01em",
                                 whiteSpace: "nowrap",
@@ -213,7 +222,7 @@ export default function Header({
                             style={{
                                 textDecoration: "none",
                                 fontFamily: "var(--font-serif)",
-                                color: "var(--foreground)",
+                                color: "#ea4c89",
                                 fontWeight: 500,
                                 letterSpacing: "-0.01em",
                                 whiteSpace: "nowrap",

@@ -19,7 +19,7 @@ export default function YearMonthTabs({ yearMonths, selectedYearMonth, onYearMon
     // 연도 탭 색상 - 사용자 요구사항에 맞춘 색상
     const colors = getThemeColors(theme);
     const activeTextColor = theme === "black" ? "#ffffff" : "#ffffff";
-    const inactiveTextColor = theme === "black" ? "#6B7280" : SIGNATURE_COLORS.sandGray;
+    const inactiveTextColor = theme === "black" ? "#e5e7e9" : SIGNATURE_COLORS.sandGray;
     const activeBgColor = theme === "black" ? "#6366f1" : "rgba(27, 38, 59, 0.05)"; // 도록 느낌의 아주 연한 배경
     const activeBorderColor = theme === "black" ? "transparent" : SIGNATURE_COLORS.royalIndigo;
     const activeTextColorFixed = theme === "black" ? "#ffffff" : SIGNATURE_COLORS.royalIndigo;

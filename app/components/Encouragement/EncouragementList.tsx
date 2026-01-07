@@ -45,7 +45,7 @@ export default function EncouragementList({
                         }}
                     >
                         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-                            <span style={{ fontWeight: 600, fontSize: "14px", color: textColor }}>
+                            <span style={{ fontWeight: 600, fontSize: "20px", color: textColor }}>
                                 {comment.authorUrl && comment.authorUrl !== "#" ? (
                                     <a
                                         href={comment.authorUrl}
@@ -61,7 +61,7 @@ export default function EncouragementList({
                             </span>
                             <span style={{ fontSize: "12px", color: subTextColor }}>{comment.date}</span>
                         </div>
-                        <p style={{ fontSize: "15px", color: theme === "black" ? "#ccc" : "#444", lineHeight: "1.6" }}>
+                        <p style={{ fontSize: "20px", color: theme === "black" ? "#ccc" : "#444", lineHeight: "1.6" }}>
                             {comment.text}
                         </p>
                         {/* 삭제 버튼 (로그인 시에만 표시) */}

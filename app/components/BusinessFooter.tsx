@@ -21,8 +21,8 @@ export default function BusinessFooter({ theme = "light", borderColor = "rgba(0,
         >
             <p
                 style={{
-                    fontSize: "14px",
-                    color: isBlack ? "#888" : "#666",
+                    fontSize: "20px",
+                    color: "#ffffff",
                     marginBottom: "16px",
                     fontFamily: "'Noto Sans KR', sans-serif",
                 }}
@@ -55,8 +55,8 @@ export default function BusinessFooter({ theme = "light", borderColor = "rgba(0,
             <p
                 style={{
                     marginTop: "16px",
-                    fontSize: "12px",
-                    color: isBlack ? "#555" : "#999",
+                    fontSize: "18px",
+                    color: "#ffffff",
                     fontFamily: "'Noto Sans KR', sans-serif",
                 }}
             >

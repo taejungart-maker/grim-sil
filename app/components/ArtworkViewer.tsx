@@ -222,9 +222,10 @@ export default function ArtworkViewer({
     // 고대비 시니어 친화적 색상 - 국립현대미술관 수준
     const bgColor = theme === "black" ? "#0a0a0a" : "#f5f5f3"; // 배경
     const captionBg = theme === "black" ? "#1a1a1a" : "#ffffff"; // 캡션 배경 (불투명 흰색)
-    const titleColor = theme === "black" ? "#ffffff" : "#000000"; // 순수 검정
-    const infoColor = theme === "black" ? "#e0e0e0" : "#000000"; // 진한 검정
-    const secondaryColor = theme === "black" ? "#c0c0c0" : "#1a1a1a";
+    // 캡션 창 배경이 항상 밝은 베이지색(rgba(245, 242, 237, 0.98))이므로 텍스트는 항상 진한 색
+    const titleColor = "#1a1a1a"; // 항상 진한 검정
+    const infoColor = "#2d2d2d"; // 항상 진한 검정
+    const secondaryColor = "#1a1a1a";
     const iconColor = theme === "black" ? "#ffffff" : "#000000";
     const buttonBg = theme === "black" ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.08)";
 
@@ -252,14 +253,14 @@ export default function ArtworkViewer({
                                 border: "none",
                                 borderRadius: "2px",
                                 textDecoration: "none",
-                                color: iconColor,
+                                color: "#fafafa",
                                 fontFamily: "var(--font-serif)",
                                 fontSize: "14px",
                                 fontWeight: 500,
                             }}
                             aria-label="수정하기"
                         >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth="2">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fafafa" strokeWidth="2">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                             </svg>
@@ -278,14 +279,14 @@ export default function ArtworkViewer({
                         borderRadius: "2px",
                         border: "none",
                         cursor: "pointer",
-                        color: iconColor,
+                        color: "#fafafa",
                         fontFamily: "var(--font-serif)",
                         fontSize: "14px",
                         fontWeight: 500,
                     }}
                     aria-label="닫기"
                 >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth="2">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fafafa" strokeWidth="2">
                         <path d="M18 6L6 18M6 6l12 12" />
                     </svg>
                     <span>닫기</span>
@@ -346,27 +347,22 @@ export default function ArtworkViewer({
                         className="flex items-center gap-4 py-2 px-4"
                         style={{
                             pointerEvents: "auto",
-                            background: "rgba(245, 242, 237, 0.7)", // 조금 더 선명하게
-                            backdropFilter: "blur(12px)",
-                            WebkitBackdropFilter: "blur(12px)",
-                            borderRadius: "40px !important", // 강제 원형 레이아웃
                         }}
                     >
                         <button
                             onClick={() => setShowCaption(!showCaption)}
                             style={{
                                 height: "48px",
-                                padding: "0 24px",
-                                background: "var(--primary)",
-                                color: "#fff",
+                                padding: "0px 24px",
+                                background: "#0b3a5f",
+                                color: "#fafafa",
                                 border: "none",
-                                borderRadius: "9999px !important", // 울트라 원형 고정
                                 fontFamily: "var(--font-serif)",
                                 fontSize: "15px",
                                 fontWeight: 600,
                                 cursor: "pointer",
-                                boxShadow: "0 6px 16px rgba(0,0,0,0.2)",
-                                transition: "all 0.3s ease",
+                                boxShadow: "#242b34 0px 6px 16px",
+                                transition: "0.3s",
                             }}
                         >
                             {showCaption ? "정보닫기" : "작품정보 클릭"}
@@ -386,6 +382,7 @@ export default function ArtworkViewer({
                                     fontSize: "14px",
                                     fontWeight: 600,
                                     cursor: "pointer",
+                                    boxShadow: "0 4px 12px rgba(220, 38, 38, 0.3)",
                                 }}
                             >
                                 작품삭제
@@ -478,8 +475,8 @@ export default function ArtworkViewer({
                         <h2
                             style={{
                                 fontFamily: "var(--font-serif)",
-                                fontSize: "28px",
-                                fontWeight: 700,
+                                fontSize: "31px",
+                                fontWeight: 800,
                                 color: titleColor,
                                 marginBottom: "16px",
                                 letterSpacing: "-0.03em",
@@ -491,23 +488,45 @@ export default function ArtworkViewer({
                         <div
                             style={{
                                 fontFamily: "var(--font-serif)",
-                                fontSize: "17px",
+                                fontSize: "20px",
+                                fontWeight: 600,
                                 color: infoColor,
                                 lineHeight: 1.8,
                             }}
                         >
                             <p style={{ marginBottom: "6px" }}>{currentArtwork.medium}</p>
-                            <p style={{ marginBottom: "6px", opacity: 0.8 }}>{currentArtwork.dimensions}</p>
-                            <p style={{ marginBottom: "24px", opacity: 0.8 }}>{currentArtwork.year}</p>
+                            <p style={{ marginBottom: "6px" }}>{currentArtwork.dimensions}</p>
+                            <p style={{ marginBottom: "24px" }}>{currentArtwork.year}</p>
 
                             {/* 가격 정보 */}
-                            {showPrice && currentArtwork.price && (() => {
+                            {currentArtwork.price && (() => {
                                 const priceNum = parseInt(currentArtwork.price.replace(/[^\d]/g, ''));
+                                if (isNaN(priceNum)) return null;
+
                                 const usdPrice = convertKRWtoUSD(priceNum, exchangeRate);
                                 return (
-                                    <div style={{ marginBottom: "16px", fontWeight: 600 }}>
-                                        <p style={{ color: "#8B7355" }}>{priceNum.toLocaleString()} KRW</p>
-                                        <p style={{ fontSize: "13px", opacity: 0.6 }}>({usdPrice.toLocaleString()} USD)</p>
+                                    <div style={{
+                                        marginBottom: "24px",
+                                        padding: "16px",
+                                        background: theme === "black" ? "rgba(255,255,255,0.03)" : "rgba(139, 115, 85, 0.05)",
+                                        borderRadius: "8px",
+                                        borderLeft: "3px solid #8B7355"
+                                    }}>
+                                        <p style={{
+                                            color: "#8B7355",
+                                            fontSize: "22px",
+                                            fontWeight: 700,
+                                            marginBottom: "4px"
+                                        }}>
+                                            {priceNum.toLocaleString()} KRW
+                                        </p>
+                                        <p style={{
+                                            fontSize: "15px",
+                                            opacity: 0.7,
+                                            fontStyle: "italic"
+                                        }}>
+                                            {usdPrice.toLocaleString()} USD
+                                        </p>
                                     </div>
                                 );
                             })()}

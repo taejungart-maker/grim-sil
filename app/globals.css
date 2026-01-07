@@ -57,6 +57,8 @@
 html {
   font-size: var(--font-size-base);
   -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
+  background: #000000;
 }
 
 body {
@@ -67,6 +69,8 @@ body {
   line-height: 1.8;
   -webkit-font-smoothing: antialiased;
   letter-spacing: -0.02em;
+  overflow-x: hidden;
+  min-height: 100vh;
 }
 
 /* [FORCE_CIRCLE] 모든 버튼에 대한 초강력 원형 고정 클래스 */

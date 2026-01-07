@@ -22,8 +22,8 @@ export default function VIPBusinessFooter({ theme, galleryNameKo, borderColor, s
         >
             <p
                 style={{
-                    fontSize: "14px",
-                    color: theme === "black" ? "#888" : "#666",
+                    fontSize: "20px",
+                    color: "#ffffff",
                     marginBottom: "16px",
                     fontFamily: "'Noto Sans KR', sans-serif",
                 }}
@@ -56,8 +56,8 @@ export default function VIPBusinessFooter({ theme, galleryNameKo, borderColor, s
             <p
                 style={{
                     marginTop: "16px",
-                    fontSize: "12px",
-                    color: theme === "black" ? "#555" : "#999",
+                    fontSize: "18px",
+                    color: "#ffffff",
                     fontFamily: "'Noto Sans KR', sans-serif",
                 }}
             >

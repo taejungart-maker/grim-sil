@@ -65,11 +65,13 @@ export default function ColleaguesPage() {
         loadArtists();
     }, []);
 
-    // 검색 필터링
-    const filteredArtists = artists.filter(artist =>
-        artist.artist_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        artist.gallery_name_ko.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // 검색 필터링 (공백 무시 및 대소문자 구분 없음)
+    const normalizedSearch = searchTerm.replace(/\s+/g, "").toLowerCase();
+    const filteredArtists = artists.filter(artist => {
+        const name = (artist.artist_name || "").replace(/\s+/g, "").toLowerCase();
+        const gallery = (artist.gallery_name_ko || "").replace(/\s+/g, "").toLowerCase();
+        return name.includes(normalizedSearch) || gallery.includes(normalizedSearch);
+    });
 
     // 작가 Gallery 방문 (내 정보 포함)
     const handleVisit = (artist: ArtistInfo) => {
@@ -158,8 +160,10 @@ export default function ColleaguesPage() {
                                     borderRadius: "16px",
                                     boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
                                     cursor: "pointer",
-                                    transition: "transform 0.2s, box-shadow 0.2s"
+                                    transition: "all 0.3s ease",
+                                    animation: "fadeSlideIn 0.3s ease forwards"
                                 }}
+                                className="colleague-card hover:scale-[1.02] hover:shadow-lg"
                             >
                                 {/* 프로필 이미지 */}
                                 <div style={{
@@ -218,6 +222,16 @@ export default function ColleaguesPage() {
                     </Link>
                 </div>
             </main>
+
+            <style jsx global>{`
+                @keyframes fadeSlideIn {
+                    from { opacity: 0; transform: translateY(10px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                .colleague-card:active {
+                    transform: scale(0.98);
+                }
+            `}</style>
         </div>
     );
 }

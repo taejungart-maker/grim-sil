@@ -174,6 +174,7 @@ export default function VIPPageClient({ VIP_ID, isAlwaysFree = false }: VIPPageC
                     initialIndex={selectedArtwork.index}
                     onClose={() => setSelectedArtwork(null)}
                     onDelete={handleArtworkDeleted}
+                    showPrice={settings.showPrice}
                     theme={settings.theme as "white" | "black"}
                 />
             )}

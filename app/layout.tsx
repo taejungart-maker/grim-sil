@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { loadSettings, loadSettingsById } from "./utils/settingsDb";
 import { getClientArtistId } from "./utils/getArtistId";
@@ -9,6 +9,14 @@ if (typeof window !== 'undefined') {
   console.log("Grim-Sil Version: v1.1.9 (Force Deploy Trigger)");
 }
 export const dynamic = "force-dynamic";
+
+// 핀치 줌 비활성화 - 작품 뷰어 확대 문제 해결
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
 
 export async function generateMetadata() {
   noStore();
@@ -82,7 +90,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" suppressHydrationWarning>
+    <html lang="ko" suppressHydrationWarning style={{ background: "#000000", overflowX: "hidden" }}>
       <head>
         {/* Noto Sans KR - 시니어 친화적 가독성 높은 폰트 */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -96,7 +104,7 @@ export default function RootLayout({
         {/* 포트원 SDK V2 - 나도 갤러리 만들기 결제 */}
         <Script src="https://cdn.portone.io/v2/browser-sdk.js" strategy="beforeInteractive" />
       </head>
-      <body suppressHydrationWarning>
+      <body suppressHydrationWarning style={{ overflowX: "hidden", minHeight: "100vh" }}>
         <PaymentProvider>
           <AuthProvider>
             <VisitorTracker />
