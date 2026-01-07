@@ -29,7 +29,7 @@ import LoginModal from "./components/LoginModal";
 import PaymentModal from "./components/PaymentModal";
 import ShareModal from "./components/ShareModal";
 import { usePayment } from "./contexts/PaymentContext";
-import { isPaymentRequired } from "./utils/deploymentMode";
+import { isPaymentRequired, getDeploymentMode } from "./utils/deploymentMode";
 
 
 
@@ -201,8 +201,8 @@ function HomeContent() {
 
       {showNewsTicker && <NewsTicker theme={settings.theme} newsText={settings.newsText} />}
 
-      {/* 구독 만료 시 흐린 유리 오버레이 */}
-      {needsPayment && !isPaid && (
+      {/* 구독 만료 시 흐린 유리 오버레이 - commercial 모드에서만 표시 (showroom에서는 구독 버튼 노출을 위해 숨김) */}
+      {needsPayment && !isPaid && getDeploymentMode() === 'commercial' && (
         <ExpiredOverlay
           galleryName={settings.galleryNameKo}
           onResubscribe={() => setShowPaymentModal(true)}
