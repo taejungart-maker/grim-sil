@@ -412,3 +412,16 @@ button[style*='background: rgb(51, 51, 51)'],
 button[style*='background: #333'] {
   color: #ffffff !important;
 }
+
+/* [URGENT FIX] Admin header button - Ensure text visibility */
+header button {
+  color: inherit !important;
+}
+
+header button[style*='f3f4f6'] {
+  color: #1a1a1a !important;
+}
+
+header button[style*='#333'] {
+  color: #ffffff !important;
+}
