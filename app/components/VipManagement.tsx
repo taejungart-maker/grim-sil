@@ -1,8 +1,8 @@
-/**
- * VIP 갤러리 관리 컴포넌트 (자동화 버전)
- * - 수동 입력 제거
- * - 결제 시 자동 생성 안내
- * - 생성된 VIP 목록 관리만 제공
+﻿/**
+ * VIP 媛ㅻ윭由?愿由?而댄룷?뚰듃 (?먮룞??踰꾩쟾)
+ * - ?섎룞 ?낅젰 ?쒓굅
+ * - 寃곗젣 ???먮룞 ?앹꽦 ?덈궡
+ * - ?앹꽦??VIP 紐⑸줉 愿由щ쭔 ?쒓났
  */
 
 "use client";
@@ -56,7 +56,7 @@ export default function VipManagement({
     const handleDeleteVip = async (artistId: string, artistName: string) => {
         if (
             !confirm(
-                `정말 "${artistName}" VIP 링크를 삭제하시겠습니까?\n\n모든 작품 데이터와 설정이 영구 삭제됩니다.`
+                `?뺣쭚 "${artistName}" VIP 留곹겕瑜???젣?섏떆寃좎뒿?덇퉴?\n\n紐⑤뱺 ?묓뭹 ?곗씠?곗? ?ㅼ젙???곴뎄 ??젣?⑸땲??`
             )
         ) {
             return;
@@ -64,17 +64,17 @@ export default function VipManagement({
 
         try {
             await deleteVipArtist(artistId);
-            setMessage(`✅ "${artistName}" VIP 링크가 삭제되었습니다.`);
+            setMessage(`??"${artistName}" VIP 留곹겕媛 ??젣?섏뿀?듬땲??`);
             await loadVipArtists();
         } catch (error: any) {
-            alert(`삭제 실패: ${error.message}`);
+            alert(`??젣 ?ㅽ뙣: ${error.message}`);
         }
     };
 
     const handleCopyLink = (linkId: string) => {
         const url = generateVipLinkUrl(linkId);
         navigator.clipboard.writeText(url).then(() => {
-            alert(`링크가 클립보드에 복사되었습니다:\n${url}`);
+            alert(`留곹겕媛 ?대┰蹂대뱶??蹂듭궗?섏뿀?듬땲??\n${url}`);
         });
     };
 
@@ -91,7 +91,7 @@ export default function VipManagement({
             });
             setSelectedVipQR({ linkId, qrUrl });
         } catch (error) {
-            alert("QR 코드 생성 실패");
+            alert("QR 肄붾뱶 ?앹꽦 ?ㅽ뙣");
         }
     };
 
@@ -128,10 +128,9 @@ export default function VipManagement({
                         letterSpacing: "-0.03em",
                     }}
                 >
-                    🤖 VIP 갤러리 자동 생성 시스템
-                </h2>
+                    ?쨼 VIP 媛ㅻ윭由??먮룞 ?앹꽦 ?쒖뒪??                </h2>
                 <p style={{ color: mutedColor, fontSize: "15px", marginTop: "8px" }}>
-                    결제 완료 시 자동으로 VIP 갤러리가 생성됩니다.
+                    寃곗젣 ?꾨즺 ???먮룞?쇰줈 VIP 媛ㅻ윭由ш? ?앹꽦?⑸땲??
                 </p>
             </div>
 
@@ -140,7 +139,7 @@ export default function VipManagement({
                     style={{
                         padding: "16px",
                         marginBottom: "24px",
-                        background: message.startsWith("✅") ? "#22c55e" : "#dc2626",
+                        background: message.startsWith("??) ? "#22c55e" : "#dc2626",
                         color: "#fff",
                         borderRadius: "12px",
                         textAlign: "center",
@@ -152,7 +151,7 @@ export default function VipManagement({
                 </div>
             )}
 
-            {/* 자동화 안내 */}
+            {/* ?먮룞???덈궡 */}
             <div
                 style={{
                     padding: "24px",
@@ -169,23 +168,23 @@ export default function VipManagement({
                         marginBottom: "12px",
                     }}
                 >
-                    ✅ 결제 완료 → 자동 생성
+                    ??寃곗젣 ?꾨즺 ???먮룞 ?앹꽦
                 </h3>
                 <p style={{ fontSize: "15px", lineHeight: 1.6 }}>
-                    고객이 "구독하기"를 클릭하고 결제가 완료되면:
+                    怨좉컼??"援щ룆?섍린"瑜??대┃?섍퀬 寃곗젣媛 ?꾨즺?섎㈃:
                 </p>
                 <ul style={{ marginTop: "12px", paddingLeft: "20px", lineHeight: 1.8 }}>
-                    <li>✅ 시스템이 자동으로 VIP 갤러리 생성</li>
-                    <li>✅ 임시 비밀번호 자동 발급</li>
-                    <li>✅ SMS/이메일로 링크 & 비밀번호 자동 발송</li>
-                    <li>✅ 고객 즉시 사용 가능</li>
+                    <li>???쒖뒪?쒖씠 ?먮룞?쇰줈 VIP 媛ㅻ윭由??앹꽦</li>
+                    <li>???꾩떆 鍮꾨?踰덊샇 ?먮룞 諛쒓툒</li>
+                    <li>??SMS/?대찓?쇰줈 留곹겕 & 鍮꾨?踰덊샇 ?먮룞 諛쒖넚</li>
+                    <li>??怨좉컼 利됱떆 ?ъ슜 媛??/li>
                 </ul>
                 <p style={{ marginTop: "12px", fontSize: "14px", opacity: 0.9 }}>
-                    <strong>작가 개입: 0%</strong> • 모든 것이 자동입니다.
+                    <strong>?묎? 媛쒖엯: 0%</strong> ??紐⑤뱺 寃껋씠 ?먮룞?낅땲??
                 </p>
             </div>
 
-            {/* VIP 목록 */}
+            {/* VIP 紐⑸줉 */}
             <div>
                 <h3
                     style={{
@@ -194,7 +193,7 @@ export default function VipManagement({
                         marginBottom: "16px",
                     }}
                 >
-                    생성된 VIP 갤러리 ({vipArtists.length}개)
+                    ?앹꽦??VIP 媛ㅻ윭由?({vipArtists.length}媛?
                 </h3>
 
                 {isLoading ? (
@@ -205,7 +204,7 @@ export default function VipManagement({
                             color: mutedColor,
                         }}
                     >
-                        로딩 중...
+                        濡쒕뵫 以?..
                     </div>
                 ) : vipArtists.length === 0 ? (
                     <div
@@ -217,10 +216,10 @@ export default function VipManagement({
                             borderRadius: "16px",
                         }}
                     >
-                        아직 생성된 VIP 갤러리가 없습니다.
+                        ?꾩쭅 ?앹꽦??VIP 媛ㅻ윭由ш? ?놁뒿?덈떎.
                         <br />
                         <span style={{ fontSize: "14px" }}>
-                            첫 결제가 완료되면 여기에 표시됩니다.
+                            泥?寃곗젣媛 ?꾨즺?섎㈃ ?ш린???쒖떆?⑸땲??
                         </span>
                     </div>
                 ) : (
@@ -262,7 +261,7 @@ export default function VipManagement({
                                                     fontWeight: 700,
                                                 }}
                                             >
-                                                무료
+                                                臾대즺
                                             </span>
                                         )}
                                         {artist.link_id === "gallery-vip-01" && (
@@ -277,7 +276,7 @@ export default function VipManagement({
                                                     fontWeight: 700,
                                                 }}
                                             >
-                                                테스트용
+                                                ?뚯뒪?몄슜
                                             </span>
                                         )}
                                     </div>
@@ -289,7 +288,7 @@ export default function VipManagement({
                                     >
                                         {artist.link_id}
                                         {!artist.is_free &&
-                                            ` • ${artist.subscription_price?.toLocaleString()}원/월`}
+                                            ` ??${artist.subscription_price?.toLocaleString()}????}
                                     </div>
                                 </div>
 
@@ -307,7 +306,7 @@ export default function VipManagement({
                                             cursor: "pointer",
                                         }}
                                     >
-                                        링크 복사
+                                        留곹겕 蹂듭궗
                                     </button>
 
                                     <button
@@ -339,7 +338,7 @@ export default function VipManagement({
                                             cursor: "pointer",
                                         }}
                                     >
-                                        삭제
+                                        ??젣
                                     </button>
                                 </div>
                             </div>
@@ -348,7 +347,7 @@ export default function VipManagement({
                 )}
             </div>
 
-            {/* QR 모달 */}
+            {/* QR 紐⑤떖 */}
             {selectedVipQR && (
                 <div
                     onClick={() => setSelectedVipQR(null)}
@@ -382,7 +381,7 @@ export default function VipManagement({
                                 color: "#1a1a1a",
                             }}
                         >
-                            {selectedVipQR.linkId} QR 코드
+                            {selectedVipQR.linkId} QR 肄붾뱶
                         </h3>
                         <img
                             src={selectedVipQR.qrUrl}
@@ -402,7 +401,7 @@ export default function VipManagement({
                                 fontWeight: 700,
                             }}
                         >
-                            다운로드
+                            ?ㅼ슫濡쒕뱶
                         </a>
                     </div>
                 </div>
