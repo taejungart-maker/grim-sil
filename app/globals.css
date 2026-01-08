@@ -7,19 +7,19 @@
 
 :root {
   /* 색상 - Private Catalog (Collectors Edition) */
-  --background: #F5F2ED;
-  /* SIGNATURE_COLORS.agingPaper */
-  --foreground: #2D2D2D;
-  /* SIGNATURE_COLORS.inkCharcoal */
+  --background: #000000;
+  /* SIGNATURE_COLORS.agingPaper -> Black */
+  --foreground: #F5F2ED;
+  /* SIGNATURE_COLORS.inkCharcoal -> Aging Paper for contrast */
   --primary: #1B263B;
   /* SIGNATURE_COLORS.royalIndigo */
   --primary-hover: #0D131F;
-  --secondary: #EAE5DD;
-  --border: #C2BCB2;
-  /* SIGNATURE_COLORS.sandGray */
-  --text-muted: #555555;
-  --accent: #803030;
-  /* SIGNATURE_COLORS.antiqueBurgundy */
+  --secondary: #121212;
+  --border: #333333;
+  /* SIGNATURE_COLORS.sandGray -> Dark Gray */
+  --text-muted: #888888;
+  --accent: #A04040;
+  /* SIGNATURE_COLORS.antiqueBurgundy -> Lighter for visibility */
 
   /* Tailwind 4 컬러 매핑 */
   --color-background: var(--background);
