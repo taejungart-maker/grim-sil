@@ -19,6 +19,8 @@ import { SIGNATURE_COLORS } from "../utils/themeColors";
 
 import Link from "next/link";
 import VipManagement from "../components/VipManagement";
+import "./admin-buttons.css";
+
 
 export default function AdminPage() {
     const router = useRouter();

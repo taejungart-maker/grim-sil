@@ -1,0 +1,28 @@
+/* [CRITICAL FIX] Admin button text visibility override */
+/* This CSS forces proper text colors for all admin buttons */
+
+/* Target all buttons in header - force dark text for light backgrounds */
+header button:not([style*="background: rgb(99, 102, 241)"]):not([style*="background: #6366f1"]) {
+    color: #1a1a1a !important;
+}
+
+/* Target buttons with specific light backgrounds */
+button[style*="#f3f4f6"],
+button[style*="rgb(243, 244, 246)"],
+button[style*="background: rgb(243"] {
+    color: #1a1a1a !important;
+}
+
+/* Target buttons with dark backgrounds */
+button[style*="#333"],
+button[style*="rgb(51, 51, 51)"],
+button[style*="background: rgb(51"] {
+    color: #ffffff !important;
+}
+
+/* Fallback: All light gray buttons get dark text */
+button[style*="f4f6"],
+button[style*="f3f4"],
+button[style*="243, 244"] {
+    color: #000000 !important;
+}
