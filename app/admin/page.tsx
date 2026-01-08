@@ -102,6 +102,19 @@ useEffect(() => {
     countBase64Images().then(setBase64ImageCount);
 }, [vipId]);
 
+    // [URGENT FIX] Force button colors after render
+    useEffect(() => {
+        const interval = setInterval(() => {
+            document.querySelectorAll('header button').forEach((btn) => {
+                const bg = (btn as HTMLButtonElement).style.background || '';
+                if (bg.includes('f3f4f6') || bg.includes('243, 244')) {
+                    (btn as HTMLButtonElement).style.color = '#000000';
+                }
+            });
+        }, 100);
+        return () => clearInterval(interval);
+    }, []);
+
 // 鍮꾨?踰덊샇 ?뺤씤 (?꾩뿭 濡쒓렇???ъ슜)
 const handleLogin = async () => {
     const success = await login(password);
